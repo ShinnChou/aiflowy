@@ -1,6 +1,8 @@
 package tech.aiflowy.system.options;
 
+import tech.aiflowy.common.entity.LoginAccount;
 import tech.aiflowy.common.options.SysOptionStore;
+import tech.aiflowy.common.satoken.util.SaTokenUtil;
 import tech.aiflowy.common.util.StringUtil;
 import tech.aiflowy.system.entity.SysOption;
 import tech.aiflowy.system.service.SysOptionService;
@@ -24,8 +26,10 @@ public class DefaultOptionStore implements SysOptionStore {
 
         String newValue = value.toString().trim();
         SysOption option = optionService.getById(key);
+        LoginAccount loginAccount = SaTokenUtil.getLoginAccount();
         if (option == null) {
             option = new SysOption(key, newValue);
+            option.setTenantId(loginAccount.getTenantId());
             optionService.save(option);
         } else {
             option.setValue(newValue);
