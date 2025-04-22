@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitepress'
+import {defineConfig} from 'vitepress'
 
 const gitee_icon_svg =
     '\n' +
@@ -20,58 +20,58 @@ const gitee_icon_svg =
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "AIFlowy",
-  description: "一个 AI 产品的底座和基石",
+    title: "AIFlowy",
+    description: "一个 AI 产品的底座和基石",
 
-  // https://vitepress.dev/reference/default-theme-config
-  themeConfig: {
-    logo: '/logo.png',
-    outline: {
-      label: '当前页导航',
-      level: 'deep'
+    // https://vitepress.dev/reference/default-theme-config
+    themeConfig: {
+        logo: '/logo.png',
+        outline: {
+            label: '当前页导航',
+            level: 'deep'
+        },
+
+        editLink: {
+            text: '编辑当前页面',
+            pattern: 'https://gitee.com/aiflowy/aiflowy/edit/main/docs/:path',
+        },
+
+        nav: [
+            {text: '开发文档', link: '/zh/development/getting-started/getting-started'},
+            {text: '产品文档', link: '/zh/product/info/what-is-aiflowy'},
+            {text: '价格', link: '/zh/product/pricing'},
+            {text: '更新记录', link: '/zh/product/changes'},
+        ],
+
+        sidebar: {
+            '/zh/development/': {base: '/zh/development/', items: sidebarDevelopment()},
+            '/zh/product/': {base: '/zh/product/', items: sidebarProduct()}
+        },
+
+        socialLinks: [
+            {icon: {svg: gitee_icon_svg}, link: 'https://gitee.com/aiflowy/aiflowy'},
+            // { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+        ],
+
+
+        footer: {
+            copyright:
+                'Copyright © 2022-present <a style="color:#777;text-decoration: none;font-size: 12px;margin-right:10px;" target="_blank" href="https://AIFlowy.tech">AIFlowy.tech</a> ' +
+                '<a style="color:#777;text-decoration: none;font-size: 12px;margin-right:10px;" target="_blank" rel="noopener" href="http://beian.miit.gov.cn/"> 黔ICP备19009310号-17 </a>' +
+                '<span style="display: flex;align-items: center;justify-content: center;">' +
+                '<span style="font-size: 12px;margin-right:10px;"> 深圳新篇智能科技有限公司 & 贵州小码科技有限公司（运营）</span>' +
+                '</span>'
+        }
+
     },
 
-    editLink: {
-      text: '编辑当前页面',
-      pattern: 'https://gitee.com/aiflowy/aiflowy/edit/main/docs/:path',
-    },
-
-    nav: [
-      { text: '开发文档', link: '/zh/development/info/what-is-aiflowy' },
-      { text: '产品文档', link: '/zh/product/info/what-is-aiflowy' },
-      { text: '价格', link: '/zh/product/pricing' },
-      { text: '更新记录', link: '/zh/product/changes' },
-    ],
-
-    sidebar:{
-      '/zh/development/': { base: '/zh/development/', items: sidebarDevelopment() },
-      '/zh/product/': { base: '/zh/product/', items: sidebarProduct() }
-    },
-
-    socialLinks: [
-      { icon: { svg: gitee_icon_svg }, link: 'https://gitee.com/aiflowy/aiflowy' },
-      // { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
-    ],
-
-
-    footer: {
-      copyright:
-          'Copyright © 2022-present <a style="color:#777;text-decoration: none;font-size: 12px;margin-right:10px;" target="_blank" href="https://AIFlowy.tech">AIFlowy.tech</a> ' +
-          '<a style="color:#777;text-decoration: none;font-size: 12px;margin-right:10px;" target="_blank" rel="noopener" href="http://beian.miit.gov.cn/"> 黔ICP备19009310号-17 </a>'+
-          '<span style="display: flex;align-items: center;justify-content: center;">' +
-          '<span style="font-size: 12px;margin-right:10px;"> 深圳新篇智能科技有限公司 & 贵州小码科技有限公司（运营）</span>' +
-          '</span>'
-    }
-
-  },
-
-  head: [
-    ['link', { rel: 'icon', href: '/logo.png' }],
-    [
-      // 添加百度统计
-      'script',
-      {},
-      `
+    head: [
+        ['link', {rel: 'icon', href: '/logo.png'}],
+        [
+            // 添加百度统计
+            'script',
+            {},
+            `
       var _hmt = _hmt || [];
       (function() {
         var hm = document.createElement("script");
@@ -80,131 +80,132 @@ export default defineConfig({
         s.parentNode.insertBefore(hm, s);
       })();
         `
-    ],
+        ],
 
-    [
-      // 自动跳转 https
-      'script',
-      {},
-      `
+        [
+            // 自动跳转 https
+            'script',
+            {},
+            `
         if (location.protocol !== 'https:' && location.hostname != 'localhost') {
             location.href = 'https://' + location.hostname + location.pathname + location.search;
         }
         `
-    ]
-  ],
+        ]
+    ],
 
 
 })
 
 
-
 function sidebarDevelopment(): DefaultTheme.SidebarItem[] {
-  return [
-    {
-      text: '快速开始',
-      collapsed: false,
-      items: [
-        { text: '快速开始', link: 'getting-started/getting-started' },
-        { text: '目录结构', link: 'getting-started/directory-structure' },
-        { text: '配置文件', link: 'getting-started/config-file' },
-        { text: '项目部署', link: 'getting-started/deploy' },
-        { text: '常见问题', link: 'getting-started/questions' }
-      ]
-    },
-    {
-      text: '前端相关',
-      collapsed: false,
-      items: [
-        { text: 'React', collapsed: false, items: [
-            { text: '路由管理', link: 'front/routes' },
-            { text: '状态管理', link: 'front/state' },
-            { text: 'Hooks', link: 'front/hooks' },
-            { text: '组件使用', link: 'front/components' },
-            { text: '国际化', link: 'front/locales' }
-          ] },
-        { text: 'Vue', collapsed: false },
-      ]
-    },
-    {
-      text: '后端相关',
-      collapsed: false,
-      items: [
-        { text: 'Controller', link: '/backend/controller' },
-        { text: '权限管理', link: '/backend/permission_management' },
-        { text: '验证码', link: '/backend/captcha' },
-        { text: '数据字典', link: '/backend/data_dictionary' },
-        { text: '文件管理', link: '/backend/file_management' },
-        { text: '其他', link: '/backend/other' }
-      ]
-    },
-    {
-      text: 'AI 相关',
-      collapsed: false,
-      items: [
-        { text: '大语言模型', link: '/ai/language-model' },
-        { text: 'Bot 应用', link: '/ai/bot-application' },
-        { text: '插件', link: '/ai/plugin' },
-        { text: '知识库', link: '/ai/knowledge' },
-        { text: 'apiKey', link: '/ai/apiKey' },
-        { text: 'Ollama', link: '/ai/ollama' },
-      ]
-    },
-  ]
+    return [
+        {
+            text: '快速开始',
+            collapsed: false,
+            items: [
+                {text: '快速开始', link: 'getting-started/getting-started'},
+                {text: '目录结构', link: 'getting-started/directory-structure'},
+                {text: '配置文件', link: 'getting-started/config-file'},
+                {text: '项目部署', link: 'getting-started/deploy'},
+                {text: '常见问题', link: 'getting-started/questions'}
+            ]
+        },
+        {
+            text: '前端相关',
+            collapsed: false,
+            items: [
+                {
+                    text: 'React', collapsed: false, items: [
+                        {text: '路由管理', link: 'front/routes'},
+                        {text: '状态管理', link: 'front/state'},
+                        {text: 'Hooks', link: 'front/hooks'},
+                        {text: '组件使用', link: 'front/components'},
+                        {text: '国际化', link: 'front/locales'}
+                    ]
+                },
+                {text: 'Vue', collapsed: false},
+            ]
+        },
+        {
+            text: '后端相关',
+            collapsed: false,
+            items: [
+                {text: 'Controller', link: '/backend/controller'},
+                {text: '权限管理', link: '/backend/permission_management'},
+                {text: '验证码', link: '/backend/captcha'},
+                {text: '数据字典', link: '/backend/data_dictionary'},
+                {text: '文件管理', link: '/backend/file_management'},
+                {text: '其他', link: '/backend/other'}
+            ]
+        },
+        {
+            text: 'AI 相关',
+            collapsed: false,
+            items: [
+                {text: '大语言模型', link: '/ai/language-model'},
+                {text: 'Bot 应用', link: '/ai/bot-application'},
+                {text: '插件', link: '/ai/plugin'},
+                {text: '知识库', link: '/ai/knowledge'},
+                {text: 'apiKey', link: '/ai/apiKey'},
+                {text: 'Ollama', link: '/ai/ollama'},
+            ]
+        },
+    ]
 }
 
 function sidebarProduct(): DefaultTheme.SidebarItem[] {
-  return [
-    {
-      text: '简介',
-      collapsed: false,
-      items: [
-        { text: '什么是 AIFlowy？', link: '/zh/product/info/what-is-aiflowy' },
-        { text: '快速开始', link: 'getting-started' },
-      ]
-    },
-    {
-      text: 'Bot 应用',
-      collapsed: false,
-      items: [
-        { text: '什么是 Bot', link: '/bot-applicatoin/what-is-a-bot' },
-        { text: '快速开始', link: '/bot-applicatoin/quick-start' },
-      ]
-    },
-    {
-      text: '插件',
-      collapsed: false,
-      items: [
-        { text: '什么是 插件？', link: '/plugin/what_is_plugin' },
-        { text: '快速开始', link: '/plugin/quick-start' },
-        { text: '自定义插件', link: '/plugin/custom-plugin' },
-      ]
-    },
-    {
-      text: '知识库',
-      collapsed: false,
-      items: [
-        { text: '什么是知识库', link: '/knowledge/what-is-knowledge' },
-        { text: '快速开始', link: '/knowledge/quick-start' },
-      ]
-    },
-    {
-      text: '工作流',
-      collapsed: false,
-      items: [
-        { text: '什么是工作流', link: '/workflow/what_is_workflow' },
-        { text: '快速开始', link: '/workflow/quick_start' },
-      ]
-    },
-    {
-      text: '模型管理',
-      collapsed: false,
-      items: [
-        { text: '什么是 AIFlowy？', link: '/model-mangement/what-is-aiflowy' },
-        { text: '快速开始', link: '/model-mangement/quick-start' },
-        { text: '路由', link: '/model-mangement/route' },
-        { text: '部署', link: '/model-mangement/deploy' }
-      ]
-    },
-  ]
+    return [
+        {
+            text: '简介',
+            collapsed: false,
+            items: [
+                {text: '什么是 AIFlowy？', link: '/info/what-is-aiflowy'},
+                {text: '技术规格', link: '/info/specifications'},
+            ]
+        },
+        {
+            text: 'Bot 应用',
+            collapsed: false,
+            items: [
+                {text: '什么是 Bot', link: '/bot-applicatoin/what-is-a-bot'},
+                {text: '快速开始', link: '/bot-applicatoin/quick-start'},
+            ]
+        },
+        {
+            text: '插件',
+            collapsed: false,
+            items: [
+                {text: '什么是 插件？', link: '/plugin/what_is_plugin'},
+                {text: '快速开始', link: '/plugin/quick-start'},
+                {text: '自定义插件', link: '/plugin/custom-plugin'},
+            ]
+        },
+        {
+            text: '知识库',
+            collapsed: false,
+            items: [
+                {text: '什么是知识库', link: '/knowledge/what-is-knowledge'},
+                {text: '快速开始', link: '/knowledge/quick-start'},
+            ]
+        },
+        {
+            text: '工作流',
+            collapsed: false,
+            items: [
+                {text: '什么是工作流', link: '/workflow/what_is_workflow'},
+                {text: '快速开始', link: '/workflow/quick_start'},
+            ]
+        },
+        {
+            text: '模型管理',
+            collapsed: false,
+            items: [
+                {text: '什么是 AIFlowy？', link: '/model-mangement/what-is-aiflowy'},
+                {text: '快速开始', link: '/model-mangement/quick-start'},
+                {text: '路由', link: '/model-mangement/route'},
+                {text: '部署', link: '/model-mangement/deploy'}
+            ]
+        },
+    ]
 }
