@@ -8,7 +8,7 @@
 
 ![create-model.png](resource/create-model.png)
 
-并且勾选上**对话模型** 才能在 Bot 中能选择大模型
+并且勾选上**对话模型** 才能在 Bot 中选择大模型
 
 ![create-model-second.png](resource/create-model-second.png)
 
