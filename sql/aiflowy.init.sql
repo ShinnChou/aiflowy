@@ -40,14 +40,18 @@ CREATE TABLE `tb_ai_bot_api_key`  (
   `api_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'apiKey',
   `created` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   `status` tinyint(0) NULL DEFAULT NULL COMMENT '状态1启用 2失效',
+  `dept_id` bigint(0) NULL DEFAULT NULL COMMENT '部门id',
+  `tenant_id` bigint(0) NULL DEFAULT NULL COMMENT '租户id',
+  `expired_at` datetime(0) NULL DEFAULT NULL COMMENT '失效时间',
+  `user_id` bigint(0) NULL DEFAULT NULL COMMENT '创建人',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tb_ai_bot_api_key
 -- ----------------------------
-INSERT INTO `tb_ai_bot_api_key` VALUES (271734616254328832, '99371353480b4cb4b552a7e0498ff2c6', '2025-04-21 09:17:21', 1);
-INSERT INTO `tb_ai_bot_api_key` VALUES (271736506891382784, 'e9ea056d8c1f48d5839732f90e653319', '2025-04-21 09:24:52', 1);
+INSERT INTO `tb_ai_bot_api_key` VALUES (271734616254328832, '99371353480b4cb4b552a7e0498ff2c6', '2025-04-21 09:17:21', 1, NULL, NULL, NULL, NULL);
+INSERT INTO `tb_ai_bot_api_key` VALUES (271736506891382784, 'e9ea056d8c1f48d5839732f90e653319', '2025-04-21 09:24:52', 1, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for tb_ai_bot_conversation_message
@@ -584,6 +588,38 @@ INSERT INTO `tb_sys_log` VALUES (272136021288976384, 1, 'page', NULL, 'tech.aifl
 INSERT INTO `tb_sys_log` VALUES (272136024053022720, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiBotApiKey/page', '127.0.0.1', 'pageNumber=1  pageSize=10  ', NULL, 1, '2025-04-22 11:52:24');
 INSERT INTO `tb_sys_log` VALUES (272136025076432896, 1, 'items', NULL, 'tech.aiflowy.common.controller.DictController', 'items', 'http://localhost:8899/api/v1/dict/items/dataStatus', '127.0.0.1', '', NULL, 1, '2025-04-22 11:52:24');
 INSERT INTO `tb_sys_log` VALUES (272136025416171520, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiBotApiKey/page', '127.0.0.1', 'pageNumber=1  pageSize=10  ', NULL, 1, '2025-04-22 11:52:25');
+INSERT INTO `tb_sys_log` VALUES (272139333262409728, 1, 'externalList', NULL, 'tech.aiflowy.ai.controller.AIBotConversationExternalMessageController', 'externalList', 'http://localhost:8899/api/v1/conversation/externalList', '127.0.0.1', 'botId=267848016181075968  ', NULL, 1, '2025-04-22 12:05:33');
+INSERT INTO `tb_sys_log` VALUES (272139333702811648, 1, 'externalList', NULL, 'tech.aiflowy.ai.controller.AIBotConversationExternalMessageController', 'externalList', 'http://localhost:8899/api/v1/conversation/externalList', '127.0.0.1', 'botId=267848016181075968  ', NULL, 1, '2025-04-22 12:05:33');
+INSERT INTO `tb_sys_log` VALUES (272139358788943872, 1, 'externalList', NULL, 'tech.aiflowy.ai.controller.AIBotConversationExternalMessageController', 'externalList', 'http://localhost:8899/api/v1/conversation/externalList', '127.0.0.1', 'botId=267848016181075968  ', NULL, 1, '2025-04-22 12:05:39');
+INSERT INTO `tb_sys_log` VALUES (272139359116099584, 1, 'externalList', NULL, 'tech.aiflowy.ai.controller.AIBotConversationExternalMessageController', 'externalList', 'http://localhost:8899/api/v1/conversation/externalList', '127.0.0.1', 'botId=267848016181075968  ', NULL, 1, '2025-04-22 12:05:39');
+INSERT INTO `tb_sys_log` VALUES (272139418348060672, 1, 'externalList', NULL, 'tech.aiflowy.ai.controller.AIBotConversationExternalMessageController', 'externalList', 'http://localhost:8899/api/v1/conversation/externalList', '127.0.0.1', 'botId=267848016181075968  ', NULL, 1, '2025-04-22 12:05:53');
+INSERT INTO `tb_sys_log` VALUES (272139418700382208, 1, 'externalList', NULL, 'tech.aiflowy.ai.controller.AIBotConversationExternalMessageController', 'externalList', 'http://localhost:8899/api/v1/conversation/externalList', '127.0.0.1', 'botId=267848016181075968  ', NULL, 1, '2025-04-22 12:05:54');
+INSERT INTO `tb_sys_log` VALUES (272915672282169344, NULL, 'tcaptcha', NULL, 'tech.aiflowy.common.controller.PublicController', 'tcaptcha', 'http://localhost:8899/api/v1/public/tcaptcha', '127.0.0.1', '', NULL, 1, '2025-04-24 15:30:27');
+INSERT INTO `tb_sys_log` VALUES (272915675629223936, 1, 'login', NULL, 'tech.aiflowy.auth.controller.AuthController', 'login', 'http://localhost:8899/api/v1/auth/login', '127.0.0.1', '', NULL, 1, '2025-04-24 15:30:28');
+INSERT INTO `tb_sys_log` VALUES (272915678103863296, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiBot/page', '127.0.0.1', 'pageNumber=1  pageSize=12  ', NULL, 1, '2025-04-24 15:30:28');
+INSERT INTO `tb_sys_log` VALUES (272915678263246848, 1, 'tree', NULL, 'tech.aiflowy.system.controller.SysMenuController', 'tree', 'http://localhost:8899/api/v1/sysMenu/tree', '127.0.0.1', 'menuType=0  isShow=1  ', NULL, 1, '2025-04-24 15:30:28');
+INSERT INTO `tb_sys_log` VALUES (272915678418436096, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiBot/page', '127.0.0.1', 'pageNumber=1  pageSize=12  ', NULL, 1, '2025-04-24 15:30:28');
+INSERT INTO `tb_sys_log` VALUES (272915678733008896, 1, 'tree', NULL, 'tech.aiflowy.system.controller.SysMenuController', 'tree', 'http://localhost:8899/api/v1/sysMenu/tree', '127.0.0.1', 'menuType=0  isShow=1  ', NULL, 1, '2025-04-24 15:30:28');
+INSERT INTO `tb_sys_log` VALUES (272915679781584896, 1, 'tree', NULL, 'tech.aiflowy.system.controller.SysMenuController', 'tree', 'http://localhost:8899/api/v1/sysMenu/tree', '127.0.0.1', 'menuType=0  isShow=1  ', NULL, 1, '2025-04-24 15:30:29');
+INSERT INTO `tb_sys_log` VALUES (272915680045826048, 1, 'tree', NULL, 'tech.aiflowy.system.controller.SysMenuController', 'tree', 'http://localhost:8899/api/v1/sysMenu/tree', '127.0.0.1', 'menuType=0  isShow=1  ', NULL, 1, '2025-04-24 15:30:29');
+INSERT INTO `tb_sys_log` VALUES (272915682893758464, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiPlugins/page', '127.0.0.1', 'pageNumber=1  pageSize=12  ', NULL, 1, '2025-04-24 15:30:29');
+INSERT INTO `tb_sys_log` VALUES (272915684282073088, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiPlugins/page', '127.0.0.1', 'pageNumber=1  pageSize=12  ', NULL, 1, '2025-04-24 15:30:30');
+INSERT INTO `tb_sys_log` VALUES (272915687440384000, 1, 'items', NULL, 'tech.aiflowy.common.controller.DictController', 'items', 'http://localhost:8899/api/v1/dict/items/dataStatus', '127.0.0.1', '', NULL, 1, '2025-04-24 15:30:30');
+INSERT INTO `tb_sys_log` VALUES (272915688413462528, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiBotApiKey/page', '127.0.0.1', 'pageNumber=1  pageSize=10  ', NULL, 1, '2025-04-24 15:30:31');
+INSERT INTO `tb_sys_log` VALUES (272915688585428992, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiBotApiKey/page', '127.0.0.1', 'pageNumber=1  pageSize=10  ', NULL, 1, '2025-04-24 15:30:31');
+INSERT INTO `tb_sys_log` VALUES (272915792851632128, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiPlugins/page', '127.0.0.1', 'pageNumber=1  pageSize=12  ', NULL, 1, '2025-04-24 15:30:56');
+INSERT INTO `tb_sys_log` VALUES (272915793992482816, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiPlugins/page', '127.0.0.1', 'pageNumber=1  pageSize=12  ', NULL, 1, '2025-04-24 15:30:56');
+INSERT INTO `tb_sys_log` VALUES (272915794273501184, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiBotApiKey/page', '127.0.0.1', 'pageNumber=1  pageSize=10  ', NULL, 1, '2025-04-24 15:30:56');
+INSERT INTO `tb_sys_log` VALUES (272915794785206272, 1, 'items', NULL, 'tech.aiflowy.common.controller.DictController', 'items', 'http://localhost:8899/api/v1/dict/items/dataStatus', '127.0.0.1', '', NULL, 1, '2025-04-24 15:30:56');
+INSERT INTO `tb_sys_log` VALUES (272915794801983488, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiBotApiKey/page', '127.0.0.1', 'pageNumber=1  pageSize=10  ', NULL, 1, '2025-04-24 15:30:56');
+INSERT INTO `tb_sys_log` VALUES (272915813915426816, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiLlm/page', '127.0.0.1', 'brand=  pageNumber=1  pageSize=10  ', NULL, 1, '2025-04-24 15:31:01');
+INSERT INTO `tb_sys_log` VALUES (272915815274381312, 1, 'list', NULL, 'tech.aiflowy.ai.controller.AiLlmBrandController', 'list', 'http://localhost:8899/api/v1/aiLlmBrand/list', '127.0.0.1', 'asTree=true  ', NULL, 1, '2025-04-24 15:31:01');
+INSERT INTO `tb_sys_log` VALUES (272915815375044608, 1, 'page', NULL, 'tech.aiflowy.common.web.controller.BaseCurdController', 'page', 'http://localhost:8899/api/v1/aiLlm/page', '127.0.0.1', 'brand=  pageNumber=1  pageSize=10  ', NULL, 1, '2025-04-24 15:31:01');
+INSERT INTO `tb_sys_log` VALUES (272915816666890240, 1, 'list', NULL, 'tech.aiflowy.ai.controller.AiLlmBrandController', 'list', 'http://localhost:8899/api/v1/aiLlmBrand/list', '127.0.0.1', 'asTree=true  ', NULL, 1, '2025-04-24 15:31:01');
+INSERT INTO `tb_sys_log` VALUES (272915818030039040, 1, 'list', NULL, 'tech.aiflowy.ai.controller.AiLlmBrandController', 'list', 'http://localhost:8899/api/v1/aiLlmBrand/list', '127.0.0.1', 'asTree=true  ', NULL, 1, '2025-04-24 15:31:02');
+INSERT INTO `tb_sys_log` VALUES (272915822547304448, 1, 'list', NULL, 'tech.aiflowy.ai.controller.AiLlmBrandController', 'list', 'http://localhost:8899/api/v1/aiLlmBrand/list', '127.0.0.1', 'asTree=true  ', NULL, 1, '2025-04-24 15:31:03');
+INSERT INTO `tb_sys_log` VALUES (272915832722685952, 1, 'list', NULL, 'tech.aiflowy.system.controller.SysOptionController', 'list', 'http://localhost:8899/api/v1/sysOption/list', '127.0.0.1', 'keys[]={model_of_chat,chatgpt_endpoint,chatgpt_api_key,chatgpt_model_name,ollama_endpoint,ollama_model_name,chatglm_api_key,spark_ai_app_id,spark_ai_api_key,spark_ai_app_secret,spark_ai_version}  ', NULL, 1, '2025-04-24 15:31:05');
+INSERT INTO `tb_sys_log` VALUES (272915834094223360, 1, 'list', NULL, 'tech.aiflowy.system.controller.SysOptionController', 'list', 'http://localhost:8899/api/v1/sysOption/list', '127.0.0.1', 'keys[]={model_of_chat,chatgpt_endpoint,chatgpt_api_key,chatgpt_model_name,ollama_endpoint,ollama_model_name,chatglm_api_key,spark_ai_app_id,spark_ai_api_key,spark_ai_app_secret,spark_ai_version}  ', NULL, 1, '2025-04-24 15:31:05');
 
 -- ----------------------------
 -- Table structure for tb_sys_menu

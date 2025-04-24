@@ -9,9 +9,13 @@ import tech.aiflowy.ai.entity.AiBotApiKey;
 import tech.aiflowy.ai.service.AiBotApiKeyService;
 import tech.aiflowy.common.ai.util.UUIDGenerator;
 import tech.aiflowy.common.domain.Result;
+import tech.aiflowy.common.entity.LoginAccount;
+import tech.aiflowy.common.satoken.util.SaTokenUtil;
 import tech.aiflowy.common.web.controller.BaseCurdController;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  *  控制层。
@@ -36,8 +40,22 @@ public class AiBotApiKeyController extends BaseCurdController<AiBotApiKeyService
         String apiKey = UUIDGenerator.generateUUID();
         AiBotApiKey entity = new AiBotApiKey();
         entity.setApiKey(apiKey);
-        entity.setCreated(LocalDateTime.now());
+        entity.setCreated(new Date());
         entity.setStatus(1);
+        // 将Date转换为LocalDate
+        LocalDate localDate = new Date().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        // 添加30天
+        LocalDate newLocalDate = localDate.plusDays(30);
+        // 转换回Date
+        Date expireDate =  Date.from(newLocalDate.atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
+        entity.setExpiredAt(expireDate);
+        LoginAccount loginAccount = SaTokenUtil.getLoginAccount();
+        commonFiled(entity,loginAccount.getId(),loginAccount.getTenantId(),loginAccount.getDeptId());
         boolean success = service.save(entity);
         onSaveOrUpdateAfter(entity, true);
         TableInfo tableInfo = TableInfoFactory.ofEntityClass(entity.getClass());

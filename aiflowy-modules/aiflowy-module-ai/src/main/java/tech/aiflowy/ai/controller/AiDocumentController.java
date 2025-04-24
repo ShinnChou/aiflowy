@@ -60,7 +60,6 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
 
     private final AiKnowledgeService knowledgeService;
     private final AiDocumentChunkService documentChunkService;
-    private final AiDocumentHistoryService documentHistoryService;
     private final AiLlmService aiLlmService;
 
     @Autowired
@@ -74,12 +73,10 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
 
     public AiDocumentController(AiDocumentService service,
                                 AiKnowledgeService knowledgeService,
-                                AiDocumentChunkService documentChunkService,
-                                AiDocumentHistoryService documentHistoryService, AiLlmService aiLlmService) {
+                                AiDocumentChunkService documentChunkService, AiLlmService aiLlmService) {
         super(service);
         this.knowledgeService = knowledgeService;
         this.documentChunkService = documentChunkService;
-        this.documentHistoryService = documentHistoryService;
         this.aiLlmService = aiLlmService;
     }
     @PostMapping("removeDoc")
@@ -124,16 +121,15 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
     public Result list(AiDocument entity, Boolean asTree, String sortKey, String sortType) {
         String kbSlug = RequestUtil.getParamAsString("id");
         if (StringUtil.noText(kbSlug)) {
-            return Result.fail(1);
+            return Result.fail(1, "知识库id不能为空");
         }
 
         AiKnowledge knowledge = StringUtil.isNumeric(kbSlug)
                 ? knowledgeService.getById(kbSlug)
                 : knowledgeService.getOne(QueryWrapper.create().eq(AiKnowledge::getSlug, kbSlug));
 
-
         if (knowledge == null) {
-            return Result.fail(1);
+            return Result.fail(2, "知识库不存在");
         }
 
         QueryWrapper queryWrapper = QueryWrapper.create()
@@ -148,7 +144,7 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
     public Result documentList(@RequestParam(name="fileName", required = false) String fileName, @RequestParam(name="pageSize") int pageSize, @RequestParam(name = "current") int current) {
         String kbSlug = RequestUtil.getParamAsString("id");
         if (StringUtil.noText(kbSlug)) {
-            return Result.fail(1);
+            return Result.fail(1, "知识库id不能为空");
         }
         Page<AiDocument> documentList = aiDocumentService.getDocumentList(kbSlug, pageSize, current,fileName);
         return Result.success(documentList);
@@ -194,7 +190,7 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
         }
         DocumentParser documentParser = DocumentParserFactory.getDocumentParser(file.getOriginalFilename());
         if (documentParser == null) {
-            return Result.fail(1, "can not support the file type: " + file.getOriginalFilename());
+            return Result.fail(2, "can not support the file type: " + file.getOriginalFilename());
         }
         String path = storageService.save(file);
         AiDocument aiDocument = new AiDocument();
@@ -211,16 +207,16 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
             // 调用解析器进行文本分割
             AiKnowledge knowledge = knowledgeService.getById(knowledgeId);
             if (knowledge == null) {
-                return Result.fail(1, "知识库不存在");
+                return Result.fail(3, "知识库不存在");
             }
             DocumentStore documentStore = knowledge.toDocumentStore();
             if (documentStore == null){
-                return Result.fail(2, "向量数据库类型未设置");
+                return Result.fail(4, "向量数据库类型未设置");
             }
             // 设置向量模型
             AiLlm aiLlm = aiLlmService.getById(knowledge.getVectorEmbedLlmId());
             if (aiLlm == null) {
-                return Result.fail(3, "该知识库未配置大模型");
+                return Result.fail(5, "该知识库未配置大模型");
 
             }
             Llm embeddingModel = aiLlm.toLlm();
@@ -270,14 +266,14 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
         aiDocument.setTitle(StringUtil.removeFileExtension(file.getOriginalFilename()));
 
         super.save(aiDocument);
-        return storeDocument(aiDocument, true, splitterName, chunkSize, overlapSize, regex);
+        return storeDocument(aiDocument, splitterName, chunkSize, overlapSize, regex);
     }
 
 
     /**
-     * 更新 entity 的位置
+     * 更新 entity
      *
-     * @param entity entity
+     * @param entity
      * @return Result
      */
     private Result updatePosition(AiDocument entity) {
@@ -312,17 +308,17 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
     }
 
     /**
-     * entity 保存或更新后触发
+     * 文档存储到向量数据库
      *
-     * @param entity
-     * @param isSave
+     * @param entity 将要分割的文档
+     * @param splitterName 分割器名称
+     * @param chunkSize 分割器名称
+     * @param overlapSize 分段大小
+     * @param overlapSize 分段重叠大小
+     * @param regex 正则表达式
      */
-    protected Result storeDocument(AiDocument entity, boolean isSave,String splitterName, int chunkSize, int overlapSize, String regex) {
-        AiDocument aiDocument = entity;
-        // 重新获取全数据内容
+    protected Result storeDocument(AiDocument entity, String splitterName, int chunkSize, int overlapSize, String regex) {
         entity = service.getById(entity.getId());
-
-        // 调用解析器进行文本分割
         AiKnowledge knowledge = knowledgeService.getById(entity.getKnowledgeId());
         if (knowledge == null) {
             return Result.fail(1, "知识库不存在");
@@ -363,11 +359,9 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
         // 设置分割器 todo 未来可以通过参数来指定分割器，不同的文档使用不同的分割器效果更好
         documentStore.setDocumentSplitter(getDocumentSplitter(splitterName, chunkSize, overlapSize, regex));
 
-        // 设置文档ID生成器
         AiDocument finalEntity = entity;
-//        AtomicInteger sort = new AtomicInteger(1);
-        //Integer sort = new Integer(1);
         AtomicInteger sort  = new AtomicInteger(1);
+        // 设置文档ID生成器
         documentStore.setDocumentIdGenerator(document -> {
             AiDocumentChunk chunk = new AiDocumentChunk();
             chunk.setContent(document.getContent());
@@ -385,7 +379,6 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
         });
 
         Document document = Document.of(entity.getContent());
-
 
         StoreResult result = documentStore.store(document, options);
 

@@ -55,7 +55,19 @@ const columnsConfig: ColumnsConfig<any> = [
 		editCondition: (data) => {
 			return data?.id === undefined;
 		}
+	},
+	{
+		form: {
+			type: "datetimepicker"
+		},
+		dataIndex: "expiredAt",
+		title: "失效时间",
+		key: "expiredAt",
+		render: (value) => {
+			return <span>{dateFormat(value, "YYYY-MM-DD HH:mm:ss")}</span>
+		},
 	}
+
 ];
 //编辑页面设置
 const editLayout = {

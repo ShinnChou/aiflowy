@@ -228,9 +228,9 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
         // 获取 API Key 和 Bot 信息
         String apiKey = request.getHeader("Authorization");
         QueryWrapper queryWrapper = QueryWrapper.create()
-                .select("apiKey")
+                .select("api_key", "status", "expired_at")
                 .from("tb_ai_bot_api_key")
-                .where("apikey = ? ", apiKey);
+                .where("api_key = ? ", apiKey);
         AiBotApiKey aiBotApiKey =  aiBotApiKeyMapper.selectOneByQuery(queryWrapper);
         if (aiBotApiKey == null ){
             return createResponse(stream, JSON.toJSONString(errorRespnseMsg(1,"该apiKey不存在")));
@@ -239,15 +239,20 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
             return createResponse(stream, JSON.toJSONString(errorRespnseMsg(2,"该apiKey未启用")));
         }
 
+        if (aiBotApiKey.getExpiredAt().getTime() < new Date().getTime()){
+            return createResponse(stream, JSON.toJSONString(errorRespnseMsg(3,"该apiKey已失效")));
+
+        }
+
         AiBot aiBot = service.getById(botId);
         if (aiBot == null) {
-            return createResponse(stream, JSON.toJSONString(errorRespnseMsg(3,"机器人不存在")));
+            return createResponse(stream, JSON.toJSONString(errorRespnseMsg(4,"机器人不存在")));
         }
 
         Map<String, Object> llmOptions = aiBot.getLlmOptions();
         AiLlm aiLlm = aiLlmService.getById(aiBot.getLlmId());
         if (aiLlm == null) {
-            return createResponse(stream, JSON.toJSONString(errorRespnseMsg(4, "LLM不存在")));
+            return createResponse(stream, JSON.toJSONString(errorRespnseMsg(5, "LLM不存在")));
         }
 
         Llm llm = aiLlm.toLlm();

@@ -5,7 +5,9 @@ import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 
 public class AiBotApiKeyBase implements Serializable {
@@ -25,10 +27,34 @@ public class AiBotApiKeyBase implements Serializable {
     private String apiKey;
 
     /**
+     * 部门id
+     */
+    @Column(comment = "deptId")
+    private BigInteger deptId;
+
+    /**
+     * 租户id
+     */
+    @Column(comment = "tenantId")
+    private BigInteger tenantId;
+
+    /**
+     * 创建人
+     */
+    @Column(comment = "userId")
+    private BigInteger userId;
+
+    /**
      * 创建时间
      */
     @Column(comment = "创建时间")
-    private LocalDateTime created;
+    private Date created;
+
+    /**
+     * 失效时间
+     */
+    @Column(comment = "失效时间")
+    private Date expiredAt;
 
     /**
      * 状态1启用 2失效
@@ -52,11 +78,11 @@ public class AiBotApiKeyBase implements Serializable {
         this.apiKey = apiKey;
     }
 
-    public LocalDateTime getCreated() {
+    public Date getCreated() {
         return created;
     }
 
-    public void setCreated(LocalDateTime created) {
+    public void setCreated(Date created) {
         this.created = created;
     }
 
@@ -68,4 +94,35 @@ public class AiBotApiKeyBase implements Serializable {
         this.status = status;
     }
 
+    public BigInteger getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(BigInteger deptId) {
+        this.deptId = deptId;
+    }
+
+    public BigInteger getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(BigInteger tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public BigInteger getCreatedBy() {
+        return userId;
+    }
+
+    public void setCreatedBy(BigInteger userId) {
+        this.userId = userId;
+    }
+
+    public Date getExpiredAt() {
+        return expiredAt;
+    }
+
+    public void setExpiredAt(Date expiredAt) {
+        this.expiredAt = expiredAt;
+    }
 }
