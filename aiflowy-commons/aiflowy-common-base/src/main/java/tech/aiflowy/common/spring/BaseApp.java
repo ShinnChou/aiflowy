@@ -5,6 +5,7 @@ import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import tech.aiflowy.common.Consts;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -39,7 +40,7 @@ public class BaseApp implements ApplicationListener<WebServerInitializedEvent> {
     }
 
     protected static void printRunningAt(int port) {
-        StringBuilder msg = new StringBuilder("\nServer running at:\n");
+        StringBuilder msg = new StringBuilder("\nAIFlowy(version: "+ Consts.VERSION +") running at:\n");
         msg.append(" > Local  : http://localhost:").append(port).append("\n");
 
         List<String> ipList = getLocalIpList();
