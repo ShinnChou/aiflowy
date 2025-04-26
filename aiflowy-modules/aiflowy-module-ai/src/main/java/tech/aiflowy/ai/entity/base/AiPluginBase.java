@@ -4,11 +4,10 @@ import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 
-public class AiBotPluginBase implements Serializable {
+public class AiPluginBase implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -25,15 +24,15 @@ public class AiBotPluginBase implements Serializable {
     private String icon;
 
     /**
-     * 名称
+     * 插件名称
      */
-    @Column(comment = "名称")
+    @Column(comment = "插件名称")
     private String name;
 
     /**
-     * 描述
+     * 插件名称
      */
-    @Column(comment = "描述")
+    @Column(comment = "插件名称")
     private String description;
 
     /**
@@ -55,16 +54,29 @@ public class AiBotPluginBase implements Serializable {
     private String headers;
 
     /**
-     * 认证类型
+     * 位置 将apiKey【存放在headers 或 query中】
      */
-    @Column(comment = "认证类型")
+    @Column(comment = "位置")
+    private String position;
+
+    /**
+     * 认证方式
+     */
+    @Column(comment = "认证方式")
     private String authType;
 
     /**
-     * apiKey
+     * tokenKey
      */
-    @Column(comment = "apiKey")
-    private String apiKey;
+    @Column(comment = "tokenKey")
+    private String tokenKey;
+
+    /**
+     * tokenValue
+     */
+    @Column(comment = "tokenValue")
+    private String tokenValue;
+
 
     /**
      * 创建时间
@@ -136,14 +148,6 @@ public class AiBotPluginBase implements Serializable {
         this.authType = authType;
     }
 
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
-    }
-
     public Date getCreated() {
         return created;
     }
@@ -152,4 +156,27 @@ public class AiBotPluginBase implements Serializable {
         this.created = created;
     }
 
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public String getTokenKey() {
+        return tokenKey;
+    }
+
+    public void setTokenKey(String tokenKey) {
+        this.tokenKey = tokenKey;
+    }
+
+    public String getTokenValue() {
+        return tokenValue;
+    }
+
+    public void setTokenValue(String tokenValue) {
+        this.tokenValue = tokenValue;
+    }
 }

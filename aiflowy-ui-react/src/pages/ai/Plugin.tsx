@@ -1,7 +1,30 @@
 import React, {useEffect, useState} from 'react';
-import {EditOutlined, EllipsisOutlined, MinusCircleOutlined, PlusOutlined, SettingOutlined} from '@ant-design/icons';
-import {Avatar, Button, Card, Checkbox, Col, Form, FormProps, Input, Modal, Radio, Row, Select, Space} from 'antd';
-import {usePage} from "../../hooks/useApis.ts";
+import {
+	DeleteOutlined,
+	EditOutlined,
+	EllipsisOutlined,
+	MinusCircleOutlined,
+	PlusOutlined,
+	SettingOutlined
+} from '@ant-design/icons';
+import {
+	Avatar,
+	Button,
+	Card,
+	Checkbox,
+	Col,
+	Form,
+	FormProps,
+	Input,
+	Modal,
+	Radio,
+	Row,
+	Select,
+	Space,
+	message,
+	Dropdown
+} from 'antd';
+import {useGetManual, usePage, usePostManual} from "../../hooks/useApis.ts";
 import SearchForm from "../../components/AntdCrud/SearchForm.tsx";
 import {ColumnsConfig} from "../../components/AntdCrud";
 import {useBreadcrumbRightEl} from "../../hooks/useBreadcrumbRightEl.tsx";
@@ -82,6 +105,7 @@ const Plugin: React.FC = () => {
 		},
 	];
 	type FieldType = {
+		id?: string;
 		icon?: string;
 		name?: string;
 		description	?: string;
@@ -90,11 +114,65 @@ const Plugin: React.FC = () => {
 		authData?: string;
 		authType?: string;
 		position?: string;
+		tokenKey?: string;
+		tokenValue?: string;
 
 	};
 
 	const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-		console.log('Success:', values);
+		// 如果是新增
+		if (isSaveOrUpdate){
+			doPostPluginSave({
+				data: {
+					icon: values.icon,
+					name: values.name,
+					description: values.description,
+					baseUrl: values.baseUrl,
+					headers: JSON.stringify(values.headers),
+					authData: values.authData,
+					authType: values.authType,
+					position: values.position,
+					tokenKey: values.tokenKey,
+					tokenValue: values.tokenValue
+				}
+			}).then(r =>{
+				if (r.data.errorCode == 0){
+					message.success("插件保存成功！")
+					setAddPluginIsOpen(false)
+				}
+			})
+		} else {
+			// 如果是修改
+			doPostPluginUpdate({
+				data: {
+					id: values.id,
+					icon: values.icon,
+					name: values.name,
+					description: values.description,
+					baseUrl: values.baseUrl,
+					headers: JSON.stringify(values.headers),
+					authData: values.authData,
+					authType: values.authType,
+					position: values.position,
+					tokenKey: values.tokenKey,
+				}
+			}).then(r =>{
+				if (r.data.errorCode == 0){
+					message.success("修改成功！")
+					doGetPage({
+						params: {
+							pageNumber: 1,
+							pageSize: 10,
+						}
+					})
+					setAddPluginIsOpen(false)
+
+				} else if (r.data.errorCode >= 1){
+					message.error(r.data.message)
+				}
+			})
+		}
+
 	};
 	const options: CheckboxGroupProps<string>['options'] = [
 		{ label: 'headers', value: 'headers' },
@@ -107,17 +185,29 @@ const Plugin: React.FC = () => {
 	const [addPluginIsOpen, setAddPluginIsOpen] = useState(false)
 	// 认证类型
 	const [authType, setAuthType] = useState('none')
+	// 定义是新增还是修改 【true: 新增 false: 修改】
+	const [isSaveOrUpdate, setIsSaveOrUpdate] = useState(true)
+	const [iconPath, setIconPath] = useState('')
 	// 认证参数位置
 	const [positionValue, setPositionValue] = useState('headers')
 	const {
 		loading,
 		result,
-		doGet
-	} = usePage('aiBotPlugin', {}, {manual: true})
-	useBreadcrumbRightEl(<Button type={"primary"} onClick={() => setAddPluginIsOpen(true)}>
+		doGet: doGetPage
+	} = usePage('aiPlugin', {}, {manual: true})
+	// 保存插件
+	const {doPost: doPostPluginSave} = usePostManual('/api/v1/aiPlugin/plugin/save')
+	// 修改插件
+	const {doPost: doPostPluginUpdate} = usePostManual('/api/v1/aiPlugin/plugin/update')
+	const {doPost: doRemove} = usePostManual('/api/v1/aiPlugin/plugin/remove')
+	useBreadcrumbRightEl(<Button type={"primary"} onClick={() => {
+		setAddPluginIsOpen(true)
+		// 设置modal 打开方式为新增
+		setIsSaveOrUpdate(true)
+	}}>
 		<PlusOutlined/>新增插件</Button>)
 	useEffect(() => {
-		doGet({
+		doGetPage({
 			params: {
 				pageNumber: 1,
 				pageSize: 10,
@@ -126,7 +216,13 @@ const Plugin: React.FC = () => {
 			console.log(res.data.data)
 		})
 	}, [])
-
+	const getIconPath = (path: string) => {
+		console.log('path')
+		console.log(path)
+		form.setFieldsValue({
+			icon: path
+		})
+	}
 	// 创建表单实例
 	const [form] = Form.useForm();
 	const handleaddPluginCancle = () => {
@@ -152,7 +248,78 @@ const Plugin: React.FC = () => {
 			<Row className={"card-row"} gutter={[16, 16]}>
 				{result?.data?.records?.length > 0 ? result?.data?.records?.map((item: any) => (
 					<Col span={6}>
-						<Card  actions={actions} style={{padding: 8}} >
+						<Card  actions={
+							[
+								<EditOutlined key="edit" onClick={() =>{
+									console.log('item')
+									console.log(item)
+									// 设置modal 打开方式为修改
+									setIsSaveOrUpdate(false)
+									// 赋值模态框数据
+									form.setFieldsValue({
+										id: item.id,
+										icon: item.icon,
+										name: item.name,
+										description: item.description,
+										baseUrl: item.baseUrl,
+										headers: JSON.parse(item.headers),
+										authData: item.authData,
+										authType: item.authType,
+										position: item.position,
+										tokenKey: item.tokenKey,
+										tokenValue: item.tokenValue
+									})
+									setIconPath(item.icon)
+									setAuthType(item.authType)
+									setAddPluginIsOpen(true)
+								}} />,
+								<SettingOutlined key="setting" />,
+								<Dropdown menu={{
+									items: [
+										{
+											key: 'delete',
+											label: '删除',
+											icon: <DeleteOutlined/>,
+											danger: true,
+											onClick: () => {
+												Modal.confirm({
+													title: '确定要删除吗?',
+													content: '此操作不可逆，请谨慎操作。',
+													onOk() {
+														doRemove({
+															data: {
+																id: item.id
+															}
+														}).then(r =>{
+															console.log(r)
+															if (r.data.errorCode == 0){
+																message.success("删除成功！")
+																setAddPluginIsOpen(false)
+																doGetPage({
+																	data: {
+																		pageNumber: 1,
+																		pageSize: 10,
+																	}
+																}).then(res => {
+																	console.log(res.data.data)
+																})
+															} else {
+																message.error(r.data.message)
+															}
+														})
+													},
+													onCancel() {
+													},
+												});
+											},
+										}
+									],
+								}}>
+									<EllipsisOutlined key="ellipsis" title="更多操作"/>
+								</Dropdown>
+							]
+
+						} style={{padding: 8}} >
 							<Card.Meta
 								avatar={<Avatar src={item.icon || "/favicon.png"} />}
 								title={item.name}
@@ -185,13 +352,18 @@ const Plugin: React.FC = () => {
 					onFinishFailed={onFinishFailed}
 					autoComplete="off"
 				>
+					<Form.Item<FieldType>
+						name="id"
+						hidden
+					>
+					</Form.Item>
 						<Form.Item<FieldType>
 							name="icon"
 							style={{ textAlign: 'center'}}
 						>
 							<div style={{ display: 'flex', justifyContent: 'center' }}>
 								{/* 使用 flex 布局确保 ImageUploader 居中 */}
-								<ImageUploader />
+								<ImageUploader onChange={getIconPath} value={iconPath}/>
 							</div>
 						</Form.Item>
 
@@ -265,7 +437,7 @@ const Plugin: React.FC = () => {
 							onChange={(value) => {
 								setAuthType(value)
 							}}
-							options={[{ value: 'none', label: '无需认证' }, { value: 'apiKey', label: 'serviceToken/apiKey' }]}
+							options={[{ value: 'none', label: '无需认证' }, { value: 'apiKey', label: 'Service token / API key' }]}
 						/>
 					</Form.Item>
 					{authType === 'apiKey' ?
@@ -282,16 +454,16 @@ const Plugin: React.FC = () => {
 						</Form.Item>
 						<Form.Item<FieldType>
 							label="Parameter name"
-							name="name"
+							name="tokenKey"
 							rules={[{ required: true, message: 'Parameter name!' }]}
 						>
-							<Input maxLength={100} showCount/>
+							<Input maxLength={500} showCount/>
 						</Form.Item>
 						<Form.Item<FieldType>
 						label="Service token / API key"
-						name="name"
+						name="tokenValue"
 						rules={[{ required: true, message: 'Service token / API key!' }]}>
-					<Input maxLength={100} showCount/>
+					<Input maxLength={2000} showCount/>
 					</Form.Item>
 						</>
 						: <></> }

@@ -1,5 +1,6 @@
 package tech.aiflowy.ai.service.impl;
 
+import com.agentsflex.store.elasticsearch.ElasticSearchVectorStore;
 import tech.aiflowy.ai.entity.AiDocumentChunk;
 import tech.aiflowy.ai.entity.AiKnowledge;
 import tech.aiflowy.ai.entity.AiLlm;
@@ -72,11 +73,17 @@ public class AiKnowledgeServiceImpl extends ServiceImpl<AiKnowledgeMapper, AiKno
 
         for (Document result : results) {
             Object resultId = result.getId();
-            Double similarityScore = ((Float) result.getMetadataMap().get("score")).doubleValue(); // 将 Float 转换为 Double
+            Double similarityScore;
+            if (documentStore instanceof ElasticSearchVectorStore){
+                similarityScore = (Double) result.getMetadataMap().get("_score");
+            } else {
+                similarityScore = ((Float) result.getMetadataMap().get("score")).doubleValue(); // 将 Float 转换为 Double
+            }
+
             // 使用 BigDecimal 保留小数点后四位
-            BigDecimal bd = new BigDecimal(similarityScore);
-            bd = bd.setScale(4, RoundingMode.HALF_UP); // 四舍五入保留四位小数
-            similarityScore = bd.doubleValue();
+            BigDecimal formatScore = new BigDecimal(similarityScore);
+            formatScore = formatScore.setScale(4, RoundingMode.HALF_UP); // 四舍五入保留四位小数
+            similarityScore = formatScore.doubleValue();
             AiDocumentChunk documentChunk = chunkService.getMapper().selectOneWithRelationsByMap(
                     Maps.of("id", resultId));
             if (documentChunk == null){
