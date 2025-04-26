@@ -204,38 +204,18 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
         //如果用户是预览分割效果
         if (!userWillSave){
             List<AiDocumentChunk> previewList = new ArrayList<>();
-            // 调用解析器进行文本分割
-            AiKnowledge knowledge = knowledgeService.getById(knowledgeId);
-            if (knowledge == null) {
-                return Result.fail(3, "知识库不存在");
-            }
-            DocumentStore documentStore = knowledge.toDocumentStore();
-            if (documentStore == null){
-                return Result.fail(4, "向量数据库类型未设置");
-            }
-            // 设置向量模型
-            AiLlm aiLlm = aiLlmService.getById(knowledge.getVectorEmbedLlmId());
-            if (aiLlm == null) {
-                return Result.fail(5, "该知识库未配置大模型");
-
-            }
-            Llm embeddingModel = aiLlm.toLlm();
-            documentStore.setEmbeddingModel(embeddingModel);
-            StoreOptions options = StoreOptions.ofCollectionName(knowledge.getVectorStoreCollection());
             // 设置分割器 todo 未来可以通过参数来指定分割器，不同的文档使用不同的分割器效果更好
-            documentStore.setDocumentSplitter(getDocumentSplitter(splitterName, chunkSize, overlapSize, regex));
-            AtomicInteger sort  = new AtomicInteger(1);
-
-            documentStore.setDocumentIdGenerator(item -> {
-                AiDocumentChunk chunk = new AiDocumentChunk();
-                chunk.setContent(item.getContent());
-                chunk.setSorting(sort.get());
-                sort.getAndIncrement();
-                previewList.add(chunk);
-                return chunk.getId();
-            });
+            DocumentSplitter documentSplitter = getDocumentSplitter(splitterName, chunkSize, overlapSize, regex);
             Document document = Document.of(aiDocument.getContent());
-            StoreResult result = documentStore.store(document, options);
+            List<Document> documents = documentSplitter.split(document);
+            int sort = 1;
+            for (Document value : documents) {
+                AiDocumentChunk chunk = new AiDocumentChunk();
+                chunk.setContent(value.getContent());
+                chunk.setSorting(sort);
+                sort++;
+                previewList.add(chunk);
+            }
             // 删除本地文件
             AiDocumentServiceImpl.deleteFile(getRootPath() + path);
             Map res = new HashMap();
