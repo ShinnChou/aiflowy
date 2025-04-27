@@ -6,6 +6,7 @@ import {usePost, usePostManual} from "../../../hooks/useApis.ts";
 import './less/pluginToolEdit.less'
 import { EditOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
+import {ParameterConfig} from "./ParameterConfig.tsx";
 
 const PluginToolEdit: React.FC = () => {
     const { setOptions } = useLayout();
@@ -173,7 +174,9 @@ const PluginToolEdit: React.FC = () => {
         {
             key: '2',
             label: '配置输入参数',
-            children: <div className="compact-view">输入参数配置区域</div>,
+            children:  (
+                <ParameterConfig/>
+            ),
             extra: editPluginTool('2')
         },
         {
@@ -193,7 +196,7 @@ const PluginToolEdit: React.FC = () => {
     }
 
     return (
-        <div style={{ backgroundColor: '#F5F5F5' }}>
+        <div style={{ backgroundColor: '#F5F5F5',height: '100vh', overflow: 'auto' }}>
             <Collapse
                 bordered={false}
                 defaultActiveKey={['1', '2', '3']}
