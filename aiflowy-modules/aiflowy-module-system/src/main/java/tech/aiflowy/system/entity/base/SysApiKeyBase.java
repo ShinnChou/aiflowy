@@ -1,4 +1,4 @@
-package tech.aiflowy.ai.entity.base;
+package tech.aiflowy.system.entity.base;
 
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
@@ -6,11 +6,10 @@ import com.mybatisflex.annotation.KeyType;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 
-public class AiBotApiKeyBase implements Serializable {
+public class SysApiKeyBase implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

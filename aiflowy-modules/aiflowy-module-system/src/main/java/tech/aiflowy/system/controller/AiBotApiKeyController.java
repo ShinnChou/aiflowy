@@ -1,17 +1,17 @@
-package tech.aiflowy.ai.controller;
+package tech.aiflowy.system.controller;
 
 import com.mybatisflex.core.table.TableInfo;
 import com.mybatisflex.core.table.TableInfoFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import tech.aiflowy.ai.entity.AiBotApiKey;
-import tech.aiflowy.ai.service.AiBotApiKeyService;
 import tech.aiflowy.common.ai.util.UUIDGenerator;
 import tech.aiflowy.common.domain.Result;
 import tech.aiflowy.common.entity.LoginAccount;
 import tech.aiflowy.common.satoken.util.SaTokenUtil;
 import tech.aiflowy.common.web.controller.BaseCurdController;
+import tech.aiflowy.system.entity.SysApiKey;
+import tech.aiflowy.system.service.SysApiKeyService;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -24,9 +24,9 @@ import java.util.Date;
  * @since 2025-04-18
  */
 @RestController
-@RequestMapping("/api/v1/aiBotApiKey")
-public class AiBotApiKeyController extends BaseCurdController<AiBotApiKeyService, AiBotApiKey> {
-    public AiBotApiKeyController(AiBotApiKeyService service) {
+@RequestMapping("/api/v1/sysApiKey")
+public class AiBotApiKeyController extends BaseCurdController<SysApiKeyService, SysApiKey> {
+    public AiBotApiKeyController(SysApiKeyService service) {
         super(service);
     }
 
@@ -38,7 +38,7 @@ public class AiBotApiKeyController extends BaseCurdController<AiBotApiKeyService
     @PostMapping("/key/save")
     public Result save() {
         String apiKey = UUIDGenerator.generateUUID();
-        AiBotApiKey entity = new AiBotApiKey();
+        SysApiKey entity = new SysApiKey();
         entity.setApiKey(apiKey);
         entity.setCreated(new Date());
         entity.setStatus(1);

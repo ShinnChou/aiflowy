@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useLayout} from "../../../hooks/useLayout.tsx";
 import {useLocation, useNavigate} from "react-router-dom";
-import {Button, Collapse, Form, Input, message, Select, Space, Spin, Switch, Table} from "antd";
+import {Button, Collapse, Form, Input, message, Select, Space, Spin, Switch, Table, Tooltip} from "antd";
 import {usePost, usePostManual} from "../../../hooks/useApis.ts";
 import './less/pluginToolEdit.less'
 import {ArrowLeftOutlined, DeleteOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons";
@@ -197,7 +197,17 @@ const PluginToolEdit: React.FC = () => {
                             <Input placeholder="参数描述" />
                         </Form.Item>
                     ) : (
-                        text
+                        <Tooltip title={text}>
+                            <div style={{
+                                display: '-webkit-box',
+                                WebkitLineClamp: 1,      // 限制显示行数
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            }}>
+                                {text}
+                            </div>
+                        </Tooltip>
                     );
                 },
             },
@@ -289,7 +299,17 @@ const PluginToolEdit: React.FC = () => {
                             <Input placeholder="参数描述" />
                         </Form.Item>
                     ) : (
-                        text
+                        <Tooltip title={text}>
+                            <div style={{
+                                display: '-webkit-box',
+                                WebkitLineClamp: 1,      // 限制显示行数
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            }}>
+                                {text}
+                            </div>
+                        </Tooltip>
                     );
                 },
             },
@@ -552,7 +572,7 @@ const PluginToolEdit: React.FC = () => {
             ) : (
                 <div className="compact-view">
                     <div><strong>工具名称:</strong> {pluginToolInfo?.data?.data?.name || '--'}</div>
-                    <div><strong>工具描述:</strong> {pluginToolInfo?.data?.data?.description || '--'}</div>
+                    <div><strong>工具描述:</strong>{pluginToolInfo?.data?.data?.description || '--'}</div>
                     <div>
                         <strong>工具路径:</strong>
                         {pluginToolInfo?.data?.aiPlugin?.baseUrl

@@ -1,21 +1,6 @@
 package tech.aiflowy.ai.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
-import com.agentsflex.core.message.AiMessage;
-import com.alibaba.fastjson.serializer.SerializeConfig;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import tech.aiflowy.ai.entity.*;
-import tech.aiflowy.ai.mapper.AiBotApiKeyMapper;
-import tech.aiflowy.ai.mapper.AiBotConversationMessageMapper;
-import tech.aiflowy.ai.service.*;
-import tech.aiflowy.common.ai.ChatManager;
-import tech.aiflowy.common.ai.MySseEmitter;
-import tech.aiflowy.common.domain.Result;
-import tech.aiflowy.common.util.StringUtil;
-import tech.aiflowy.common.web.controller.BaseCurdController;
-import tech.aiflowy.common.web.jsonbody.JsonBody;
-import tech.aiflowy.common.satoken.util.SaTokenUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.agentsflex.core.llm.ChatContext;
 import com.agentsflex.core.llm.Llm;
@@ -23,24 +8,43 @@ import com.agentsflex.core.llm.StreamResponseListener;
 import com.agentsflex.core.llm.functions.Function;
 import com.agentsflex.core.llm.response.AiMessageResponse;
 import com.agentsflex.core.llm.response.FunctionCaller;
+import com.agentsflex.core.message.AiMessage;
 import com.agentsflex.core.message.HumanMessage;
 import com.agentsflex.core.message.SystemMessage;
 import com.agentsflex.core.prompt.HistoriesPrompt;
 import com.agentsflex.core.util.CollectionUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.mybatisflex.core.query.QueryWrapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import tech.aiflowy.ai.entity.*;
+import tech.aiflowy.ai.mapper.AiBotConversationMessageMapper;
+import tech.aiflowy.ai.service.*;
+import tech.aiflowy.common.ai.ChatManager;
+import tech.aiflowy.common.ai.MySseEmitter;
+import tech.aiflowy.common.domain.Result;
+import tech.aiflowy.common.satoken.util.SaTokenUtil;
+import tech.aiflowy.common.util.StringUtil;
+import tech.aiflowy.common.web.controller.BaseCurdController;
+import tech.aiflowy.common.web.jsonbody.JsonBody;
+import tech.aiflowy.system.entity.SysApiKey;
+import tech.aiflowy.system.mapper.SysApiKeyMapper;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 控制层。
@@ -57,7 +61,7 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
     private final AiBotKnowledgeService aiBotKnowledgeService;
     private final AiBotMessageService aiBotMessageService;
     @Resource
-    private AiBotApiKeyMapper aiBotApiKeyMapper;
+    private SysApiKeyMapper aiBotApiKeyMapper;
     @Resource
     private AiBotConversationMessageService aiBotConversationMessageService;
     @Resource
@@ -231,9 +235,9 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
         String apiKey = request.getHeader("Authorization");
         QueryWrapper queryWrapper = QueryWrapper.create()
                 .select("api_key", "status", "expired_at")
-                .from("tb_ai_bot_api_key")
+                .from("tb_sys_api_key")
                 .where("api_key = ? ", apiKey);
-        AiBotApiKey aiBotApiKey =  aiBotApiKeyMapper.selectOneByQuery(queryWrapper);
+        SysApiKey aiBotApiKey =  aiBotApiKeyMapper.selectOneByQuery(queryWrapper);
         if (aiBotApiKey == null ){
             return createResponse(stream, JSON.toJSONString(errorRespnseMsg(1,"该apiKey不存在")));
         }

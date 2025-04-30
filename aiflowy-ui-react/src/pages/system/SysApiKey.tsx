@@ -88,15 +88,15 @@ const actionConfig = {
     
 } as ActionConfig<any>
 
-export const AiBotApiKey: React.FC = () => {
-	const {doPost: useApiKeyPost} = usePostManual('/api/v1/aiBotApiKey/key/save');
-	const {doGet: doPage} = useGetManual('/api/v1/aiBotApiKey/page');
+export const SysApiKey: React.FC = () => {
+	const {doPost: useApiKeyPost} = usePostManual('/api/v1/sysApiKey/key/save');
+	const {doGet: doPage} = useGetManual('/api/v1/sysApiKey/page');
 	const [queryParam] = useState({
 		pageNum: 1,
 		pageSize: 10
 	});
     return (
-        <CrudPage columnsConfig={columnsConfig} tableAlias="aiBotApiKey" addButtonEnable={false}
+        <CrudPage columnsConfig={columnsConfig} tableAlias="sysApiKey" addButtonEnable={false}
 				  customButton={() => {
 					  return <><Button type="primary" onClick={() => {
 							  Modal.confirm({
@@ -128,6 +128,6 @@ export const AiBotApiKey: React.FC = () => {
 };
 
 export default {
-    path: "/ai/aiBotApiKey",
-    element:  AiBotApiKey
+    path: "/sys/sysApiKey",
+    element:  SysApiKey
 };
