@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 
 import {useLayout} from '../../../hooks/useLayout.tsx';
 import {Row} from 'antd/lib/index';
-import {App, Button, Col, Collapse, Modal, Select} from 'antd';
+import {App, Avatar, Button, Col, Collapse, Modal, Select, Tooltip} from 'antd';
 import Title from 'antd/es/typography/Title';
 import {DeleteOutlined, PlusOutlined} from "@ant-design/icons";
 import {useDetail, useGet, useList, usePostManual, useRemove, useSave, useUpdate} from "../../../hooks/useApis.ts";
@@ -55,7 +55,7 @@ const CollapseLabel: React.FC<CollapseLabelProps> = ({text, onClick, plusDisable
 
 export const ListItem: React.FC<{
     title?: string,
-    description?: string,
+    description?: string | React.ReactNode,
     icon?: string,
     onButtonClick?: () => void
 }> = ({title, description, icon = "/favicon.png", onButtonClick}) => {
@@ -68,11 +68,25 @@ export const ListItem: React.FC<{
             padding: "10px",
             borderRadius: "3px"
         }}>
-            <div style={{"width": "40px"}}><img src={icon} alt="" style={{maxWidth: "100%"}}/>
+            <div style={{"width": "40px"}}>
+                <Avatar shape="square" src={icon || "/favicon.png"} />
             </div>
             <div style={{flexGrow: 1}}>
                 <div>{title}</div>
-                <div style={{color: "#999999"}}>{description}</div>
+                <div style={{color: "#999999"}}>
+                    <Tooltip title={description}>
+                        <div style={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: 1,      // 限制显示行数
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                        }}>
+                            {description}
+                        </div>
+                    </Tooltip>
+
+                </div>
             </div>
             <div>
                 <Button type={"text"} onClick={() => {
@@ -344,6 +358,7 @@ const BotDesign: React.FC = () => {
                                         {pluginResult?.data?.map((item: any) => {
                                             return <ListItem key={item.id} title={item.aiPlugin.name}
                                                              description={item.aiPlugin.description}
+                                                             icon={item.aiPlugin.icon}
                                                              onButtonClick={() => {
                                                                  Modal.confirm({
                                                                      title: '确定要删除该插件吗？',
