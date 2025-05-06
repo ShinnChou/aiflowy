@@ -29,6 +29,7 @@ export type AiProChatProps = {
     style?: React.CSSProperties;
     appStyle?: React.CSSProperties;
     helloMessage?: string;
+    botAvatar?: string;
     request: (messages: ChatMessage[]) => Promise<Response>;
 };
 
@@ -39,6 +40,7 @@ export const AiProChat = ({
                               style = {},
                               appStyle = {},
                               helloMessage = '欢迎使用 AIFlowy',
+                              botAvatar = `${logo}`,
                               request,
                           }: AiProChatProps) => {
     const isControlled = parentChats !== undefined && parentOnChatsChange !== undefined;
@@ -203,7 +205,7 @@ export const AiProChat = ({
                 <Welcome
                     variant="borderless"
                     icon={<img
-                        src={logo}
+                        src={botAvatar}
                         style={{ width: 32, height: 32, borderRadius: '50%' }}
                         alt="AI Avatar"
                     />}
@@ -273,7 +275,7 @@ export const AiProChat = ({
                     ),
                     avatar: chat.role === 'assistant' ? (
                         <img
-                            src={logo}
+                            src={botAvatar}
                             style={{ width: 32, height: 32, borderRadius: '50%' }}
                             alt="AI Avatar"
                         />

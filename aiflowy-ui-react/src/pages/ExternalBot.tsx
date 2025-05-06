@@ -102,7 +102,7 @@ export const ExternalBot: React.FC = () => {
     const [activeKey, setActiveKey] = React.useState('');
     const [open, setOpen] = useState(false);
     const params = useParams();
-    const { doGet: doGetBotInfo} =useGetManual("/api/v1/aiBot/detail")
+    const { doGet: doGetBotInfo, result: botInfo} =useGetManual("/api/v1/aiBot/detail")
     const { start: startChat } = useSse("/api/v1/aiBot/chat");
     // 查询会话列表的数据
     const { doGet: getConversationManualGet } = useGetManual('/api/v1/conversation/externalList');
@@ -222,11 +222,11 @@ export const ExternalBot: React.FC = () => {
     const logoNode = (
         <div className={styles.logo}>
             <img
-                src="../../public/favicon.png"
+                src={botInfo?.data?.icon || "/favicon.png"}
                 draggable={false}
                 alt="logo"
             />
-            <span>AIFlowy</span>
+            <span>{botInfo?.data?.title}</span>
         </div>
     );
 
@@ -308,6 +308,7 @@ export const ExternalBot: React.FC = () => {
                     chats={chats}
                     onChatsChange={setChats} // 确保正确传递 onChatsChange
                     helloMessage="欢迎使用 AIFlowy ，我是你的专属机器人，有什么问题可以随时问我。"
+                    botAvatar={botInfo?.data?.icon}
                     request={async (messages) => {
                         const readableStream = new ReadableStream({
                             async start(controller) {
