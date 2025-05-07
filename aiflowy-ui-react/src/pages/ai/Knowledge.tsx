@@ -80,12 +80,21 @@ const columnsColumns: ColumnsConfig<any> = [
             tooltip: (
                 <span>
                      <p style={{ marginBottom: 8, width: 300 }}>数据库配置说明：</p>
-                     <p>1.  Redis数据库,建议使用docker安装redis-stack向量数据库</p>
+                     <p>1.  Redis数据库,建议使用docker安装redis-stack向量数据库,普通redis不支持向量化</p>
                      <p style={{ fontSize: 12}}>uri=redis://:pwssword@127.0.0.1:6379</p>
                      <p>2.  ElasticSearch 数据库</p>
-                     <span style={{ fontSize: 12}}>serverUrl=http://localhost:9200</span><br/>
+                     <span style={{ fontSize: 12}}>serverUrl=http://127.0.0.1:9200</span><br/>
                      <span style={{ fontSize: 12}}>username=elastic</span><br/>
-                     <span style={{ fontSize: 12}}>password=123456</span>
+                     <span style={{ fontSize: 12}}>password=123456</span><br/>
+                     <p>3.  Milvus 数据库</p>
+                     <span style={{ fontSize: 12}}>uri=http://127.0.0.1:19530</span><br/>
+                     <span style={{ fontSize: 12}}>username=root</span><br/>
+                     <span style={{ fontSize: 12}}>password=123456</span><br/>
+                     <span style={{ fontSize: 12}}>对话地址：</span><br/>
+                     <span style={{ fontSize: 12}}>chatPath=/api/v3/chat/completions</span><br/>
+                     <span style={{ fontSize: 12}}>向量化地址：</span><br/>
+                     <span style={{ fontSize: 12}}>enbedPath=/v1/embeddings</span>
+
                 </span>
             ),
             type: 'TextArea',
