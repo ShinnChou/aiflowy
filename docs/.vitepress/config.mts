@@ -196,6 +196,7 @@ function sidebarProduct(): DefaultTheme.SidebarItem[] {
                 {text: '什么是工作流', link: '/workflow/what_is_workflow'},
                 {text: '快速开始', link: '/workflow/quick_start'},
                 {text: '节点配置', collapsed: false, items: [
+                        {text: '搜索引擎', link: '/workflow/nodes/search-engine'},
                         {text: '内容模板', link: '/workflow/nodes/template-node'},
                     ]},
             ]
