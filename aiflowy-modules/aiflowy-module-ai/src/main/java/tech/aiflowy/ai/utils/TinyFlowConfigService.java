@@ -14,7 +14,6 @@ import dev.tinyflow.core.provider.KnowledgeProvider;
 import dev.tinyflow.core.provider.LlmProvider;
 import dev.tinyflow.core.provider.SearchEngineProvider;
 import dev.tinyflow.core.searchengine.SearchEngine;
-import dev.tinyflow.core.searchengine.impl.BochaaiSearchEngineImpl;
 import org.springframework.stereotype.Component;
 import tech.aiflowy.ai.config.BochaaiProps;
 import tech.aiflowy.ai.entity.AiKnowledge;
@@ -23,6 +22,7 @@ import tech.aiflowy.ai.node.DocNodeParser;
 import tech.aiflowy.ai.node.MakeFileNodeParser;
 import tech.aiflowy.ai.node.ReadDocService;
 import tech.aiflowy.ai.node.ReaderManager;
+import tech.aiflowy.ai.provider.BochaaiSearchEngine;
 import tech.aiflowy.ai.service.AiKnowledgeService;
 import tech.aiflowy.ai.service.AiLlmService;
 import tech.aiflowy.common.filestorage.FileStorageService;
@@ -69,7 +69,7 @@ public class TinyFlowConfigService {
         tinyflow.setSearchEngineProvider(new SearchEngineProvider() {
             @Override
             public SearchEngine getSearchEngine(Object id) {
-                BochaaiSearchEngineImpl searchEngine = new BochaaiSearchEngineImpl();
+                BochaaiSearchEngine searchEngine = new BochaaiSearchEngine();
                 searchEngine.setApiKey(bochaaiProps.getApiKey());
                 return searchEngine;
             }
