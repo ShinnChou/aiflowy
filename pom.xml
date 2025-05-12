@@ -37,7 +37,7 @@
         <commons-io.version>2.18.0</commons-io.version>
         <hutool-http.version>5.8.28</hutool-http.version>
         <hutool-json.version>5.8.32</hutool-json.version>
-        <easyexcel.version>4.0.3</easyexcel.version>
+        <fastexcel.version>1.2.0</fastexcel.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -249,9 +249,9 @@
                 <version>${commons-io.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>easyexcel</artifactId>
-                <version>${easyexcel.version}</version>
+                <groupId>cn.idev.excel</groupId>
+                <artifactId>fastexcel</artifactId>
+                <version>${fastexcel.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

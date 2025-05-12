@@ -32,8 +32,8 @@ import java.util.ArrayList;
 @RequestMapping("/api/v1/aiDocumentChunk")
 public class AiDocumentChunkController extends BaseCurdController<AiDocumentChunkService, AiDocumentChunk> {
 
-     @Resource
-     AiKnowledgeService aiKnowledgeService;
+    @Resource
+    AiKnowledgeService aiKnowledgeService;
 
     @Resource
     AiLlmService aiLlmService;

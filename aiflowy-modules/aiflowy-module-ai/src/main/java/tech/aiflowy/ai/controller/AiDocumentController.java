@@ -12,6 +12,7 @@ import tech.aiflowy.ai.entity.AiLlm;
 import tech.aiflowy.ai.service.*;
 import tech.aiflowy.ai.service.impl.AiDocumentServiceImpl;
 import tech.aiflowy.common.ai.DocumentParserFactory;
+import tech.aiflowy.common.ai.ExcelDocumentSplitter;
 import tech.aiflowy.common.domain.Result;
 import tech.aiflowy.common.tree.Tree;
 import tech.aiflowy.common.util.RequestUtil;
@@ -208,7 +209,7 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
         if (!userWillSave){
             List<AiDocumentChunk> previewList = new ArrayList<>();
             // 设置分割器 todo 未来可以通过参数来指定分割器，不同的文档使用不同的分割器效果更好
-            DocumentSplitter documentSplitter = getDocumentSplitter(splitterName, chunkSize, overlapSize, regex);
+            DocumentSplitter documentSplitter = getDocumentSplitter(splitterName, chunkSize, overlapSize, regex, 2);
             Document document = Document.of(aiDocument.getContent());
             List<Document> documents = documentSplitter.split(document);
             int sort = 1;
@@ -342,7 +343,7 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
         }
 
         // 设置分割器 todo 未来可以通过参数来指定分割器，不同的文档使用不同的分割器效果更好
-        documentStore.setDocumentSplitter(getDocumentSplitter(splitterName, chunkSize, overlapSize, regex));
+        documentStore.setDocumentSplitter(getDocumentSplitter(splitterName, chunkSize, overlapSize, regex, 2));
 
         AiDocument finalEntity = entity;
         AtomicInteger sort  = new AtomicInteger(1);
@@ -389,7 +390,7 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
         }
     }
 
-    public DocumentSplitter getDocumentSplitter (String splitterName, int chunkSize, int overlapSize, String regex){
+    public DocumentSplitter getDocumentSplitter (String splitterName, int chunkSize, int overlapSize, String regex, int excelRows){
 
         if (StringUtil.noText(splitterName)) {
             return null;
@@ -405,6 +406,8 @@ public class AiDocumentController extends BaseCurdController<AiDocumentService, 
                 } else {
                     return new SimpleTokenizeSplitter(chunkSize, overlapSize);
                 }
+            case "ExcelDocumentSplitter":
+                return new ExcelDocumentSplitter(excelRows);
             default:
                 return null;
         }

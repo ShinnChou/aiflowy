@@ -1,9 +1,10 @@
 package tech.aiflowy.common.ai;
 
+import cn.idev.excel.EasyExcel;
+import cn.idev.excel.read.listener.PageReadListener;
 import com.agentsflex.core.document.Document;
 import com.agentsflex.core.document.DocumentParser;
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.read.listener.PageReadListener;
+import com.alibaba.fastjson.JSON;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -34,40 +35,15 @@ public class ExcelDocumentParser implements DocumentParser {
                         }
                     }
                 }))
-                .headRowNumber(0)  // 关键：不要跳过任何行
+//                .headRowNumber(0)  // 关键：不要跳过任何行
                 .sheet()           // 默认第一个 sheet
                 .doRead();
-        String plainText = generateMarkdownTable(tableData);
+//        String plainText = generateMarkdownTable(tableData);
 
         // 创建并返回 Document 对象
-        return new Document(plainText);
+        return new Document(JSON.toJSONString(tableData));
     }
 
 
-    private static String generateMarkdownTable(List<List<String>> tableData) {
-        if (tableData == null || tableData.isEmpty()) {
-            return "表格数据为空";
-        }
 
-        StringBuilder sb = new StringBuilder();
-
-        // 表头
-        List<String> headers = tableData.get(0);
-        sb.append("| ").append(String.join(" | ", headers)).append(" |\n");
-
-        // 分隔线
-        sb.append("|");
-        for (int i = 0; i < headers.size(); i++) {
-            sb.append(" --- |");
-        }
-        sb.append("\n");
-
-        // 数据行
-        for (int i = 1; i < tableData.size(); i++) {
-            List<String> row = tableData.get(i);
-            sb.append("| ").append(String.join(" | ", row)).append(" |\n");
-        }
-
-        return sb.toString();
-    }
 }
