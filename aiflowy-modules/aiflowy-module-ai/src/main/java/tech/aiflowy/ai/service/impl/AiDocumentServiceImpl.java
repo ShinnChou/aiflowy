@@ -164,6 +164,12 @@ public class AiDocumentServiceImpl extends ServiceImpl<AiDocumentMapper, AiDocum
                 return ResponseEntity.ok()
                         .contentType(MediaType.TEXT_PLAIN)
                         .body(textContent);
+            case "xlsx":
+                // 文本文件：直接返回内容
+                String excelToMarkdownContent = aiDocument.getContent();
+                return ResponseEntity.ok()
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .body(excelToMarkdownContent);
 
             case "jpg":
             case "jpeg":

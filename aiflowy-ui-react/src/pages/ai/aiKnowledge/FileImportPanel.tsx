@@ -84,23 +84,24 @@ const FileImportPanel: React.FC<FileImportPanelProps> = ({ data, maxCount = 1, a
             file.type === "application/pdf" ||
             file.type === "application/markdown" ||
             file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+            file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
             file.name.endsWith(".md");
-        const isLt15M = file.size / 1024 / 1024 < 200;
+        const isLt20M = file.size / 1024 / 1024 < 20;
 
         if (!isAllowedType) {
-            message.error("仅支持 txt, pdf, md, docx 格式的文件！");
+            message.error("仅支持 txt, pdf, md, docx, xlsx 格式的文件！");
         }
-        if (!isLt15M) {
-            message.error("单个文件大小不能超过 15MB！");
+        if (!isLt20M) {
+            message.error("单个文件大小不能超过 20MB！");
         }
-        if (isAllowedType && isLt15M){
+        if (isAllowedType && isLt20M){
             setPreviewListLoading({
                 spinning: true,
                 tip: '正在加载数据，请稍候...'
             })
         }
 
-        return isAllowedType && isLt15M;
+        return isAllowedType && isLt20M;
     };
     // 状态管理：当前选中的选项
     const [selectedOption, setSelectedOption] = useState("document");
@@ -151,7 +152,7 @@ const FileImportPanel: React.FC<FileImportPanelProps> = ({ data, maxCount = 1, a
 
                     {/* 上传文件 */}
                     <p className="section-description">
-                        支持 txt, pdf, docx, md 格式文件，单次最多上传 {maxCount} 个文件，单个大小不超过 15M。
+                        支持 txt, pdf, docx, md, xlsx 格式文件，单次最多上传 {maxCount} 个文件，单个大小不超过 20M。
                     </p>
 
 
@@ -276,7 +277,7 @@ const FileImportPanel: React.FC<FileImportPanelProps> = ({ data, maxCount = 1, a
                         <Upload.Dragger
                             name="file"
                             multiple
-                            accept=".txt,.pdf,.md,.docx"
+                            accept=".txt,.pdf,.md,.docx,.xlsx"
                             beforeUpload={beforeUpload}
                             fileList={fileList}
                             onChange={(info) => handleFileChange(info.fileList)}

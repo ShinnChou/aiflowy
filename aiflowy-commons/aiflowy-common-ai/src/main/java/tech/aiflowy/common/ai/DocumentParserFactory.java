@@ -25,6 +25,9 @@ public class DocumentParserFactory {
         if (typeOrFileName.endsWith(".md")) {
             return new MarkdownDocumentParser();
         }
+        if (typeOrFileName.endsWith(".xlsx")) {
+            return new ExcelDocumentParser();
+        }
         return null;
     }
 }

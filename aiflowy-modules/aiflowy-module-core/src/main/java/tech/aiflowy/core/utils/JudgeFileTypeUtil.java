@@ -16,7 +16,10 @@ public class JudgeFileTypeUtil {
             return "md";
         } else if (fileName.endsWith(".docx")) {
             return "docx";
-        } else {
+        } else if (fileName.endsWith(".xlsx")) {
+            return "xlsx";
+        }
+        else {
             return null;
         }
     }

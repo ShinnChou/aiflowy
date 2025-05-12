@@ -373,7 +373,12 @@ const Document: React.FC = () => {
                 setFileContent(data);
                 setIsDocPreviewContent(true);
 
-            } else {
+            }else if (contentType.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+                // 纯文本文件
+                setFileContent(data);
+                setIsDocPreviewContent(true);
+            }
+            else {
                 setError('不支持的文件类型');
                 setIsDocPreviewContent(true);
 
