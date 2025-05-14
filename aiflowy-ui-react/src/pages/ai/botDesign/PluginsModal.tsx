@@ -191,13 +191,14 @@ export const PluginsModal: React.FC<PluginModalProps> = ({
                                                         pluginToolId: item.id,
                                                     }
                                                 }).then(r => {
-                                                    console.log('selectedPlugin')
-                                                    console.log(selectedPlugin)
-                                                    console.log(r)
+                                                    if (r?.data?.errorCode === 0){
+                                                        message.success("添加成功")
+                                                        onToolExecute?.(selectedPlugin.id, item.id, toolParams);
+                                                    } else {
+                                                        message.error("添加失败")
+                                                    }
                                                     doPostGetToolsList({data: {pluginId: selectedPlugin.id}}).then(res => {
                                                         setPluginTools(res?.data?.data)
-                                                        console.log(';sssss')
-                                                        console.log(res)
                                                     })
                                                 })
                                             }}>添加</Button>

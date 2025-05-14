@@ -114,9 +114,10 @@ public class AiPluginToolServiceImpl extends ServiceImpl<AiPluginToolMapper, AiP
                 .from("tb_ai_bot_plugins")
                 .where("bot_id = ? ", botId);
         List<BigInteger> pluginToolIds = aiBotPluginsMapper.selectListByQueryAs(queryAiPluginToolWrapper, BigInteger.class);
-        if (pluginToolIds.size() <= 0){
+        if (pluginToolIds.isEmpty()){
             return Result.success();
         }
+        // 查询当前bots对应的有哪些pluginTool
         List<AiPluginTool> aiPluginTools = aiPluginToolMapper.selectListByIds(pluginToolIds);
         return Result.success(aiPluginTools);
     }

@@ -60,8 +60,8 @@ public class AiPluginServiceImpl extends ServiceImpl<AiPluginMapper, AiPlugin>  
     }
 
     @Override
-    public Result getList(String botId) {
-        QueryWrapper queryWrapper = QueryWrapper.create().select("*")
+    public Result getList() {
+        QueryWrapper queryWrapper = QueryWrapper.create().select("id, name, description, icon")
                 .from("tb_ai_plugin");
         List<AiPlugin> aiPlugins = aiPluginMapper.selectListByQueryAs(queryWrapper, AiPlugin.class);
         return Result.success(aiPlugins);
