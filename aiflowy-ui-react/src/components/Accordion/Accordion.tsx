@@ -7,11 +7,12 @@ import {Avatar, List} from "antd";
  */
 export type AccordionItemType = {
     title: string,
+    description: string,
     children?: React.ReactNode,
     isActive?: boolean|false,
     clickItem: () => void
 }
-const AccordionItem: React.FC<AccordionItemType> = ({ title, children, isActive, clickItem }) => {
+const AccordionItem: React.FC<AccordionItemType> = ({ title,description, children, isActive, clickItem }) => {
     return (
         <div className={`accordion-item ${isActive ? 'active' : ''}`}>
             <div className="accordion-header" onClick={clickItem}>
@@ -20,7 +21,7 @@ const AccordionItem: React.FC<AccordionItemType> = ({ title, children, isActive,
                         <List.Item.Meta
                             avatar={<Avatar src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${1}`} />}
                             title={title}
-                            description={"dsadsahgjdshgfjdjh"}
+                            description={description}
                         />
                     </List.Item>
                 </List>

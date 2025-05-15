@@ -77,14 +77,19 @@ export const PluginTools: React.FC<PluginToolsProps> = (props) => {
                         <div>
                             {pageData?.data.totalRow > 0 ? pageData?.data.records.map((item: any, index: number) => {
                                 return (
-                                    <AccordionItem key={index} title={item.name} isActive={selectedIndex == index}
-                                                   clickItem={() => {
-                                                       if (selectedIndex == index) {
-                                                           setSelectedIndex(-1)
-                                                       } else {
-                                                           setSelectedIndex(index)
-                                                       }
-                                                   }}>
+                                    <AccordionItem
+                                        key={index}
+                                        title={item.name}
+                                        description={item.description}
+                                        isActive={selectedIndex == index}
+                                        clickItem={() => {
+                                            if (selectedIndex == index) {
+                                                setSelectedIndex(-1)
+                                            } else {
+                                                setSelectedIndex(index)
+                                            }
+                                        }}
+                                    >
                                         <List
                                             dataSource={item.tools}
                                             renderItem={(item: any, index) => (
