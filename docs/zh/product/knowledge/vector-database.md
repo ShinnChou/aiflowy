@@ -2,7 +2,7 @@
 
 ## Redis向量数据库
 
-## 1、部署Redis向量数据库
+## 1. 部署Redis向量数据库
 
 Redis向量数据库是包含redisSearch功能组件的Redis,这里使用docker版实现快速部署
 
@@ -10,7 +10,7 @@ Redis向量数据库是包含redisSearch功能组件的Redis,这里使用docker�
 docker run --name  redis_stack  -e REDIS_ARGS="--requirepass Test2025L" -p 6379:6379  -d --restart=always redis/redis-stack-server:latest
 ```
 
-## 2、知识库页面配置
+## 2. 知识库页面配置
 
 向量数据库类型选择Redis,向量数据库配置中填写uri = redis://:Test2025L@127.0.0.1:6379，向量数据库集合中填写知识库英文缩写如：redisKnowledge,Embedding 模型中选择一个模型（大模型菜单中能力是Embedding的模型）
 ![输入图片说明](../../development/ai/resource/ai_redis_knowledge.png)
@@ -21,14 +21,14 @@ docker run --name  redis_stack  -e REDIS_ARGS="--requirepass Test2025L" -p 6379:
 storePrefix = docs:
 defaultCollectionName = documents
 ```
-## 3、文件导入
+## 3. 文件导入
 ![输入图片说明](../../development/ai/resource/ai_redis_file_import.png)
-## 四、检索测试
+## 4. 检索测试
 ![输入图片说明](../../development/ai/resource/ai_redis_search_test.png)
 
 ## Milvus 向量数据库
 
-## 1、安装 DockerDesktop
+## 1. 安装 DockerDesktop
 这里介绍windows使用 dockerDesktop 部署 Milvus 向量数据库
 
 1. 安装dockerDesktop , 点开连接，直接点击Download for Windows即可下载
@@ -49,7 +49,7 @@ docker --version
 docker-compose --version
 ```
 
-## 2、部署 Milvus 向量数据库
+## 2. 部署 Milvus 向量数据库
 
 1. Milvus下载
    从链接中: 下载选择自己所需的版本即可，这里我选择的是最新版本milvus-2.5.11
@@ -67,7 +67,7 @@ docker-compose --version
 
 ![install_milvus_3.png](../../development/ai/resource/install_milvus_3.png)
 
-## 3、Milvus 图形化界面attu的安装
+## 3. Milvus 图形化界面attu的安装
 
 1. attu下载
    大家可以点击下载attu选择自己所需的版本，我使用的为最新版本Release v2.4.6
@@ -81,7 +81,7 @@ https://github.com/zilliztech/attu/releases/tag/v2.5.8
 
 ![install_attu_1.png](../../development/ai/resource/install_attu_1.png)
 
-## 4、Milvus 向量数据库配置
+## 4. Milvus 向量数据库配置
 **Milvus 向量数据库配置**
 1. 以下为未设置密码的配置样例：
 
@@ -99,7 +99,7 @@ token ：使用token认证，默认为空，为空则不使用token认证
 
 ## Elasticsearch 向量数据库
 
-## 1、 Elasticsearch 知识库配置样例
+## 1. Elasticsearch 知识库配置样例
 
 如果没有设置账号和密码，不用添加账号和密码的配置
 ![img.png](../../development/ai/resource/elastic_search_config.png)
@@ -109,7 +109,7 @@ apiKey ：使用apiKey认证，默认为空，为空则不使用apiKey认证
 
 ## OpenSearch 向量数据库
 
-## 1、安装OpenSearch
+## 1. 安装OpenSearch
 
 docker 安装参考地址
 
@@ -127,6 +127,6 @@ docker run -d -p 9200:9200 -p 9600:9600 -e "discovery.type=single-node" -e "OPEN
 
 ![oepn_search_success.png](../../development/ai/resource/oepn_search_success.png)
 
-## 2、OpenSearch 知识库配置样例
+## 2. OpenSearch 知识库配置样例
 
 ![open_search_config.png](../../development/ai/resource/open_search_config.png)
