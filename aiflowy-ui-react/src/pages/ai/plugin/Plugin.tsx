@@ -389,9 +389,6 @@ const Plugin: React.FC = () => {
 			/>
 			<Modal title="新增插件" open={addPluginIsOpen} onOk={handleaddPluginOk}
 				   onCancel={handleaddPluginCancle}
-				   styles={{
-					   body: { maxHeight: '500px', overflowY: 'auto' }, // 使用 styles 替代 bodyStyle
-				   }}
 				   footer={null}
 			>
 				<Form
@@ -425,7 +422,7 @@ const Plugin: React.FC = () => {
 						name="name"
 						rules={[{ required: true, message: '请输入插件名称!' }]}
 					>
-						<Input maxLength={30} showCount/>
+						<Input maxLength={30} showCount placeholder={'请输入插件名称'}/>
 					</Form.Item>
 					<Form.Item<FieldType>
 						label="插件描述"
@@ -435,17 +432,17 @@ const Plugin: React.FC = () => {
 						<TextArea
 							showCount
 							maxLength={500}
-							placeholder="disable resize"
+							placeholder="请输入插件描述"
 							style={{ height: 80, resize: 'none' }}
 						/>
 					</Form.Item>
 
 					<Form.Item<FieldType>
 						name="baseUrl"
-						label={'插件URL'}
+						label={'插件 URL'}
 					  	rules={[{ required: true, message: '请输入插件URL' }]}
 					>
-						<Input />
+						<Input placeholder="请输入插件 URL" />
 					</Form.Item>
 					<Form.Item<FieldType>
 						name="headers"

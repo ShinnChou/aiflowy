@@ -8,7 +8,6 @@ import {
     ArrowLeftOutlined,
     DeleteOutlined,
     EditOutlined,
-    PlayCircleOutlined,
     PlusOutlined,
     QuestionCircleOutlined
 } from "@ant-design/icons";
@@ -62,12 +61,6 @@ const PluginToolEdit: React.FC = () => {
                 <Button onClick={() => navigate(-1)}  icon={<ArrowLeftOutlined />}>返回</Button>
                 {/* 其他内容 */}
             </div>
-            <Button
-                type="primary"
-                icon={<PlayCircleOutlined />}
-            >
-                试运行
-            </Button>
         </div>
     )
     const [editStates, setEditStates] = useState({

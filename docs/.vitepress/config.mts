@@ -179,9 +179,9 @@ function sidebarProduct(): DefaultTheme.SidebarItem[] {
             text: '插件',
             collapsed: false,
             items: [
-                {text: '什么是 插件？', link: '/plugin/what_is_plugin'},
+                {text: '什么是插件', link: '/plugin/what_is_plugin'},
                 {text: '快速开始', link: '/plugin/quick-start'},
-                {text: '自定义插件', link: '/plugin/custom-plugin'},
+                {text: '计划中', link: '/plugin/other'},
             ]
         },
         {
