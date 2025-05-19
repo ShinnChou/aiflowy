@@ -1,5 +1,7 @@
 package tech.aiflowy.common.ai.util;
 
+import java.util.List;
+
 public class PluginParam {
     private String name;
     private String description;
@@ -9,7 +11,7 @@ public class PluginParam {
     private boolean required;
     private boolean enabled;
     private String key;
-
+    private List<PluginParam> children;
     public String getName() {
         return name;
     }
@@ -72,5 +74,13 @@ public class PluginParam {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public List<PluginParam> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<PluginParam> children) {
+        this.children = children;
     }
 }

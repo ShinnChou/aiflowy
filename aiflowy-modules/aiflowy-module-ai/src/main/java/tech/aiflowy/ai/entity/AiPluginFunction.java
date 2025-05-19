@@ -11,8 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mybatisflex.core.query.QueryWrapper;
 import tech.aiflowy.ai.mapper.AiPluginMapper;
 import tech.aiflowy.ai.service.AiPluginToolService;
+import tech.aiflowy.common.ai.util.NestedParamConverter;
 import tech.aiflowy.common.ai.util.PluginHttpClient;
 import tech.aiflowy.common.ai.util.PluginParam;
+import tech.aiflowy.common.ai.util.PluginParamConverter;
 import tech.aiflowy.common.domain.Result;
 import tech.aiflowy.common.util.SpringContextUtil;
 
@@ -164,16 +166,80 @@ public class AiPluginFunction  implements Function {
                 params.add(pluginParam);
             }
         }
+        List<PluginParam> pluginParams = PluginParamConverter.convertFromJson(aiPluginTool.getInputData());
+        Map<String, Object> nestedParams = NestedParamConverter.convertToNestedParamMap(pluginParams);
 
-        List<Map<String, Object>> dataList = getDataList(aiPluginTool.getInputData());
+        // 准备存放不同位置的参数
+        List<PluginParam> queryParams = new ArrayList<>();
+        List<PluginParam> bodyParams = new ArrayList<>();
+        List<PluginParam> headerParams = new ArrayList<>();
+        List<PluginParam> pathParams = new ArrayList<>();
 
-        // 遍历插件工具定义的参数列表
-        for (Map<String, Object> paramDef : dataList) {
-            processParamWithChildren(paramDef, argsMap, params);
+        // 遍历嵌套参数
+        for (Map.Entry<String, Object> entry : nestedParams.entrySet()) {
+            String paramName = entry.getKey();
+
+            // 获取原始参数定义
+            PluginParam originalParam = findOriginalParam(pluginParams, paramName);
+            if (originalParam == null || !originalParam.isEnabled()) {
+                continue;
+            }
+
+            // 创建参数副本以避免修改原始定义
+            PluginParam requestParam = new PluginParam();
+            requestParam.setName(originalParam.getName());
+            requestParam.setDescription(originalParam.getDescription());
+            requestParam.setRequired(originalParam.isRequired());
+            requestParam.setType(originalParam.getType());
+            requestParam.setEnabled(originalParam.isEnabled());
+            requestParam.setMethod(originalParam.getMethod());
+
+            // 优先级: argsMap值 > 参数默认值
+            if (argsMap != null && argsMap.containsKey(paramName) && requestParam.getDefaultValue() != null) {
+                // 使用大模型返回的值
+                requestParam.setDefaultValue(argsMap.get(paramName));
+            } else if (originalParam.getDefaultValue() != null) {
+                // 使用参数定义的默认值
+                requestParam.setDefaultValue(originalParam.getDefaultValue());
+            }
+
+            // 根据method分类参数
+            switch (originalParam.getMethod().toLowerCase()) {
+                case "query":
+                    queryParams.add(requestParam);
+                    break;
+                case "body":
+                    bodyParams.add(requestParam);
+                    break;
+                case "header":
+                    headerParams.add(requestParam);
+                    break;
+                case "path":
+                    pathParams.add(requestParam);
+                    break;
+            }
         }
 
-        JSONObject result = PluginHttpClient.sendRequest(url, method, headersMap, params);
+        // 合并所有参数
+        List<PluginParam> allParams = new ArrayList<>();
+        allParams.addAll(pathParams);
+        allParams.addAll(queryParams);
+        allParams.addAll(bodyParams);
+        allParams.addAll(headerParams);
+
+        // 发送请求
+        JSONObject result = PluginHttpClient.sendRequest(url, method, headersMap, allParams);
         return result;
+    }
+
+    // 辅助方法：根据参数名查找原始参数定义
+    private PluginParam findOriginalParam(List<PluginParam> params, String name) {
+        for (PluginParam param : params) {
+            if (name.equals(param.getName())) {
+                return param;
+            }
+        }
+        return null;
     }
 
     private void processParamWithChildren(Map<String, Object> paramDef, Map<String, Object> argsMap, List<PluginParam> params) {
@@ -193,7 +259,7 @@ public class AiPluginFunction  implements Function {
         // 如果用户传了值，就用用户的值；否则用默认值
         if (paramDef.get("defaultValue") != null && !"".equals(paramDef.get("defaultValue"))) {
             pluginParam.setDefaultValue(paramDef.get("defaultValue"));
-        } else if (argsMap != null && paramDef.get("name").equals(paramName)){
+        } else if (argsMap != null && paramDef.get("name").equals(paramName) && paramDef.get("defaultValue") != null) {
             pluginParam.setDefaultValue(argsMap.get(paramName));
         }
 
