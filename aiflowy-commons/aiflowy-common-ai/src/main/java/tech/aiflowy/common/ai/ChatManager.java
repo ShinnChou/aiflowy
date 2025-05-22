@@ -1,5 +1,6 @@
 package tech.aiflowy.common.ai;
 
+import com.agentsflex.core.message.AiMessage;
 import tech.aiflowy.common.ai.util.LLMUtil;
 import tech.aiflowy.common.options.SysOptions;
 import tech.aiflowy.common.util.StringUtil;
@@ -19,6 +20,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -50,6 +53,7 @@ public class ChatManager {
         AiMessageResponse messageResponse = llm.chat(prompt);
         return messageResponse != null && messageResponse.getMessage() != null ?
                 messageResponse.getMessage().getContent() : null;
+
     }
 
 
@@ -68,33 +72,51 @@ public class ChatManager {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         sseExecutor.execute(() -> {
             RequestContextHolder.setRequestAttributes(sra, true);
-            Llm llm = getChatLlm();
-            if (llm == null) {
-                emitter.sendAndComplete("AI 大模型未配置正确");
-                return;
-            }
-            llm.chatStream(prompt, new StreamResponseListener() {
-                @Override
-                public void onMessage(ChatContext chatContext, AiMessageResponse aiMessageResponse) {
-                    String content = aiMessageResponse.getMessage().getContent();
-                    Object messageContent = aiMessageResponse.getMessage();
-                    if (StringUtil.hasText(content)) {
-                        String jsonResult =  JSON.toJSONString(messageContent);
-                        emitter.send(jsonResult);
-                    }
+            try {
+                Llm llm = getChatLlm();
+                if (llm == null) {
+                    logger.error("sseEmitter error:llm is null");
+                    AiMessage aiMessage = buildErrorMessage("AI 大模型未配置正确：大模型为 null");
+                    String message = JSON.toJSONString(aiMessage);
+                    emitter.sendAndComplete(message);
+                    return;
+                }
+                llm.chatStream(prompt, new StreamResponseListener() {
+                    @Override
+                    public void onMessage(ChatContext chatContext, AiMessageResponse aiMessageResponse) {
+                        String content = aiMessageResponse.getMessage().getContent();
+                        Object messageContent = aiMessageResponse.getMessage();
+                        if (StringUtil.hasText(content)) {
+                            String jsonResult =  JSON.toJSONString(messageContent);
+                            emitter.send(jsonResult);
+                        }
 //                    String content = aiMessageResponse.getMessage().getContent();
-                    System.out.println(">>>>response: " + content);
-                }
-                @Override
-                public void onStop(ChatContext context) {
-                    emitter.complete();
-                }
-            });
+                        System.out.println(">>>>response: " + content);
+                    }
+                    @Override
+                    public void onStop(ChatContext context) {
+                        emitter.complete();
+                    }
+                });
+            }catch (Exception e){
+                logger.error("sseEmitter error", e);
+                AiMessage aiMessage = buildErrorMessage("服务器内部错误，请查看日志，或检查大模型配置！");
+                String message = JSON.toJSONString(aiMessage);
+                emitter.sendAndComplete(message);
+            }
+
 
         });
         return emitter;
     }
 
+    private AiMessage buildErrorMessage(String content){
+        AiMessage aiMessage = new AiMessage();
+        aiMessage.setCalls(new ArrayList<>());
+        aiMessage.setContent(content);
+        aiMessage.setFullContent(content);
+        return aiMessage;
+    }
 
     public SseEmitter sseEmitterForContent(String content) {
         MySseEmitter emitter = new MySseEmitter((long) (1000 * 60 * 2));

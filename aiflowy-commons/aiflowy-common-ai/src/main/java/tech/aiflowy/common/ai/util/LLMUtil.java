@@ -15,7 +15,7 @@ import com.agentsflex.llm.spark.SparkLlmConfig;
 public class LLMUtil {
 
     public static Llm getLlmByType(String type) {
-        if ("chatGPT".equalsIgnoreCase(type)) {
+        if ("openai".equalsIgnoreCase(type)) {
             OpenAILlmConfig openAiLlmConfig = new OpenAILlmConfig();
             openAiLlmConfig.setApiKey(SysOptions.get("chatgpt_api_key"));
             openAiLlmConfig.setEndpoint(SysOptions.get("chatgpt_endpoint"));
