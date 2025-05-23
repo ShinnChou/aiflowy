@@ -174,12 +174,13 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
         MySseEmitter emitter = new MySseEmitter((long) (1000 * 60 * 2));
 
         final Boolean[] needClose = {true};
-
+        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         // 统一使用流式处理，无论是否有 Function Calling
         llm.chatStream(historiesPrompt, new StreamResponseListener() {
             @Override
             public void onMessage(ChatContext context, AiMessageResponse response) {
                 try {
+                    RequestContextHolder.setRequestAttributes(sra, true);
                     if (response != null){
                         // 检查是否需要触发 Function Calling
                         if (response.getFunctionCallers() != null && CollectionUtil.hasItems(response.getFunctionCallers())) {
