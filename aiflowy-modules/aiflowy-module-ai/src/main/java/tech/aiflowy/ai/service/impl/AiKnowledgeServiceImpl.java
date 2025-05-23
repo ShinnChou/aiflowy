@@ -74,16 +74,15 @@ public class AiKnowledgeServiceImpl extends ServiceImpl<AiKnowledgeMapper, AiKno
         for (Document result : results) {
             Object resultId = result.getId();
             Double similarityScore = result.getScore();
-            // 使用 BigDecimal 保留小数点后四位
-            BigDecimal formatScore = new BigDecimal(similarityScore);
-            formatScore = formatScore.setScale(4, RoundingMode.HALF_UP); // 四舍五入保留四位小数
-            similarityScore = formatScore.doubleValue();
+            // 计算相似度并保留 4 位小数
+            BigDecimal similarity = BigDecimal.valueOf(1 - similarityScore)
+                    .setScale(4, RoundingMode.HALF_UP); // 四舍五入
             AiDocumentChunk documentChunk = chunkService.getMapper().selectOneWithRelationsByMap(
                     Maps.of("id", resultId));
             if (documentChunk == null){
                 continue;
             }
-            documentChunk.setSimilarityScore(similarityScore);
+            documentChunk.setSimilarityScore(similarity.doubleValue());
             chunks.add(documentChunk);
         }
 
