@@ -92,6 +92,11 @@ const useStyle = createStyles(({ token, css }) => {
 });
 
 export const ExternalBot: React.FC = () => {
+    const urlParams = new URLSearchParams(location.search);
+    const token = urlParams.get('authKey');
+    if (token) {
+        localStorage.setItem('authKey', token);
+    }
     const [newTitle, setNewTitle] = useState<string>('');
 
     // ==================== Style ====================
