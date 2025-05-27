@@ -167,3 +167,65 @@ status: END 表示本次对话正常结束
 
 
 ## 通过 apiKey 调用工作流
+
+可以通过 apiKey 在外部调用工作流。
+
+### 获取参数
+请求方式：POST
+
+请求地址：http://127.0.0.1:8080/api/v1/aiWorkflow/external/getRunningParams
+
+请求头：
+Headers: {
+Authorization: apiKey
+}
+
+请求体：id=workflowId
+
+返回值：
+```
+{
+    "errorCode": 0,
+    "description": "根据输入的IP地址，获取详细的IP信息。",
+    "title": "获取IP信息",
+    "parameters": [
+        {
+            "dataType": "String",
+            "description": "IP地址",
+            "id": "3BE5GftyH8y7CUfF",
+            "name": "ipAddress",
+            "refType": "INPUT",
+            "required": true
+        }
+    ]
+}
+```
+### 运行
+请求方式：POST
+
+请求地址：http://127.0.0.1:8080/api/v1/aiWorkflow/external/run
+
+请求头：
+Headers: {
+Authorization: apiKey
+}
+
+请求体：
+```
+{
+    "id": "workflowId",
+    "variables": { // 此处是工作流的入参
+        "ipAddress": "218.86.179.185"
+    }
+}
+```
+
+返回值：
+```
+{
+    "result": {
+        ... // 此处是工作流的返回值   
+    },
+    "errorCode": 0
+}
+```
