@@ -12,14 +12,22 @@ aiflowy:
   storage:
     type: local
     local:
-      root: /rootPath  # 文件存储的根目录，默认在 target目录下，部署请修改！
-# 修改完上述配置后同步修改这里
+      # 文件存储的根目录，默认在 target目录下，生产环境部署请修改！
+      root: /rootPath
 spring:
   web:
     resources:
-      static-locations: classpath:/rootPath
+      # 修改完上述配置后同步修改这里
+      static-locations: file:/rootPath
 ```
-> 注意：不建议使用默认存储方式，建议使用 s3 方式来存储文件。
+> <span style="color: red;font-weight: bold;">注意：不建议使用默认存储方式，默认方式仅用于测试。生产环境建议使用 s3 方式来存储文件。</span>
+
+**如果使用默认存储方式来部署，前端页面需要转发 `/attachment/` 路径才能正常访问文件。nginx 配置如下：**
+```
+  location /attachment {
+	proxy_pass http://127.0.0.1:8080/static/attachment ;
+  }
+```
 
 以上配置，指的是使用 LocalFileStorageServiceImpl这个实现类来进行文件存储，同时存储的目录为：/rootPath。
 自定义存储类型
