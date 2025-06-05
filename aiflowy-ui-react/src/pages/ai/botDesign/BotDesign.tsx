@@ -127,14 +127,13 @@ const BotDesign: React.FC = () => {
     const [systemPrompt, setSystemPrompt] = useState<string>('')
     const [welcomeMessage, setWelcomeMessage] = useState<string>('')
     const [isOpenProblemPreset, setIsOpenProblemPreset] = useState<boolean>(false)
-    const {result: pluginToolResult,doPost: doPostPluginToolIds} = usePostManual('/api/v1/aiBotPlugins/getBotPluginToolIds')
+
     const {doSave: doSavePlugin} = useSave("aiBotPlugins");
     const {doPost: doRemovePlugin} = usePostManual('/api/v1/aiBotPlugins/doRemove');
     // 添加状态管理预设问题数组
     const [presetQuestions, setPresetQuestions] = useState<PresetQuestion[]>([]);
-    useEffect(() => {
-        doPostPluginToolIds({data: {botId: params.id}})
-    }, []);
+
+
     const {setOptions} = useLayout();
     useEffect(() => {
         setOptions({
@@ -267,7 +266,7 @@ const BotDesign: React.FC = () => {
             />
 
             <PluginTools
-                selectedItem={pluginToolResult?.data}
+                selectedItem={pluginToolData && pluginToolData.length ? pluginToolData.map(m => (m as any).id) : []}
                 goToPage="/ai/plugin"
                 open={pluginOpen} onClose={() => setPluginOpen(false)}
                 onCancel={() => setPluginOpen(false)}
@@ -281,6 +280,7 @@ const BotDesign: React.FC = () => {
                     }).then(r => {
                         if (r?.data?.errorCode === 0) {
                             message.success("添加成功")
+                            // 重新获取插件数据
                             doPostPluginTool({data: {botId: params.id}}).then(r => {
                                 setPluginToolData(r?.data?.data)
                             })
@@ -294,6 +294,7 @@ const BotDesign: React.FC = () => {
                     doRemovePlugin({data: {pluginToolId: item.id, botId: params.id}}).then(res => {
                         if (res?.data?.errorCode === 0){
                             message.success('删除成功')
+                            // 重新获取插件数据
                             doPostPluginTool({data: {botId: params.id}}).then(r => {
                                 setPluginToolData(r?.data?.data)
                             })
