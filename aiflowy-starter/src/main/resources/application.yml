@@ -14,7 +14,8 @@ spring:
       max-request-size: 100MB
   web:
     resources:
-      static-locations: classpath:/public
+      # 示例：windows【file: C:\aiflowy\file】 linux【file: /www/aiflowy/file】
+      static-locations: file:C:\aiflowy\file
   mvc:
     static-path-pattern: /static/**
   quartz:
@@ -41,7 +42,10 @@ aiflowy:
       access-policy: 2
       prefix: public
     local:
-      root: ''
+      # 示例：windows【file: C:\aiflowy\file】 linux【file: /www/aiflowy/file】
+      root: 'C:\aiflowy\file'
+      # 后端接口地址
+      prefix: 'http://localhost:8080/static'
   ollama:
     host: http://127.0.0.1:11434
   login:

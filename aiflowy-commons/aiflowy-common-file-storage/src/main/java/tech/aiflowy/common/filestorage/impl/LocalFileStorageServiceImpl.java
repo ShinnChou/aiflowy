@@ -27,8 +27,10 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
     private static final Logger LOG = LoggerFactory.getLogger(LocalFileStorageServiceImpl.class);
 
 
-    @Value("${aiflowy.storage.local.root:}")
+    @Value("${aiflowy.storage.local.root}")
     private String root;
+    @Value("${aiflowy.storage.local.prefix}")
+    private String prefix;
 
     @EventListener(ApplicationReadyEvent.class)
     public void init() {
@@ -42,10 +44,10 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
             String path = generatePath(bytes, file.getOriginalFilename());
             File target = getLocalFile(path);
             if (!target.getParentFile().exists() && !target.getParentFile().mkdirs()) {
-                LOG.error("Can not mkdirs: {} ", target.getParentFile());
+                LOG.error("创建文件失败: {} ", target.getParentFile());
             }
             file.transferTo(target);
-            return path;
+            return prefix + path;
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -59,32 +61,21 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
 
     @Override
     public void delete(String path) {
-
+        try {
+            File file = getLocalFile(path);
+            Files.delete(file.toPath());
+        } catch (IOException e) {
+            LOG.error("删除本地文件出错: {}", path, e);
+            throw new RuntimeException("删除本地文件出错：",e);
+        }
     }
 
 
     private File getLocalFile(String path) throws IOException {
-        String root = StringUtils.hasText(this.root) ? this.root : getDefaultRoot();
-        return new File(root, path);
-    }
-
-
-    public static String getExtName(String fileName) {
-        if (!StringUtils.hasText(fileName)) {
-            return null;
+        if (this.root == null || this.root.isEmpty()) {
+            throw new RuntimeException("请指定存储根目录");
         }
-        int index = fileName.lastIndexOf('.');
-        if (index != -1 && (index + 1) < fileName.length()) {
-            return fileName.substring(index + 1);
-        } else {
-            return null;
-        }
-    }
-
-    public static String newFile(String extName) {
-        return "/attachment/"
-                + DateUtil.toString(new Date(), "yyyy/MM-dd") + "/"
-                + UUID.randomUUID() + "." + extName;
+        return new File(this.root, path.replace(prefix, ""));
     }
 
     public static String generatePath(byte[] content, String originalName) throws Exception {
@@ -114,8 +105,4 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
         return hexString.toString(); // 返回字符串类型的哈希值
     }
 
-    private String getDefaultRoot() throws IOException {
-        ClassPathResource fileResource = new ClassPathResource("/");
-        return new File(fileResource.getFile(), "/public").getAbsolutePath();
-    }
 }

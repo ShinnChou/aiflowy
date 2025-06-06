@@ -155,13 +155,7 @@ public class AiDocumentServiceImpl extends ServiceImpl<AiDocumentMapper, AiDocum
         // 再删除指定路径下的文件
         QueryWrapper wrapper = QueryWrapper.create().where("id = ?", id);
         AiDocument aiDocument = aiDocumentMapper.selectOneByQuery(wrapper);
-        // 删除 s3 下的文件
-        if (aiDocument.getDocumentPath().startsWith("http")){
-            storageService.delete(aiDocument.getDocumentPath());
-        } else {
-            String filePath = getRootPath() + aiDocument.getDocumentPath();
-            deleteFile(filePath);
-        }
+        storageService.delete(aiDocument.getDocumentPath());
         return true;
     }
 
