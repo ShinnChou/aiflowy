@@ -340,6 +340,7 @@ public class AiDocumentServiceImpl extends ServiceImpl<AiDocumentMapper, AiDocum
         EmbeddingOptions embeddingOptions = new EmbeddingOptions();
         embeddingOptions.setModel(aiLlm.getLlmModel());
         options.setEmbeddingOptions(embeddingOptions);
+        options.setIndexName(options.getCollectionName());
         List<Document> documents = new ArrayList<>();
         aiDocumentChunks.forEach(item ->{
                     Document document = new Document();
