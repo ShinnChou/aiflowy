@@ -67,6 +67,7 @@ const FileImportPanel: React.FC<FileImportPanelProps> = ({ data, maxCount = 1, a
     interface PreviewItem {
         sorting: string; // 顺序编号
         content: string; // 内容
+        similarityScore: string;
     }
 
     const headers = {
