@@ -20,7 +20,7 @@ public class AiKnowledgeFunction extends BaseFunction {
 
     public AiKnowledgeFunction(AiKnowledge aiKnowledge) {
         this.knowledgeId = aiKnowledge.getId();
-        this.name = aiKnowledge.getTitle();
+        this.name = aiKnowledge.getId().toString();
         this.description = aiKnowledge.getDescription();
         this.parameters = getDefaultParameters();
     }
@@ -30,7 +30,7 @@ public class AiKnowledgeFunction extends BaseFunction {
         Parameter parameter = new Parameter();
         parameter.setName("input");
         parameter.setDescription("要查询的相关知识");
-        parameter.setType("String");
+        parameter.setType("string");
         parameter.setRequired(true);
         return new Parameter[]{parameter};
     }
