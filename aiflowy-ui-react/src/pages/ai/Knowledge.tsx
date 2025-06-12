@@ -128,9 +128,9 @@ const columnsColumns: ColumnsConfig<any> = [
         dataIndex: 'vectorEmbedLlmId',
         key: 'vectorEmbedLlmId',
         dict: '/api/v1/aiLlm/list?supportEmbed=true',
-        // editCondition: (data: any) => {
-        //     return data?.options?.canUpdateEmbedding != false;
-        // },
+        editCondition: (data: any) => {
+            return data?.options?.canUpdateEmbedding != false;
+        },
         form: {
             type: 'select',
             attrs: {
