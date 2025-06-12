@@ -38,3 +38,6 @@ build/
 /.idea/
 .logs
 .idea
+
+.jlsp/
+.arts/
