@@ -1,7 +1,7 @@
 import {Col, Row, Slider} from "antd";
 import {MinusOutlined, PlusOutlined} from "@ant-design/icons";
 import {DebouncedInput} from "../../../components/DebouncedInput";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useDebouncedCallback} from "use-debounce";
 
 export const LlmSlider = ({title, defaultValue = 0, step = 1, min = 0, max = 100, onChange}: {
@@ -14,7 +14,9 @@ export const LlmSlider = ({title, defaultValue = 0, step = 1, min = 0, max = 100
 }) => {
 
     const [value, setValue] = useState(defaultValue)
-
+    useEffect(() => {
+        setValue(defaultValue)
+    },[defaultValue])
     const debounced = useDebouncedCallback(
         (value) => {
             onChange?.(value)
