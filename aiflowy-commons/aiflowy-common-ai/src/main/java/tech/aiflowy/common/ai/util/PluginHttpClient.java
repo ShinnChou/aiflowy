@@ -67,10 +67,12 @@ public class PluginHttpClient {
                     String methodType = p.getMethod().toLowerCase();
                     switch (methodType) {
                         case "query":
-                            queryParams.put(p.getName(), p.getDefaultValue());
+                            Object queryParamsParamValue = buildNestedParamValue(p);
+                            queryParams.put(p.getName(), queryParamsParamValue);
                             break;
                         case "body":
-                            bodyParams.put(p.getName(), p.getDefaultValue());
+                            Object bodyParamValue = buildNestedParamValue(p);
+                            bodyParams.put(p.getName(), bodyParamValue);
                             break;
                     }
                 });
@@ -85,6 +87,30 @@ public class PluginHttpClient {
             request.body(JSONUtil.toJsonStr(bodyParams))
                     .header(Header.CONTENT_TYPE, ContentType.JSON.getValue());
         }
+    }
+
+    /**
+     * 递归构建嵌套参数值
+     * @param param 当前参数
+     * @return 如果是 Object 类型，返回 Map；否则返回 defaultValue
+     */
+    private static Object buildNestedParamValue(PluginParam param) {
+        // 如果不是 Object 类型，直接返回默认值
+        if (!"Object".equalsIgnoreCase(param.getType())) {
+            return param.getDefaultValue();
+        }
+
+        // 如果是 Object 类型，递归处理子参数
+        Map<String, Object> nestedParams = new HashMap<>();
+        if (param.getChildren() != null) {
+            param.getChildren().stream()
+                    .filter(PluginParam::isEnabled)
+                    .forEach(child -> {
+                        Object childValue = buildNestedParamValue(child); // 递归处理子参数
+                        nestedParams.put(child.getName(), childValue);
+                    });
+        }
+        return nestedParams;
     }
 
     /**
