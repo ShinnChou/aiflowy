@@ -86,9 +86,9 @@ public class AiKnowledgeBase extends DateEntity implements Serializable {
     private String vectorStoreConfig;
 
     /**
-     * 是否启用向量存储
+     * 是否启用搜索引擎
      */
-    @Column(comment = "是否启用搜索")
+    @Column(comment = "是否启用搜索引擎")
     private Boolean searchEngineEnable;
 
     /**
