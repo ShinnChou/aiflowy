@@ -25,6 +25,7 @@ import TextArea from "antd/es/input/TextArea";
 import {getSessionId} from "../../../libs/getSessionId.ts";
 import {AiProChat, ChatMessage} from "../../../components/AiProChat/AiProChat";
 import {PluginTools} from "./PluginTools.tsx";
+import {parseAnswerUtil, processArray} from "../../../libs/parseAnswerUtil.ts";
 const colStyle: React.CSSProperties = {
     background: '#fafafa',
     padding: '8px',
@@ -223,7 +224,44 @@ const BotDesign: React.FC = () => {
     const defaultWelcomeMessage = "欢迎使用AIFlowy";
 
     useEffect(() => {
-        setChats(messageResult?.data)
+
+
+        const messageList = messageResult?.data;
+        console.log(messageList)
+        if (messageList){
+            const formatList = messageList.map((message: { role: string; content: string; }) => {
+                if (message.role === "user"){
+                    return message;
+                }
+
+                const result = parseAnswerUtil(message.content);
+
+                const originContent = message.content;
+
+
+                message.content = '';
+
+                if (result.thought) {
+                    message.content += `${result.thought}\n\n`;
+                }
+
+                if (result.finalAnswer) {
+                    message.content += `${result.finalAnswer}\n`;
+                }
+
+                if (!message.content.trim()) {
+                    message.content = originContent;
+                }
+                return message;
+            })
+
+            const processArr = processArray(formatList);
+
+            console.log(processArr)
+
+            setChats(processArr);
+        }
+
     }, [messageResult]);
     useEffect(() => {
         doPostPluginTool({data: {botId: params.id}}).then(r => {

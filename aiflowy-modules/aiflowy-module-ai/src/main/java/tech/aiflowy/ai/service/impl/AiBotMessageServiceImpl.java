@@ -17,6 +17,7 @@ import tech.aiflowy.common.satoken.util.SaTokenUtil;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -62,7 +63,21 @@ public class AiBotMessageServiceImpl extends ServiceImpl<AiBotMessageMapper, AiB
             }
             result.forEach(conversationMessage -> {
                 if (conversationMessage.getSessionId().equals(sessionId)) {
-                    messages.set(conversationMessage.getAiBotMessageList());
+                    List<AiBotMessage> aiBotMessageList = conversationMessage.getAiBotMessageList();
+                    List<AiBotMessage> finalMessageList = new ArrayList<>();
+                    for (AiBotMessage aiBotMessage : aiBotMessageList) {
+                        Map<String, Object> options = aiBotMessage.getOptions();
+                        if (options != null && (Integer) options.get("type") == 2) {
+                            continue;
+                        }
+
+                        if (options != null && (Integer) options.get("type") == 1){
+                            aiBotMessage.setContent((String) options.get("user_input"));
+                        }
+
+                        finalMessageList.add(aiBotMessage);
+                    }
+                    messages.set(finalMessageList);
                 }
             });
             return Result.success(messages);

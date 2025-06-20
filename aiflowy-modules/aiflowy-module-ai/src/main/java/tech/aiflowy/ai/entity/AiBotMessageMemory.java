@@ -15,9 +15,7 @@ import tech.aiflowy.common.satoken.util.SaTokenUtil;
 
 import javax.annotation.Resource;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class AiBotMessageMemory implements ChatMemory {
     private final BigInteger botId;
@@ -64,6 +62,7 @@ public class AiBotMessageMemory implements ChatMemory {
 
     @Override
     public void addMessage(Message message) {
+
         AiBotMessage aiMessage = new AiBotMessage();
         aiMessage.setCreated(new Date());
         aiMessage.setBotId(botId);
@@ -77,23 +76,48 @@ public class AiBotMessageMemory implements ChatMemory {
             aiMessage.setTotalTokens(m.getTotalTokens());
             aiMessage.setPromptTokens(m.getPromptTokens());
             aiMessage.setCompletionTokens(m.getCompletionTokens());
+            Map<String, Object> metadataMap = m.getMetadataMap();
+            aiMessage.setOptions(metadataMap);
             List<FunctionCall> calls = m.getCalls();
             if (CollectionUtil.isNotEmpty(calls)) {
                 return;
             }
+
         } else if (message instanceof HumanMessage) {
+
             HumanMessage hm = (HumanMessage) message;
             aiMessage.setContent(hm.getContent());
             List<Function> functions = hm.getFunctions();
             aiMessage.setFunctions(JSON.toJSONString(functions, SerializerFeature.WriteClassName));
             aiMessage.setRole("user");
+            Map<String, Object> metadataMap = hm.getMetadataMap();
+
+            Object type = metadataMap.get("type");
+            if (type != null) {
+                String t = type.toString();
+                if ("reActWrapper".equals(type)){
+                    metadataMap.put("type",1);
+                }else{
+                    metadataMap.put("type",2);
+                }
+            }else {
+                metadataMap.put("type",0);
+            }
+
+            aiMessage.setOptions(metadataMap);
+
         } else if (message instanceof SystemMessage) {
+
             aiMessage.setRole("system");
             aiMessage.setContent(((SystemMessage) message).getContent());
+
         }
         if (StrUtil.isNotEmpty(aiMessage.getContent())) {
+
             AiBotConversationMessage aiBotConversation = aiBotConversationMessageMapper.selectOneById(aiMessage.getSessionId());
+
             if (aiBotConversation == null  && isExternalMsg == 1){
+
                 AiBotConversationMessage conversation = new AiBotConversationMessage();
                 conversation.setSessionId(aiMessage.getSessionId());
                 conversation.setTitle(aiMessage.getContent());
@@ -101,7 +125,9 @@ public class AiBotMessageMemory implements ChatMemory {
                 conversation.setCreated(new Date());
                 conversation.setAccountId(SaTokenUtil.getLoginAccount().getId());
                 aiBotConversationService.save(conversation);
+
             }
+
             messageService.save(aiMessage);
         }
     }

@@ -16,6 +16,7 @@ import {useParams} from "react-router-dom";
 import {useGetManual, usePostManual} from "../hooks/useApis.ts";
 import {uuid} from "../libs/uuid.ts";
 import {PresetQuestion} from "./ai/botDesign/BotDesign.tsx";
+import {parseAnswerUtil, processArray} from "../libs/parseAnswerUtil.ts";
 
 const useStyle = createStyles(({token, css}) => {
     return {
@@ -96,6 +97,7 @@ const useStyle = createStyles(({token, css}) => {
 });
 
 export const ExternalBot: React.FC = () => {
+
     const params = useParams();
     var tempUserId = localStorage.getItem("tempUserId");
     if (!tempUserId) {
@@ -280,8 +282,44 @@ export const ExternalBot: React.FC = () => {
                 isExternalMsg: 1,
                 tempUserId: localStorage.getItem("tempUserId")
             },
-        }).then((r: any) => {
-            setChats(r?.data.data);
+        }).then((resp: any) => {
+
+            if (resp.data.errorCode === 0) {
+
+                const messageList = resp.data.data;
+                console.log(messageList)
+
+                const formatList = messageList.map((message: { role: string; content: string; }) => {
+                    if (message.role === "user"){
+                        return message;
+                    }
+
+                    const result = parseAnswerUtil(message.content);
+
+                    const originContent = message.content;
+
+
+                    message.content = '';
+
+                    if (result.thought) {
+                        message.content += `${result.thought}\n\n`;
+                    }
+
+                    if (result.finalAnswer) {
+                        message.content += `${result.finalAnswer}\n`;
+                    }
+
+                    if (!message.content.trim()) {
+                        message.content = originContent;
+                    }
+                    return message;
+                })
+
+                const processArr = processArray(formatList);
+
+                setChats(processArr);
+            }
+
         });
 
     };

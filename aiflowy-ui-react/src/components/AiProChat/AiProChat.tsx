@@ -1,13 +1,14 @@
-import React, {useLayoutEffect, useRef, useState} from 'react';
+import React, {useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {Bubble, Prompts, Sender, Welcome} from '@ant-design/x';
-import {Button, GetProp, message, Space, Spin} from 'antd';
-import {CopyOutlined, OpenAIOutlined, SyncOutlined} from '@ant-design/icons';
+import {Button, GetProp, message,  Space, Spin} from 'antd';
+import {CopyOutlined, FolderAddOutlined, OpenAIOutlined, SyncOutlined} from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import logo from "/favicon.png";
-import { UserOutlined } from '@ant-design/icons';
+import {UserOutlined} from '@ant-design/icons';
 import './aiprochat.less'
+
 const fooAvatar: React.CSSProperties = {
     color: '#fff',
     backgroundColor: '#87d068',
@@ -32,8 +33,12 @@ export type AiProChatProps = {
     botAvatar?: string;
     request: (messages: ChatMessage[]) => Promise<Response>;
     clearMessage?: () => void;
+    showQaButton?: boolean;
+    onQaButtonClick?: (currentChat: ChatMessage, index: number, allChats: ChatMessage[]) => void;
     prompts?: GetProp<typeof Prompts, 'items'>;
     inputDisabled?: boolean;
+    customToolBarr?: React.ReactNode;
+
 };
 
 export const AiProChat = ({
@@ -45,13 +50,19 @@ export const AiProChat = ({
                               helloMessage = '欢迎使用 AIFlowy',
                               botAvatar = `${logo}`,
                               request,
+                              showQaButton = false,
+                              onQaButtonClick = (): void => {
+                              },
                               clearMessage,
                               inputDisabled = false,
                               prompts,
+                              customToolBarr,
                           }: AiProChatProps) => {
     const isControlled = parentChats !== undefined && parentOnChatsChange !== undefined;
     const [internalChats, setInternalChats] = useState<ChatMessage[]>([]);
-    const chats = isControlled ? parentChats : internalChats;
+    const chats = useMemo(() => {
+        return isControlled ? parentChats : internalChats;
+    }, [isControlled, parentChats, internalChats]);
     const setChats = isControlled ? parentOnChatsChange : setInternalChats;
     const [content, setContent] = useState('');
     const [sendLoading, setSendLoading] = useState(false);
@@ -85,7 +96,7 @@ export const AiProChat = ({
         if (!container) return;
 
         const handleScroll = () => {
-            const { scrollTop, scrollHeight, clientHeight } = container;
+            const {scrollTop, scrollHeight, clientHeight} = container;
             const atBottom = scrollHeight - scrollTop <= clientHeight + 5; // 允许误差 5px
 
             if (atBottom) {
@@ -106,11 +117,12 @@ export const AiProChat = ({
     }, []);
     // 提交流程优化
     const handleSubmit = async (newMessage: string) => {
-        // 使用 newMessage 的值（如果存在），否则使用 content 状态
         const messageContent = newMessage?.trim() || content.trim();
         if (!messageContent) return;
+
         setSendLoading(true);
         setIsStreaming(true);
+
         const userMessage: ChatMessage = {
             role: 'user',
             id: Date.now().toString(),
@@ -118,6 +130,7 @@ export const AiProChat = ({
             created: Date.now(),
             updateAt: Date.now(),
         };
+
         const aiMessage: ChatMessage = {
             role: 'assistant',
             id: Date.now().toString(),
@@ -126,47 +139,92 @@ export const AiProChat = ({
             created: Date.now(),
             updateAt: Date.now(),
         };
+
         const temp = [userMessage, aiMessage];
         setChats?.((prev: ChatMessage[]) => [...(prev || []), ...temp]);
         setTimeout(scrollToBottom, 50);
         setContent('');
+
         try {
             const response = await request([...(chats || []), userMessage]);
             if (!response?.body) return;
+
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let partial = '';
             let currentContent = '';
+            let typingIntervalId: NodeJS.Timeout | null = null;
+
+            // 用于等待打字效果完成的Promise
+            const waitForTypingComplete = (): Promise<void> => {
+                return new Promise((resolve) => {
+                    const checkTypingComplete = () => {
+                        if (currentContent === partial) {
+                            resolve();
+                        } else {
+                            setTimeout(checkTypingComplete, 50);
+                        }
+                    };
+                    checkTypingComplete();
+                });
+            };
+            let isStreamFinished = false;
             while (true) {
                 const {done, value} = await reader.read();
-                if (done) break;
+                if (done) {
+                    isStreamFinished = true;
+                    break;
+                }
+
                 partial += decoder.decode(value, {stream: true});
 
-                const id = setInterval(() => {
-                    currentContent = partial.slice(0, currentContent.length + 2);
-                    setChats?.((prev: ChatMessage[]) => {
-                        const newChats = [...(prev || [])];
-                        const lastMsg = newChats[newChats.length - 1];
-                        if (lastMsg?.role === 'assistant') {
-                            lastMsg.loading = false;
-                            lastMsg.content = currentContent;
-                            lastMsg.updateAt = Date.now();
+                // 清除之前的打字间隔
+                if (typingIntervalId) {
+                    clearInterval(typingIntervalId);
+                }
+
+                // 开始新的打字效果
+                typingIntervalId = setInterval(() => {
+                    if (currentContent.length < partial.length) {
+                        currentContent = isStreamFinished ? partial : partial.slice(0, currentContent.length + 2);
+                        setChats?.((prev: ChatMessage[]) => {
+                            const newChats = [...(prev || [])];
+                            const lastMsg = newChats[newChats.length - 1];
+                            if (!lastMsg) return prev;
+
+                            if (lastMsg?.role === 'assistant') {
+                                lastMsg.loading = false;
+                                lastMsg.content = currentContent;
+                                lastMsg.updateAt = Date.now();
+                            }
+                            return newChats;
+                        });
+
+                        if (autoScrollEnabled.current) {
+                            scrollToBottom();
                         }
-                        return newChats;
-                    });
-                    if (autoScrollEnabled.current) {
-                        scrollToBottom(); // 只有在自动滚动开启时才滚动
                     }
-                    if (currentContent === partial) {
-                        clearInterval(id);
+
+                    // 当前内容已经追上完整内容时停止
+                    if (currentContent == partial || isStreamFinished) {
+                        clearInterval(typingIntervalId!);
+                        typingIntervalId = null;
                     }
                 }, 50);
-
             }
+
+            // 等待最后的打字效果完成
+            await waitForTypingComplete();
+
+            // 清理间隔（如果还存在）
+            if (typingIntervalId) {
+                clearInterval(typingIntervalId);
+            }
+
         } catch (error) {
             console.error('Error:', error);
-            console.error('出错了:', error);
         } finally {
+            // 确保打字效果完成后再重置状态
             setIsStreaming(false);
             setSendLoading(false);
         }
@@ -203,16 +261,24 @@ export const AiProChat = ({
             const decoder = new TextDecoder();
             let partial = '';
             let currentContent = '';
+            let isStreamFinished = false;
             while (true) {
                 const {done, value} = await reader.read();
-                if (done) break;
+                if (done) {
+                    isStreamFinished = true;
+                    break;
+                }
                 partial += decoder.decode(value, {stream: true});
-
                 const id = setInterval(() => {
-                    currentContent = partial.slice(0, currentContent.length + 2);
+                    currentContent = isStreamFinished ? partial : partial.slice(0, currentContent.length + 2);
                     setChats?.((prev: ChatMessage[]) => {
                         const newChats = [...(prev || [])];
                         const lastMsg = newChats[newChats.length - 1];
+
+                        if (!lastMsg) {
+                            return prev;
+                        }
+
                         if (lastMsg.role === 'assistant') {
                             lastMsg.loading = false;
                             lastMsg.content = currentContent;
@@ -226,13 +292,10 @@ export const AiProChat = ({
                 }, 50);
 
 
-
             }
         } catch (error) {
             console.error('Error:', error);
-        } finally {
         }
-
 
     };
 
@@ -244,7 +307,7 @@ export const AiProChat = ({
                     variant="borderless"
                     icon={<img
                         src={botAvatar}
-                        style={{ width: 32, height: 32, borderRadius: '50%' }}
+                        style={{width: 32, height: 32, borderRadius: '50%'}}
                         alt="AI Avatar"
                     />}
                     description={helloMessage}
@@ -295,10 +358,21 @@ export const AiProChat = ({
                                         await navigator.clipboard.writeText(chat.content);
                                         message.success('复制成功');
                                     } catch (error) {
+                                        console.log(error);
                                         message.error('复制失败');
                                     }
                                 }}
                             />
+                            {(chat.role === 'user' && showQaButton) && <Button
+                                color="default"
+                                variant="text"
+                                size="small"
+
+                                icon={<FolderAddOutlined/>}
+                                onClick={async () => {
+                                    handleQaClick(chat, index)
+                                }}
+                            ></Button>}
                         </Space>
                     ),
                     role: chat.role === 'user' ? 'local' : 'ai',
@@ -314,15 +388,23 @@ export const AiProChat = ({
                     avatar: chat.role === 'assistant' ? (
                         <img
                             src={botAvatar}
-                            style={{ width: 32, height: 32, borderRadius: '50%' }}
+                            style={{width: 32, height: 32, borderRadius: '50%'}}
                             alt="AI Avatar"
                         />
-                    ) : { icon: <UserOutlined />, style: fooAvatar },
+                    ) : {icon: <UserOutlined/>, style: fooAvatar},
                 }))}
                 roles={{ai: {placement: 'start'}, local: {placement: 'end'}}}
             />
         );
     };
+
+    // qa按钮点击事件
+    const handleQaClick = (chat: ChatMessage, index: number) => {
+        if (onQaButtonClick) {
+            onQaButtonClick(chat, index, chats);
+        }
+    };
+
     const SENDER_PROMPTS = prompts || [
         {
             key: '1',
@@ -367,8 +449,8 @@ export const AiProChat = ({
                     </>
                 )}
             </div>
-
             {/* 输入区域 */}
+
             <div
                 style={{
                     borderTop: '1px solid #eee',
@@ -378,6 +460,7 @@ export const AiProChat = ({
                     gap: '8px',
                 }}
             >
+
                 {/* 🌟 提示词 */}
                 <Prompts
                     items={SENDER_PROMPTS}
@@ -385,10 +468,21 @@ export const AiProChat = ({
                         handleSubmit(info.data.description as string)
                     }}
                     styles={{
-                        item: { padding: '6px 12px' },
+                        item: {padding: '6px 12px'},
                     }}
-
                 />
+
+                {customToolBarr ?
+                    <div style={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "start",
+                        alignItems: "center",
+                    }}>
+                        {customToolBarr}
+                    </div> : <></>
+                }
+
                 <Sender
                     value={content}
                     onChange={setContent}
@@ -398,12 +492,15 @@ export const AiProChat = ({
                     actions={(_, info) => (
                         <Space size="small">
                             <info.components.ClearButton
-                                disabled={inputDisabled}  // 强制不禁用
+                                disabled={sendLoading || isStreaming || !chats?.length}  // 强制不禁用
                                 title="删除对话记录"
-                                style={{ fontSize: 20 }}
-                                onClick={(e) => {
+                                style={{fontSize: 20}}
+                                onClick={async (e) => {
                                     e.preventDefault();  // 阻止默认行为（如果有）
-                                    clearMessage?.();
+
+                                    setSendLoading(true)
+                                    await clearMessage?.();
+                                    setSendLoading(false)
                                 }}
                             />
                             <info.components.SendButton

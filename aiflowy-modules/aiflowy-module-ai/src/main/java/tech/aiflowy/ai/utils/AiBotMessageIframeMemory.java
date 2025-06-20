@@ -18,6 +18,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AiBotMessageIframeMemory implements ChatMemory {
@@ -91,6 +92,9 @@ public class AiBotMessageIframeMemory implements ChatMemory {
             aiMessage.setTotalTokens(m.getTotalTokens());
             aiMessage.setPromptTokens(m.getPromptTokens());
             aiMessage.setCompletionTokens(m.getCompletionTokens());
+            Map<String, Object> metadataMap = m.getMetadataMap();
+            aiMessage.setOptions(metadataMap);
+
             List<FunctionCall> calls = m.getCalls();
             if (CollectionUtil.isNotEmpty(calls)) {
                 return;
@@ -101,6 +105,22 @@ public class AiBotMessageIframeMemory implements ChatMemory {
             List<Function> functions = hm.getFunctions();
             aiMessage.setFunctions(JSON.toJSONString(functions, SerializerFeature.WriteClassName));
             aiMessage.setRole("user");
+            Map<String, Object> metadataMap = hm.getMetadataMap();
+
+            Object type = metadataMap.get("type");
+            if (type != null) {
+                String t = type.toString();
+                if ("reActWrapper".equals(type)){
+                    metadataMap.put("type",1);
+                }else{
+                    metadataMap.put("type",2);
+                }
+            }else {
+                metadataMap.put("type",0);
+            }
+
+            aiMessage.setOptions(metadataMap);
+
         } else if (message instanceof SystemMessage) {
             aiMessage.setRole("system");
             aiMessage.setContent(((SystemMessage) message).getContent());

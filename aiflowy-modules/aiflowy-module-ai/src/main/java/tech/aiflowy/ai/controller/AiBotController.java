@@ -14,7 +14,11 @@ import com.agentsflex.core.message.AiMessage;
 import com.agentsflex.core.message.HumanMessage;
 import com.agentsflex.core.message.SystemMessage;
 import com.agentsflex.core.prompt.HistoriesPrompt;
+import com.agentsflex.core.prompt.TextPrompt;
 import com.agentsflex.core.prompt.ToolPrompt;
+import com.agentsflex.core.react.ReActAgent;
+import com.agentsflex.core.react.ReActAgentListener;
+import com.agentsflex.core.react.ReActStep;
 import com.agentsflex.core.util.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializeConfig;
@@ -26,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,6 +60,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * 控制层。
@@ -186,7 +192,7 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
             Object maxMessageCount = llmOptions.get("maxMessageCount");
             historiesPrompt.setMaxAttachedMessageCount(Integer.parseInt(String.valueOf(maxMessageCount)));
         }
-        if (systemPrompt != null) {
+        if (StringUtils.hasLength(systemPrompt)) {
             historiesPrompt.setSystemMessage(SystemMessage.of(systemPrompt));
         }
         if (StpUtil.isLogin()){
@@ -201,82 +207,119 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
 
         }
         boolean needEnglishName = AiBotChatUtil.needEnglishName(llm);
-        HumanMessage humanMessage = new HumanMessage(prompt);
 
-        // 添加插件相关的function calling
-        appendPluginToolFunction(botId, humanMessage);
+        MySseEmitter emitter = new MySseEmitter(1000 * 60 * 300L);
+        List<Function> functions = buildFunctionList(Maps.of("botId", botId).set("needEnglishName", needEnglishName));
 
-        //添加工作流相关的 Function Calling
-        appendWorkflowFunctions(botId, humanMessage, needEnglishName);
+        ReActAgent reActAgent = new ReActAgent(llm, functions, prompt, historiesPrompt);
 
-        //添加知识库相关的 Function Calling
-        appendKnowledgeFunctions(botId, humanMessage, needEnglishName);
+        reActAgent.setStreamable(true);
 
-        historiesPrompt.addMessage(humanMessage);
+        reActAgent.addListener(new ReActAgentListener() {
 
-        MySseEmitter emitter = new MySseEmitter((long) (1000 * 60 * 2));
-
-        final Boolean[] needClose = {true};
-
-        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-
-        ChatOptions chatOptions = getChatOptions(llmOptions);
-
-        // 统一使用流式处理，无论是否有 Function Calling
-        llm.chatStream(historiesPrompt, new StreamResponseListener() {
             @Override
-            public void onMessage(ChatContext context, AiMessageResponse response) {
-                try {
-                    RequestContextHolder.setRequestAttributes(sra, true);
-                    if (response != null) {
-                        // 检查是否需要触发 Function Calling
-                        logger.info("是否需要调用function calling:{}",response.getFunctionCallers() != null && CollectionUtil.hasItems(response.getFunctionCallers()));
-                        if (response.getFunctionCallers() != null && CollectionUtil.hasItems(response.getFunctionCallers())) {
-                            needClose[0] = false;
-                            function_call(response, emitter, needClose, historiesPrompt, llm, prompt, false,chatOptions);
-                        } else {
-                            // 强制流式返回，即使有 Function Calling 也先返回部分结果
-                            if (response.getMessage() != null) {
-                                String content = response.getMessage().getContent();
-                                if (StringUtil.hasText(content)) {
-                                    emitter.send(JSON.toJSONString(response.getMessage()));
-                                }
-                            }
-                        }
-                    }
-
-
-                } catch (Exception e) {
-                    logger.error("大模型调用出错：",e);
-                    emitter.send(JSON.toJSONString(Maps.of("content","大模型调用出错，请检查配置")));
-                    emitter.completeWithError(e);
-                }
+            public void onFinalAnswer(String finalAnswer) {
+                logger.info("onFinalAnswer,{}",finalAnswer);
+                AiMessage message = new AiMessage();
+                message.setContent(finalAnswer);
+                emitter.sendAndComplete(JSON.toJSONString(message));
             }
 
             @Override
-            public void onStop(ChatContext context) {
-                logger.info("normal chat complete");
-                if (needClose[0]) {
-                    emitter.complete();
-                }
+            public void onNonActionResponseStream(ChatContext context) {
+                logger.info("onNonActionResponseStream");
+                String fullContent = context.getLastAiMessage().getFullContent();
+                AiMessage message   = new AiMessage();
+                message.setContent(fullContent);
+                emitter.sendAndComplete(JSON.toJSONString(message));
             }
 
             @Override
-            public void onFailure(ChatContext context, Throwable throwable) {
-                logger.error("大模型调用出错：",throwable);
+            public void onError(Exception error) {
+                logger.error("onError:", error);
                 AiMessage aiMessage = new AiMessage();
                 aiMessage.setContent("大模型调用出错，请检查配置");
-                boolean hasUnsupportedApiError = containsUnsupportedApiError(throwable.getMessage());
-                if (hasUnsupportedApiError){
-                    String errMessage = throwable.getMessage() + "\n**以下是 AIFlowy 提供的可查找当前错误的方向**\n**1: 在 AIFlowy 中，Bot 对话需要大模型携带 function_calling 功能**" +
-                            "\n**2: 请查看当前模型是否支持 function_calling 调用？**"
-                            ;
+                boolean hasUnsupportedApiError = containsUnsupportedApiError(error.getMessage());
+                if (hasUnsupportedApiError) {
+                    String errMessage = error.getMessage() + "\n**以下是 AIFlowy 提供的可查找当前错误的方向**\n**1: 在 AIFlowy 中，Bot 对话需要大模型携带 function_calling 功能**" +
+                            "\n**2: 请查看当前模型是否支持 function_calling 调用？**";
                     aiMessage.setContent(errMessage);
                 }
                 emitter.send(JSON.toJSONString(aiMessage));
-                emitter.completeWithError(throwable);
+                emitter.completeWithError(error);
             }
-        },chatOptions);
+
+            @Override
+            public void onActionStart(ReActStep step) {
+                logger.info("onActionStart");
+
+                AiMessage thoughtMessage = new AiMessage();
+                thoughtMessage.setContent(step.getThought() + "\n");
+                emitter.send(JSON.toJSONString(thoughtMessage));
+
+                AiMessage toolCallMessage = new AiMessage();
+                toolCallMessage.setContent("\uD83D\uDCCB 正在调用工具，请稍等" + "\n\n");
+                toolCallMessage.setFullContent("\uD83D\uDCCB 正在调用工具，请稍等" + "\n\n");
+                toolCallMessage.setMetadataMap(Maps.of("showContent",toolCallMessage.getContent()).set("type",0));
+                emitter.send(JSON.toJSONString(toolCallMessage));
+                historiesPrompt.addMessage(toolCallMessage);
+                String actionInput = step.getActionInput();
+                logger.info("onActionStart:{}", actionInput);
+                // 验证 JSON 格式
+                try {
+                    JSON.parseObject(actionInput);
+                    logger.info("Action Input JSON 格式正确");
+                } catch (Exception e) {
+                    logger.error("Action Input JSON 格式错误: " + actionInput);
+                    logger.info("开始json矫正");
+                    // 调用大模型矫正 JSON 格式
+                    StringBuilder prompt = new StringBuilder();
+                    prompt.append("你是一个 JSON 格式矫正专家。请修复下面的 JSON 格式错误。\n\n");
+                    prompt.append("## 需要修复的 JSON:\n");
+                    prompt.append("```\n");
+                    prompt.append(actionInput);
+                    prompt.append("\n```\n\n");
+                    prompt.append("## 修复要求:\n");
+                    prompt.append("1. 输出标准的 JSON 格式，必须以 { 开始，以 } 结束\n");
+                    prompt.append("2. 所有键名和字符串值必须用双引号包围\n");
+                    prompt.append("3. 移除多余的逗号、括号或其他语法错误\n");
+                    prompt.append("4. 保持原有的参数名和参数值不变，只修复格式\n");
+                    prompt.append("5. 不要添加任何解释或注释\n\n");
+                    prompt.append("## 常见错误修复示例:\n");
+                    prompt.append("错误: {sql: 'SELECT * FROM users'}\n");
+                    prompt.append("正确: {\"sql\": \"SELECT * FROM users\"}\n\n");
+                    prompt.append("错误: {\"name\": \"test\",}\n");
+                    prompt.append("正确: {\"name\": \"test\"}\n\n");
+                    prompt.append("错误: {'key': \"value\"}\n");
+                    prompt.append("正确: {\"key\": \"value\"}\n\n");
+                    prompt.append("请直接输出修复后的 JSON，不要包含任何其他内容:");
+
+                    logger.info("----------------------------矫正提示词-------------------------------");
+                    logger.info(prompt.toString());
+                    logger.info("--------------------------------------------------------------------");
+                    AiMessageResponse chat = llm.chat(new TextPrompt(prompt.toString()));
+                    AiMessage message = chat.getMessage();
+                    String replace = message.getContent().replace("```json", "").replace("```", "");
+                    logger.info("校正后json:" + replace);
+                    if (StringUtils.hasLength(replace)) {
+                        step.setActionInput(replace);
+                    }
+                }
+            }
+
+            @Override
+            public void onActionEnd(ReActStep step, Object result) {
+                logger.info("onActionEnd----> step:{},result:{}", step, result);
+                AiMessage aiMessage =  new AiMessage();
+                aiMessage.setFullContent("\uD83D\uDD0D Query Result:" + result.toString() + "\n\n");
+                aiMessage.setContent("\uD83D\uDD0D Query Result:" + result.toString() + "\n\n");
+                aiMessage.setMetadataMap(Maps.of("showContent",aiMessage.getContent()).set("type",0));
+                historiesPrompt.addMessage(aiMessage);
+                emitter.send(JSON.toJSONString(aiMessage));
+            }
+        });
+
+        reActAgent.run();
 
         return emitter;
     }
@@ -619,6 +662,71 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
             }
         }
         return aiMessageResponse;
+    }
+
+
+    private List<Function> buildFunctionList(Map<String,Object> buildParams){
+
+        if (buildParams == null || buildParams.isEmpty()) {
+            throw new IllegalArgumentException("buildParams is empty");
+        }
+
+        List<Function> functionList = new ArrayList<>();
+
+        BigInteger botId = (BigInteger) buildParams.get("botId");
+        if (botId == null) {
+            throw new IllegalArgumentException("botId is empty");
+        }
+        Boolean needEnglishName = (Boolean) buildParams.get("needEnglishName");
+        if (needEnglishName == null) {
+            needEnglishName = false;
+        }
+
+        QueryWrapper queryWrapper = QueryWrapper.create();
+
+        // 工作流 function 集合
+        queryWrapper.eq(AiBotWorkflow::getBotId,botId);
+        List<AiBotWorkflow> aiBotWorkflows = aiBotWorkflowService.getMapper().selectListWithRelationsByQuery(queryWrapper);
+        if (aiBotWorkflows != null &&  !aiBotWorkflows.isEmpty()) {
+            for (AiBotWorkflow aiBotWorkflow : aiBotWorkflows) {
+                Function function = aiBotWorkflow.getWorkflow().toFunction(needEnglishName);
+                functionList.add(function);
+            }
+        }
+
+        // 知识库 function 集合
+        queryWrapper =  QueryWrapper.create();
+        queryWrapper.eq(AiBotKnowledge::getBotId,botId);
+        List<AiBotKnowledge> aiBotKnowledges = aiBotKnowledgeService.getMapper().selectListWithRelationsByQuery(queryWrapper);
+        if (aiBotKnowledges != null && !aiBotKnowledges.isEmpty()) {
+            for (AiBotKnowledge aiBotKnowledge : aiBotKnowledges) {
+                Function function = aiBotKnowledge.getKnowledge().toFunction(needEnglishName);
+                functionList.add(function);
+            }
+        }
+
+        // 插件 function 集合
+        queryWrapper = QueryWrapper.create();
+        queryWrapper.select("plugin_tool_id").eq(AiBotPlugins::getBotId, botId);
+        List<BigInteger> pluginToolIds = aiBotPluginsService.getMapper().selectListWithRelationsByQueryAs(queryWrapper, BigInteger.class);
+
+        if (pluginToolIds == null || pluginToolIds.isEmpty()) {
+            return functionList;
+        }
+
+        QueryWrapper queryTool = QueryWrapper.create()
+                .select("*")
+                .from("tb_ai_plugin_tool")
+                .in("id", pluginToolIds);
+        List<AiPluginTool> aiPluginTools = aiPluginToolService.getMapper().selectListWithRelationsByQuery(queryTool);
+        if (aiPluginTools != null && !aiPluginTools.isEmpty()) {
+            for (AiPluginTool aiPluginTool : aiPluginTools){
+                functionList.add(aiPluginTool.toFunction());
+            }
+        }
+
+
+        return functionList;
     }
 
     private void appendWorkflowFunctions(BigInteger botId, HumanMessage humanMessage, boolean needEnglishName) {

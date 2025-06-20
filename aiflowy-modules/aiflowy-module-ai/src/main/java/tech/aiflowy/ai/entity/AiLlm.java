@@ -106,7 +106,7 @@ public class AiLlm extends AiLlmBase {
         giteeAiLlmConfig.setEndpoint(getLlmEndpoint());
         giteeAiLlmConfig.setApiKey(getLlmApiKey());
         giteeAiLlmConfig.setModel(getLlmModel());
-        giteeAiLlmConfig.setDebug(true);
+//        giteeAiLlmConfig.setDebug(true);
         return new GiteeAiLlm(giteeAiLlmConfig);
     }
 
@@ -115,7 +115,7 @@ public class AiLlm extends AiLlmBase {
         qwenLlmConfig.setEndpoint(getLlmEndpoint());
         qwenLlmConfig.setApiKey(getLlmApiKey());
         qwenLlmConfig.setModel(getLlmModel());
-        qwenLlmConfig.setDebug(true);
+//        qwenLlmConfig.setDebug(true);
         return new QwenLlm(qwenLlmConfig);
     }
 
@@ -124,7 +124,7 @@ public class AiLlm extends AiLlmBase {
         ollamaLlmConfig.setEndpoint(getLlmEndpoint());
         ollamaLlmConfig.setApiKey(getLlmApiKey());
         ollamaLlmConfig.setModel(getLlmModel());
-        ollamaLlmConfig.setDebug(true);
+//        ollamaLlmConfig.setDebug(true);
         return new OllamaLlm(ollamaLlmConfig);
     }
 
@@ -134,7 +134,7 @@ public class AiLlm extends AiLlmBase {
         openAiLlmConfig.setApiKey(getLlmApiKey());
         openAiLlmConfig.setModel(getLlmModel());
         openAiLlmConfig.setDefaultEmbeddingModel(getLlmModel());
-        openAiLlmConfig.setDebug(true);
+//        openAiLlmConfig.setDebug(true);
         String llmExtraConfig = getLlmExtraConfig();
         if (llmExtraConfig != null && !llmExtraConfig.isEmpty()){
             Properties prop = PropertiesUtil.textToProperties(llmExtraConfig);
@@ -153,7 +153,7 @@ public class AiLlm extends AiLlmBase {
     private Llm sparkLlm() {
         SparkLlmConfig sparkLlmConfig = PropertiesUtil.propertiesTextToEntity(getLlmExtraConfig(), SparkLlmConfig.class);
         sparkLlmConfig.setApiKey(getLlmApiKey());
-        sparkLlmConfig.setDebug(true);
+//        sparkLlmConfig.setDebug(true);
         return new SparkLlm(sparkLlmConfig);
     }
 
@@ -162,7 +162,7 @@ public class AiLlm extends AiLlmBase {
         config.setModel(getLlmModel());
         config.setEndpoint(getLlmEndpoint());
         config.setApiKey(getLlmApiKey());
-        config.setDebug(true);
+//        config.setDebug(true);
         return new DeepseekLlm(config);
     }
 }
