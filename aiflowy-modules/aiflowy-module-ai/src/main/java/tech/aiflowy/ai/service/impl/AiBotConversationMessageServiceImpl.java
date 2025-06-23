@@ -1,5 +1,6 @@
 package tech.aiflowy.ai.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.agentsflex.core.llm.Llm;
 import com.agentsflex.core.llm.response.AiMessageResponse;
 import com.agentsflex.core.message.AiMessage;
@@ -109,7 +110,11 @@ public class AiBotConversationMessageServiceImpl extends ServiceImpl<AiBotConver
     }
 
     @Override
-    public Boolean needRefreshConversationTitle(String sessionId, String userPrompt, Llm llm, BigInteger botId, long accountId, int isExternalMsg) {
+    public Boolean needRefreshConversationTitle(String sessionId, String userPrompt, Llm llm, BigInteger botId, int isExternalMsg) {
+        boolean login = StpUtil.isLogin();
+        if (!login){
+            return false;
+        }
         AiBotConversationMessage conversationMessage = this.getMapper().selectOneById(sessionId);
         if (conversationMessage == null && isExternalMsg == 1){
             TextPrompt textPrompt = new TextPrompt();
@@ -124,7 +129,7 @@ public class AiBotConversationMessageServiceImpl extends ServiceImpl<AiBotConver
             newConversation.setTitle(title);
             newConversation.setBotId(botId);
             newConversation.setCreated(new Date());
-            newConversation.setAccountId(BigInteger.valueOf(accountId));
+            newConversation.setAccountId(BigInteger.valueOf(StpUtil.getLoginIdAsLong()));
             int insert = this.getMapper().insert(newConversation);
             return insert > 0;
         }

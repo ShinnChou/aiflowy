@@ -372,7 +372,7 @@ const FileImportPanel: React.FC<FileImportPanelProps> = ({ data, maxCount = 1, a
                                 />
                             </div>
                         ) : null}
-                        <div style={{width: "500px"}}>
+                        <div style={{maxWidth: "500px", paddingRight: "10px"}}>
                             {/* 上传区域 */}
                             <Upload.Dragger
                                 name="file"
@@ -496,7 +496,8 @@ const FileImportPanel: React.FC<FileImportPanelProps> = ({ data, maxCount = 1, a
                             </div>
                         </div>
 
-
+                    </div>
+                    <div style={{maxWidth: "500px", marginTop: "10px", paddingRight: "10px"}}>
                         <Upload.Dragger
                             name="file"
                             multiple
@@ -516,9 +517,6 @@ const FileImportPanel: React.FC<FileImportPanelProps> = ({ data, maxCount = 1, a
                             <p className="upload-text" style={{ userSelect: "none" }}> 点击或拖拽文件到此区域上传</p>
                             <p className="upload-hint" style={{ userSelect: "none" }}>支持单次上传最多 {maxCount} 个文件。</p>
                         </Upload.Dragger>
-
-
-
                     </div>
                 </div>
                 <div style={{flex:1}}>

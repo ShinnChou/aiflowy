@@ -21,6 +21,6 @@ public interface AiBotConversationMessageService extends IService<AiBotConversat
 
     Result externalList(BigInteger botId);
 
-    Boolean needRefreshConversationTitle(String sessionId, String userPrompt, Llm llm, BigInteger botId, long accountId, int isExternalMsg);
+    Boolean needRefreshConversationTitle(String sessionId, String userPrompt, Llm llm, BigInteger botId, int isExternalMsg);
 
 }

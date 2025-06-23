@@ -39,6 +39,9 @@ public class AiKnowledgeController extends BaseCurdController<AiKnowledgeService
     protected Result onSaveOrUpdateBefore(AiKnowledge entity, boolean isSave) {
         if (isSave){
             Map<String, Object> options =  new HashMap<>();
+            if (entity.getSearchEngineEnable() == null){
+                entity.setSearchEngineEnable(false);
+            }
             options.put("canUpdateEmbedding", true);
             entity.setOptions(options);
         }

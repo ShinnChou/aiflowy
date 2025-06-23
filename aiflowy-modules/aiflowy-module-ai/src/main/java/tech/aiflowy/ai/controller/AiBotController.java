@@ -60,8 +60,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 /**
  * 控制层。
@@ -215,12 +213,13 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
         ReActAgent reActAgent = new ReActAgent(llm, functions, prompt, historiesPrompt);
 
         reActAgent.setStreamable(true);
-        long userId = StpUtil.getLoginIdAsLong();
+        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Boolean needRefresh = aiBotConversationMessageService.needRefreshConversationTitle(sessionId, prompt, llm, botId, userId, isExternalMsg);
+                RequestContextHolder.setRequestAttributes(sra, true);
+                Boolean needRefresh = aiBotConversationMessageService.needRefreshConversationTitle(sessionId, prompt, llm, botId, isExternalMsg);
                 if (needRefresh){
                     try {
                         emitter.send(SseEmitter.event().name("refreshSession"));
@@ -230,6 +229,7 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
                 }
             }
         }).start();
+
 
         reActAgent.addListener(new ReActAgentListener() {
 
