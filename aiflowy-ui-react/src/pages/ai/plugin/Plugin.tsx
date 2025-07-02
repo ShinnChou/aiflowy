@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
 	ClusterOutlined,
-	DeleteOutlined,
 	EditOutlined,
 	EllipsisOutlined,
 	MenuUnfoldOutlined,
@@ -37,6 +36,7 @@ import TextArea from 'antd/es/input/TextArea';
 import {CheckboxGroupProps} from "antd/es/checkbox";
 import {useNavigate} from "react-router-dom";
 import './less/plugin.less'
+import CustomDeleteIcon from "../../../components/CustomIcon/CustomDeleteIcon.tsx";
 
 interface Category {
 	id: number;
@@ -432,7 +432,7 @@ const Plugin: React.FC = () => {
 													},
 													{
 														key: 'delete',
-														icon: <DeleteOutlined />,
+														icon: <CustomDeleteIcon />,
 														label: '删除',
 														danger: true,
 														onClick: (e) => {
@@ -514,7 +514,7 @@ const Plugin: React.FC = () => {
 												{
 												key: 'delete',
 												label: '删除',
-												icon: <DeleteOutlined />,
+												icon: <CustomDeleteIcon />,
 												danger: true,
 												onClick: () => {
 													Modal.confirm({

@@ -3,7 +3,7 @@ import {MenuUnfoldOutlined, SearchOutlined} from "@ant-design/icons";
 import {ColumnsConfig} from "../../components/AntdCrud";
 import CardPage from "../../components/CardPage";
 import DraggableModal from "../../components/DraggableModal";
-import {Button, Form, Input, Spin} from "antd";
+import {Button, Form, Input, Space, Spin} from "antd";
 import {useGetManual} from "../../hooks/useApis.ts";
 
 
@@ -259,17 +259,30 @@ const Knowledge: React.FC<{ paramsToUrl: boolean }> = () => {
                       avatarKey="icon"
                       defaultAvatarSrc={"/favicon.png"}
                       editLayout={{labelWidth: 140}}
+                      optionsText={{
+                          addCardTitle: "创建知识库",
+                          noDataText: "你还没有知识库，快来创建你的知识库吧！",
+                          noDataAddButtonText: "创建知识库"
+                      }}
                       customActions={(item, existNodes) => {
                           return [
-                              <MenuUnfoldOutlined title="文档列表" onClick={() => {
+                              <Space onClick={() => {
                                   // window.open(`/ai/knowledge/${item.slug || item.id}`)
                                   window.open(`/ai/knowledge/${item.id}`)
-                              }}/>,
+                              }}>
+                                  <MenuUnfoldOutlined title="文档列表" />
+                                  <span>文档列表</span>
+                              </Space>
+                              ,
 
-                              <SearchOutlined title="向量检索" onClick={() => {
+                              <Space onClick={() => {
                                   setIsModalOpen(true)
                                   setId(item.id)
-                              }}/>,
+                              }}>
+                              <SearchOutlined title="向量检索" />
+                                  <span>检索</span>
+                              </Space>
+                                  ,
                               ...existNodes
                           ]
                       }}

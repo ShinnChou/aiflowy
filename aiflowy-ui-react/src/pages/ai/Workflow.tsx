@@ -174,6 +174,11 @@ const Workflow: React.FC<{ paramsToUrl: boolean }> = () => {
                           addButtonText={"新增工作流"}
                           defaultAvatarSrc={"/favicon.png"}
                           editLayout={{labelWidth: 140}}
+                          optionsText={{
+                              addCardTitle: "创建工作流",
+                              noDataText: "你还没有工作流，快来创建你的工作流吧!",
+                              noDataAddButtonText: "创建工作流"
+                          }}
                           customActions={(item, existNodes) => {
                               return [
                                   <NodeIndexOutlined title="设计工作流" onClick={() => {

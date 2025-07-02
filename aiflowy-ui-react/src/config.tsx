@@ -13,7 +13,7 @@ export const appConfig = {
         //全局配置
         token: {
             // 主色调
-            // colorPrimary: '#152b39',
+            colorPrimary: '#0066FF',
             // colorPrimaryText:"#fff",
         },
 

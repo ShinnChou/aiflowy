@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import CardPage from "../../components/CardPage";
 import {ColumnsConfig} from "../../components/AntdCrud";
+import {Space} from "antd";
 
 
 const columnsColumns: ColumnsConfig<any> = [
@@ -57,7 +58,7 @@ const Bots: React.FC<{ paramsToUrl: boolean }> = () => {
                       columnsConfig={columnsColumns}
                       addButtonText={"新增 Bot"}
                       avatarKey="icon"
-                      defaultAvatarSrc={"/favicon.png"}
+                      defaultAvatarSrc={"/src/assets/botIcon.png"}
                       editLayout={{labelWidth: 80}}
                       optionsText={{
                           addCardTitle: "创建Bots",
@@ -66,12 +67,18 @@ const Bots: React.FC<{ paramsToUrl: boolean }> = () => {
                       }}
                       customActions={(item, existNodes) => {
                           return [
-                              <SettingOutlined title="设置" onClick={() => {
-                                  window.open(`/ai/bot/design/${item.id}`, "_blank")
-                              }}/>,
-                              <PlayCircleOutlined title="运行" onClick={() => {
-                                  window.open(window.location.href.substring(0, window.location.href.indexOf('/ai')) + '/ai/externalBot/' + item.id, "_blank")
-                              }}/>,
+                              <Space>
+                                  <SettingOutlined  onClick={() => {
+                                      window.open(`/ai/bot/design/${item.id}`, "_blank")
+                                  }}/>
+                                  <span>设置</span>
+                              </Space>,
+                              <Space>
+                                  <PlayCircleOutlined onClick={() => {
+                                      window.open(window.location.href.substring(0, window.location.href.indexOf('/ai')) + '/ai/externalBot/' + item.id, "_blank")
+                                  }}/>
+                                  <span>运行</span>
+                              </Space>,
                               ...existNodes
                           ]
                       }}

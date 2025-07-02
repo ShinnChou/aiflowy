@@ -1,8 +1,21 @@
 import React, {forwardRef, useEffect, useImperativeHandle, useState} from 'react';
 import {ColumnsConfig} from "../AntdCrud";
-import {Avatar, Button, Card, Col, Dropdown, Image, Modal, Pagination, Row, Spin, Tooltip, Typography} from "antd";
 import {
-    DeleteOutlined,
+    Avatar,
+    Button,
+    Card,
+    Col,
+    Dropdown,
+    Image,
+    Modal,
+    Pagination,
+    Row,
+    Space,
+    Spin,
+    Tooltip,
+    Typography
+} from "antd";
+import {
     EditOutlined, EllipsisOutlined,
 } from "@ant-design/icons";
 import {usePage, useRemove} from "../../hooks/useApis.ts";
@@ -16,6 +29,8 @@ import {Page} from "../../types/Page.ts";
 import {useUrlParams} from "../../hooks/useUrlParams.ts";
 import addCardIcon from "../../../src/assets/addCardIcon.png"
 import noDataIcon from "../../../src/assets/noData.png"
+import "../../pages/commons/commonStyle.less"
+import CustomDeleteIcon from "../CustomIcon/CustomDeleteIcon.tsx";
 export type CardPageProps = {
     ref?: any,
     tableAlias: string,
@@ -150,6 +165,7 @@ const CardPage: React.FC<CardPageProps> = forwardRef(({
                                     display: 'flex',
                                     flexDirection: 'row',
                                     cursor: 'pointer',
+                                    border: '1px solid #0066FF',
                                 }}
                                 bodyStyle={{
                                     flex: 1,
@@ -165,6 +181,7 @@ const CardPage: React.FC<CardPageProps> = forwardRef(({
                             >
                                 <Image
                                     src={addCardIcon}
+                                    preview={false}
                                     style={{
                                         height: '20px',
                                         width: '20px',
@@ -186,19 +203,23 @@ const CardPage: React.FC<CardPageProps> = forwardRef(({
                         >
 
                             <Card
+                                hoverable={true}
+                                className={"card-hover"}
                                 actions={[
                                     ...customActions(item, [
-                                        <EditOutlined key="edit" title="编辑" onClick={() => {
+                                        <Space onClick={() => {
                                             setEditData(item)
                                             setIsEditOpen(true)
-                                        }}/>,
+                                        }}>
+                                        <EditOutlined key="edit" />
+                                            <span>编辑</span>
+                                        </Space>,
                                         <Dropdown menu={{
                                             items: [
                                                 {
                                                     key: 'delete',
                                                     label: '删除',
-                                                    icon: <DeleteOutlined/>,
-                                                    danger: true,
+                                                    icon: <CustomDeleteIcon />,
                                                     onClick: () => {
                                                         Modal.confirm({
                                                             title: '确定要删除吗?',
@@ -222,7 +243,7 @@ const CardPage: React.FC<CardPageProps> = forwardRef(({
                                     ]),
                                 ]}>
                                 <Card.Meta
-                                    avatar={<Avatar src={item[avatarKey] || defaultAvatarSrc}/>}
+                                    avatar={<Avatar src={item[avatarKey] || defaultAvatarSrc} style={{width: '52px', height: '52px'}}/>}
                                     title={item[titleKey]}
                                     description={
                                         <Tooltip title={item[descriptionKey] || "暂无描述"} placement="top" >
