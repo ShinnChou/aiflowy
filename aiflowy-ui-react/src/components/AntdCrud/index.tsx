@@ -1,4 +1,12 @@
-import React, {JSX, useCallback, useEffect, useRef, useState} from "react";
+import React, {
+    forwardRef,
+    JSX,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+    useState
+} from "react";
 import {Button, Dropdown, MenuProps, message, Popconfirm, Space, Table, TableProps, Tooltip} from "antd";
 import {ColumnGroupType, ColumnType, SorterResult, TableRowSelection} from "antd/es/table/interface";
 import SearchForm from "./SearchForm";
@@ -9,7 +17,7 @@ import {
     EditOutlined,
     EyeOutlined, FormatPainterOutlined,
     ReloadOutlined,
-    RestOutlined, SwapOutlined
+    RestOutlined
 } from "@ant-design/icons";
 import EditForm, {EditFormProps, EditLayout} from "./EditForm.tsx";
 import {useReactToPrint} from "react-to-print";
@@ -171,6 +179,9 @@ export type AntdCrudProps<T> = {
     editLayout?: EditLayout,
 
     tableAlias?: string,
+
+    // 是否需要隐藏搜索框
+    needHideSearchForm?: boolean,
 }
 
 
@@ -204,8 +215,7 @@ function download(columns: ColumnsConfig<any>, dataSource: any[]) {
     document.body.removeChild(link);
 }
 
-
-function AntdCrud<T>({
+const AntdCrud = forwardRef(function AntdCrud<T>({
                          columns,
                          groups,
                          dataSource,
@@ -227,7 +237,8 @@ function AntdCrud<T>({
                          onSearchValueInit,
                          editLayout,
                          tableAlias,
-                     }: AntdCrudProps<T>) {
+                         needHideSearchForm = false
+                     }: AntdCrudProps<T>, ref: any) {
 
     const tableRef = useRef<any>(null);
 
@@ -376,17 +387,50 @@ function AntdCrud<T>({
         }, 200)
     }, []);
 
+    useImperativeHandle(ref, () => ({
+        openAddModal: () => { // 暴露openAddModal方法
+            setModalRow(null);
+            setModalTitle("新增");
+            setIsModalOpen(true);
+        },
+        onSearch: (params: any) => {
+            setLocalPageNumber(1)
+            setSearchParams(params)
+        },
+
+    }));
+
     return (
-        <div style={{padding: "8px"}}>
+        <div style={{padding: "0 20px 20px 20px"}}>
             {contextHolder}
-            <SearchForm columns={columns} colSpan={6}
-                        onSearch={(values: any) => {
-                            setLocalPageNumber(1)
-                            setSearchParams(values)
-                        }}
-                        onSearchValueInit={onSearchValueInit}
-                        formRenderFactory={formRenderFactory}
-            />
+            {
+                !needHideSearchForm &&   <SearchForm columns={columns} colSpan={6}
+                                                     onSearch={(values: any) => {
+                                                         setLocalPageNumber(1)
+                                                         setSearchParams(values)
+                                                     }}
+                                                     onSearchValueInit={onSearchValueInit}
+                                                     formRenderFactory={formRenderFactory}
+                />
+            }
+
+            {/*{*/}
+            {/*    !needHideSearchForm &&*/}
+            {/*    <KeywordSearchForm*/}
+            {/*        setIsEditOpen={() =>{*/}
+            {/*            setModalRow(null);*/}
+            {/*            setModalTitle("新增")*/}
+            {/*            setIsModalOpen(!isModalOpen)*/}
+            {/*        }}*/}
+            {/*        addButtonText="新增插件"*/}
+            {/*        columns={columns}*/}
+            {/*        tableAlias={"aiPlugin"}*/}
+            {/*        onSearch={(values: any) =>{*/}
+            {/*            setLocalPageNumber(1)*/}
+            {/*            setSearchParams(values)*/}
+            {/*        }}/>*/}
+            {/*}*/}
+
 
             <EditForm title={modalTitle}
                       intelligentFilling={intelligentFilling}
@@ -409,12 +453,16 @@ function AntdCrud<T>({
                       layout={editLayout}
             />
 
-            <Space style={{display: "flex", justifyContent: "space-between", padding: "10px"}}>
+            <Space style={{display: "flex", justifyContent: "space-between", padding: "10px 0 10px 0"}}>
                 <Space align={"center"}>
 
                     {customButton?.()}
 
-                    {(addButtonEnable && useCheckPermission(`/api/v1/${tableAlias}/save`)) && <Button type="primary" onClick={() => {
+                    {needHideSearchForm &&   <Button onClick={() => {
+                    }}><a target="_blank" href="https://aiflowy.tech/zh/product/llm/addLlm.html" style={{ fontSize: 12}}>大模型配置参考地址</a></Button>}
+
+
+                    {!needHideSearchForm && (addButtonEnable && useCheckPermission(`/api/v1/${tableAlias}/save`)) && <Button type="primary" onClick={() => {
                         setModalRow(null);
                         setModalTitle("新增")
                         setIsModalOpen(!isModalOpen)
@@ -489,9 +537,9 @@ function AntdCrud<T>({
                         }}/>
                     </Tooltip>
 
-                    <Tooltip placement="top" title="列设置">
-                        <SwapOutlined/>
-                    </Tooltip>
+                    {/*<Tooltip placement="top" title="列设置">*/}
+                    {/*    <SwapOutlined/>*/}
+                    {/*</Tooltip>*/}
                 </Space>
 
             </Space>
@@ -553,6 +601,6 @@ function AntdCrud<T>({
             </div>
         </div>
     )
-}
+})
 
 export default AntdCrud
