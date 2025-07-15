@@ -262,6 +262,7 @@ export const ExternalBot: React.FC = () => {
             setActiveKey(getExternalSessionId());
             setConversationsItems(getConversations(r?.data?.data?.cons));
         });
+
     }, [])
 
     const onAddConversation = () => {
@@ -421,6 +422,7 @@ export const ExternalBot: React.FC = () => {
                     clearMessage={() => clearMessage(params.id, getExternalSessionId(), localStorage.getItem("tempUserId"))}
                     inputDisabled={inputDisabled}
                     prompts={presetQuestions}
+                    sessionId={getExternalSessionId()}
                     // setNewConversation={onAddConversation}
                     onCustomEvent={(eventType) => {
                         console.log("收到收到事件：",eventType)

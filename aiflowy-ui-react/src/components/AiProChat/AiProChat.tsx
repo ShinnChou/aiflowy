@@ -529,32 +529,6 @@ export const AiProChat = ({
             return true;
         }
 
-        // if (['messageSessionId'].includes(eventType)) {
-        //     setChats((prevChats: ChatMessage[]) => {
-        //         const newChats = [...prevChats];
-        //
-        //         // 找到最后一条 assistant 消息
-        //         const lastAiIndex = (() => {
-        //             for (let i = newChats.length - 1; i >= 0; i--) {
-        //                 if (newChats[i].role === 'assistant') {
-        //                     return i;
-        //                 }
-        //             }
-        //             return -1;
-        //         })();
-        //
-        //         if (lastAiIndex !== -1) {
-        //             const aiMessage = newChats[lastAiIndex];
-        //             if (!aiMessage.options){
-        //                 aiMessage.options = {};
-        //             }
-        //             aiMessage.options['messageSessionId'] = eventData;
-        //         }
-        //
-        //         return newChats;
-        //     });
-        // }
-
         return true;
     };
 
@@ -648,11 +622,11 @@ export const AiProChat = ({
                 const respData = JSON.parse(parse.data);
 
                 // 🔍 调试：打印收到的数据
-                console.log('📥 收到数据:', {
-                    event: parse.event,
-                    content: respData.content,
-                    contentLength: (respData.content || '').length
-                });
+                // console.log('📥 收到数据:', {
+                //     event: parse.event,
+                //     content: respData.content,
+                //     contentLength: (respData.content || '').length
+                // });
 
                 const incomingEventType = parse.event || 'content';
 
@@ -703,10 +677,10 @@ export const AiProChat = ({
                     console.warn('🚨 检测到重复内容，跳过累积:', newContent);
                 }
 
-                console.log('📚 累积内容:', {
-                    partialLength: partial.length,
-                    partialContent: partial.substring(Math.max(0, partial.length - 50))
-                });
+                // console.log('📚 累积内容:', {
+                //     partialLength: partial.length,
+                //     partialContent: partial.substring(Math.max(0, partial.length - 50))
+                // });
 
                 // 清除之前的打字间隔
                 if (typingIntervalId) {
@@ -727,7 +701,7 @@ export const AiProChat = ({
                                 lastMsg.loading = false;
                                 lastMsg.content = currentContent;
 
-                                if (respData.metadataMap && respData.metadataMap.messageSessionId) {
+                                if (!lastMsg.options?.messageSessionId && respData.metadataMap && respData.metadataMap.messageSessionId) {
                                     lastMsg.options = {messageSessionId: respData.metadataMap.messageSessionId};
                                 }
 
@@ -902,51 +876,57 @@ export const AiProChat = ({
                         console.warn('🚨 检测到重复内容，跳过累积:', newContent);
                     }
 
-                    console.log('📚 累积内容:', {
-                        partialLength: partial.length,
-                        partialContent: partial.substring(Math.max(0, partial.length - 50))
-                    });
+                    // console.log('📚 累积内容:', {
+                    //     partialLength: partial.length,
+                    //     partialContent: partial.substring(Math.max(0, partial.length - 50))
+                    // });
+                    // 清除之前的打字间隔
+                    if (typingIntervalId) {
+                        clearInterval(typingIntervalId);
+                    }
+
+                    // 开始新的打字效果
+                    typingIntervalId = setInterval(() => {
+                        if (currentContent.length < partial.length) {
+                            currentContent = isStreamFinished ? partial : partial.slice(0, currentContent.length + 2);
+                            setChats?.((prev: ChatMessage[]) => {
+                                const newChats = [...(prev || [])];
+                                const lastMsg = newChats[newChats.length - 1];
+
+                                if (!lastMsg) {
+                                    return prev;
+                                }
+
+                                if (lastMsg.role === 'assistant') {
+                                    lastMsg.loading = false;
+                                    lastMsg.content = currentContent;
+
+                                    if (!lastMsg.options?.messageSessionId && respData.metadataMap && respData.metadataMap.messageSessionId) {
+                                        lastMsg.options = {messageSessionId: respData.metadataMap.messageSessionId};
+                                    }
+
+                                    lastMsg.updateAt = Date.now();
+                                }
+                                return newChats;
+                            });
+
+                            if (autoScrollEnabled.current) {
+                                scrollToBottom();
+                            }
+                        }
+
+                        // 当前内容已经追上完整内容时停止
+                        if (currentContent === partial || isStreamFinished) {
+                            clearInterval(typingIntervalId!);
+                            typingIntervalId = null;
+                        }
+                    }, 50);
                 } catch (error) {
                     //  如果解析失败，当作普通内容处理（兼容旧格式）
                     partial += decode;
                 }
 
-                // 清除之前的打字间隔
-                if (typingIntervalId) {
-                    clearInterval(typingIntervalId);
-                }
 
-                // 开始新的打字效果
-                typingIntervalId = setInterval(() => {
-                    if (currentContent.length < partial.length) {
-                        currentContent = isStreamFinished ? partial : partial.slice(0, currentContent.length + 2);
-                        setChats?.((prev: ChatMessage[]) => {
-                            const newChats = [...(prev || [])];
-                            const lastMsg = newChats[newChats.length - 1];
-
-                            if (!lastMsg) {
-                                return prev;
-                            }
-
-                            if (lastMsg.role === 'assistant') {
-                                lastMsg.loading = false;
-                                lastMsg.content = currentContent;
-                                lastMsg.updateAt = Date.now();
-                            }
-                            return newChats;
-                        });
-
-                        if (autoScrollEnabled.current) {
-                            scrollToBottom();
-                        }
-                    }
-
-                    // 当前内容已经追上完整内容时停止
-                    if (currentContent === partial || isStreamFinished) {
-                        clearInterval(typingIntervalId!);
-                        typingIntervalId = null;
-                    }
-                }, 50);
             }
 
             // 等待最后的打字效果完成
