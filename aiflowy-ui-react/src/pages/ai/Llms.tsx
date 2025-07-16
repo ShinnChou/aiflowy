@@ -5,6 +5,7 @@ import {ColumnsConfig} from "../../components/AntdCrud";
 import {Form, FormInstance, Input, Select, Switch, Tag} from "antd";
 import CustomLeftArrowIcon from "../../components/CustomIcon/CustomLeftArrowIcon.tsx";
 import KeywordSearchForm from "../../components/AntdCrud/KeywordSearchForm.tsx";
+import {RawValueType} from 'rc-select/lib/interface';
 
 
 const columns: ColumnsConfig<any> = [
@@ -18,7 +19,7 @@ const columns: ColumnsConfig<any> = [
     },
     {
         title: '自定义输入标识',
-        key: 'isCustomInput',
+        key: 'llmExtraConfig.isCustomInput',
         hidden: true,
         form: {
             type: "hidden"
@@ -77,8 +78,8 @@ const columns: ColumnsConfig<any> = [
         dataIndex: 'llmEndpoint',
         key: 'llmEndpoint',
         hidden: true,
-        editCondition:(data) => {
-            return data?.brand === "spark" || data?.isCustomInput
+        editCondition: (data) => {
+            return data?.brand === "spark" || data?.llmExtraConfig?.isCustomInput
         }
 
     },
@@ -96,6 +97,9 @@ const columns: ColumnsConfig<any> = [
         form: {
             type: "input",
         },
+        editCondition:(data:any) => {
+            return data?.brand === "spark" || data?.brand === "ollama"
+        }
     },
     {
         title: 'App Id',
@@ -105,6 +109,9 @@ const columns: ColumnsConfig<any> = [
         form: {
             type: "input",
         },
+        editCondition:(data:any) => {
+            return data?.brand === "spark"
+        }
     },
     {
         title: 'Version',
@@ -117,6 +124,26 @@ const columns: ColumnsConfig<any> = [
         editCondition: (data) => {
             return data?.brand === "spark";
         }
+    },
+    {
+        title: '对话路径',
+        dataIndex: 'llmExtraConfig.chatPath',
+        key: 'llmExtraConfig.chatPath',
+        hidden: true,
+        form: {type: 'input'},
+        editCondition: (data) => {
+            return data?.brand && data?.llmExtraConfig?.isCustomInput;
+        },
+    },
+    {
+        title: '向量化路径',
+        dataIndex: 'llmExtraConfig.embedPath',
+        key: 'llmExtraConfig.embedPath',
+        hidden: true,
+        form: {type: 'input'},
+        editCondition: (data) => {
+            return data?.brand && data?.llmExtraConfig?.isCustomInput;
+        },
     },
     {
         title: '能力',
@@ -150,8 +177,7 @@ const columns: ColumnsConfig<any> = [
         hidden: true,
         form: {type: 'switch'},
         editCondition: (data) => {
-            console.log(1)
-            return data?.brand && data?.isCustomInput;
+            return data?.brand && data?.llmExtraConfig?.isCustomInput;
         },
     },
     {
@@ -160,8 +186,8 @@ const columns: ColumnsConfig<any> = [
         key: 'supportFunctionCalling',
         hidden: true,
         form: {type: 'switch'},
-        editCondition: (data) => {
-            return data?.brand && data?.isCustomInput;
+        editCondition: (_data: any) => {
+            return false;
         },
     },
     {
@@ -173,7 +199,7 @@ const columns: ColumnsConfig<any> = [
             type: 'switch',
         },
         editCondition: (data) => {
-            return data?.brand && data?.isCustomInput;
+            return data?.brand && data?.llmExtraConfig?.isCustomInput;
         },
     },
     {
@@ -183,7 +209,7 @@ const columns: ColumnsConfig<any> = [
         hidden: true,
         form: {type: 'switch'},
         editCondition: (data) => {
-            return data?.brand && data?.isCustomInput;
+            return data?.brand && data?.llmExtraConfig?.isCustomInput;
         },
     },
     {
@@ -193,7 +219,7 @@ const columns: ColumnsConfig<any> = [
         hidden: true,
         form: {type: 'switch'},
         editCondition: (data) => {
-            return data?.brand && data?.isCustomInput;
+            return data?.brand && data?.llmExtraConfig?.isCustomInput;
         },
     },
     {
@@ -203,7 +229,7 @@ const columns: ColumnsConfig<any> = [
         hidden: true,
         form: {type: 'switch'},
         editCondition: (data) => {
-            return data?.brand && data?.isCustomInput;
+            return data?.brand && data?.llmExtraConfig?.isCustomInput;
         },
     },
     {
@@ -213,7 +239,7 @@ const columns: ColumnsConfig<any> = [
         hidden: true,
         form: {type: 'switch'},
         editCondition: (data) => {
-            return data?.brand && data?.isCustomInput;
+            return data?.brand && data?.llmExtraConfig?.isCustomInput;
         },
     },
     {
@@ -223,7 +249,7 @@ const columns: ColumnsConfig<any> = [
         hidden: true,
         form: {type: 'switch'},
         editCondition: (data) => {
-            return data?.brand && data?.isCustomInput;
+            return data?.brand && data?.llmExtraConfig?.isCustomInput;
         },
     },
     {
@@ -233,7 +259,7 @@ const columns: ColumnsConfig<any> = [
         hidden: true,
         form: {type: 'switch'},
         editCondition: (data) => {
-            return data?.brand && data?.isCustomInput;
+            return data?.brand && data?.llmExtraConfig?.isCustomInput;
         },
     },
     {
@@ -243,7 +269,7 @@ const columns: ColumnsConfig<any> = [
         hidden: true,
         form: {type: 'switch'},
         editCondition: (data) => {
-            return data?.brand && data?.isCustomInput;
+            return data?.brand && data?.llmExtraConfig?.isCustomInput;
         },
     },
     {
@@ -253,7 +279,7 @@ const columns: ColumnsConfig<any> = [
         hidden: true,
         form: {type: 'switch'},
         editCondition: (data) => {
-            return data?.brand && data?.isCustomInput;
+            return data?.brand && data?.llmExtraConfig?.isCustomInput;
         },
     },
 ];
@@ -262,16 +288,26 @@ const ModelNameInput: React.FC<{
     treeData: any[];
     columnConfig: any;
     form: FormInstance;
+    value?: string;
+    onChange?: (value: string) => void;
 }> = ({
           treeData,
           columnConfig,
           form,
+          value,
+          onChange,
       }) => {
     const [modelOptions, setModelOptions] = useState([]);
     const [isCustomInput, setIsCustomInput] = useState(false);
+
     // 监听brand字段变化
     const brandValue = Form.useWatch('brand', form);
 
+    // 使用 useRef 来追踪初始化状态，避免无限循环
+    const hasInitialized = useRef(false);
+    const prevBrandValue = useRef(brandValue);
+
+    // 当品牌变化时，需要判断是否为编辑状态
     useEffect(() => {
         const brandData = treeData.find(brand => brand.key === brandValue);
         const options = brandData?.options.modelList?.map((model: { title: any; llmModel: any; }) => ({
@@ -279,34 +315,133 @@ const ModelNameInput: React.FC<{
             value: model.llmModel
         })) || [];
         setModelOptions(options);
+
+        // 只有在品牌真正发生变化时才执行清空逻辑
+        const brandChanged = prevBrandValue.current !== brandValue;
+        prevBrandValue.current = brandValue;
+
+        if (!brandValue) {
+            form.setFieldValue("brand", undefined);
+            form.setFieldValue("llmEndpoint", undefined);
+            form.setFieldValue("llmExtraConfig.chatPath", undefined);
+            form.setFieldValue("llmExtraConfig.embedPath", undefined);
+
+            // 只有在非编辑状态下且品牌发生变化时才清空模型名称和描述
+            const formId = form.getFieldValue('id');
+            if (!formId && brandChanged && hasInitialized.current) {
+                form.setFieldValue("llmModel", undefined);
+                form.setFieldValue("description", undefined);
+                onChange?.('');
+            }
+
+
+        } else {
+            form.setFieldValue("brand", brandValue);
+            if (brandData) {
+                const options = brandData.options;
+                form.setFieldValue("llmEndpoint", options.llmEndpoint);
+                form.setFieldValue("llmExtraConfig.chatPath", options.chatPath);
+                form.setFieldValue("llmExtraConfig.embedPath", options.embedPath);
+
+                // 品牌变化时，如果不是编辑状态，清空模型名称
+                const formId = form.getFieldValue('id');
+                if (!formId && brandChanged && hasInitialized.current) {
+                    form.setFieldValue("llmModel", undefined);
+                    onChange?.('');
+                }
+            }
+
+            console.log(form.getFieldsValue())
+        }
+
+        hasInitialized.current = true;
     }, [brandValue, treeData]);
 
     useEffect(() => {
+        const dbIsCustomInput = form.getFieldValue('llmExtraConfig.isCustomInput');
 
-        const currentValues = form.getFieldsValue();
-        const newValues = {
-            ...currentValues,
+
+        if (dbIsCustomInput !== undefined && dbIsCustomInput !== null) {
+            setIsCustomInput(!!dbIsCustomInput);
+        } else {
+            // 如果数据库中没有这个值，根据当前模型值判断是否应该使用自定义输入
+            if (value && brandValue && treeData.length > 0) {
+                const brandData = treeData.find(brand => brand.key === brandValue);
+                const modelList = brandData?.options?.modelList || [];
+                const isModelInList = modelList.some((model: any) => model.llmModel === value);
+                setIsCustomInput(!isModelInList);
+            } else if (!value) {
+                setIsCustomInput(false);
+            }
+        }
+
+
+
+    }, [value, brandValue, treeData]);
+
+    useEffect(() => {
+        // 构建新的值对象
+        const updatedFields = {
             brand: brandValue,
-            isCustomInput: isCustomInput,
         };
 
-        form.setFieldsValue(newValues);
+        // 更新表单值
+        form.setFieldsValue(updatedFields);
+        form.setFieldValue("llmExtraConfig.isCustomInput", isCustomInput);
+
+        // 获取更新后的所有值
+        const allValues = form.getFieldsValue();
 
         columns.forEach(column => {
-
-            const key = column.key + "";
-            console.log(key,key.startsWith("support"))
-
-            if (key !== "brand"){
-                if (key.startsWith("support") || key === "options.multimodal" || key === "llmEndpoint"){
-                    column.onValuesChange?.("","");
+            if (column.editCondition) {
+                const onValuesChange = column.onValuesChange;
+                if (onValuesChange) {
+                    onValuesChange(updatedFields, allValues);
                 }
             }
-        })
+        });
 
 
 
-    }, [isCustomInput, brandValue, form]);
+
+    }, [isCustomInput]);
+
+    const findModelListByBrandKey = (brandKey: string) => {
+        const options = treeData.find(tree => tree.key === brandKey)?.options;
+        let llmList = [];
+        if (options) {
+            llmList = options.modelList;
+        }
+        return llmList;
+    }
+
+    const setFormSupportValues = (form: FormInstance, model: any) => {
+        form.setFieldValue("supportChat", model.supportChat);
+        form.setFieldValue("supportFunctionCalling", model.supportFunctionCalling);
+        form.setFieldValue("supportEmbed", model.supportEmbed);
+        form.setFieldValue("supportReranker", model.supportReranker);
+        form.setFieldValue("supportTextToImage", model.supportTextToImage);
+        form.setFieldValue("supportImageToImage", model.supportImageToImage);
+        form.setFieldValue("supportTextToAudio", model.supportTextToAudio);
+        form.setFieldValue("supportAudioToAudio", model.supportAudioToAudio);
+        form.setFieldValue("supportTextToVideo", model.supportTextToVideo);
+        form.setFieldValue("supportImageToVideo", model.supportImageToVideo);
+
+        if (model.multimodal) {
+            form.setFieldValue("options.multimodal", model.multimodal);
+        } else {
+            form.setFieldValue("options.multimodal", false);
+        }
+
+        if (model.version){
+            form.setFieldValue("llmExtraConfig.version", model.version);
+        }
+
+
+        if (model.description) {
+            form.setFieldValue("description", model.description);
+        }
+    }
 
     return (
         <div>
@@ -314,6 +449,12 @@ const ModelNameInput: React.FC<{
                 <Input
                     placeholder={columnConfig.placeholder}
                     {...columnConfig.form?.attrs}
+                    value={value}
+                    onChange={(e) => {
+                        const inputValue = e.target.value;
+                        onChange?.(inputValue);
+                        form.setFieldValue('llmModel', inputValue);
+                    }}
                 />
             ) : (
                 <Select
@@ -322,8 +463,52 @@ const ModelNameInput: React.FC<{
                     placeholder={columnConfig.placeholder}
                     {...columnConfig.form?.attrs}
                     options={modelOptions}
+                    value={value}
+                    onChange={(selectValue) => {
+                        onChange?.(selectValue);
+                        form.setFieldValue('llmModel', selectValue);
+
+                        // 设置其他相关字段
+                        const llmList = findModelListByBrandKey(brandValue);
+                        if (llmList) {
+                            const model = llmList.find((llm: { llmModel: any; }) => llm.llmModel === selectValue);
+                            if (model) {
+                                setFormSupportValues(form, model);
+                            }
+                        }
+                    }}
                     filterOption={(input, option) => {
                         return ((option?.label ?? '') as string).toLowerCase().includes(input.toLowerCase())
+                    }}
+                    optionRender={(option, _info) => {
+                        const llmList = findModelListByBrandKey(brandValue);
+
+                        if (llmList && llmList.length) {
+                            const currentModel = llmList.find((model: {
+                                llmModel: RawValueType | undefined;
+                            }) => model.llmModel === option.value);
+
+                            if (currentModel) {
+                                return (
+                                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap'}}>
+                                        <span>{option.label}</span>
+                                        <div style={{display: 'flex', gap: '4px', flexWrap: 'wrap'}}>
+                                            {currentModel.supportChat && (
+                                                <Tag color="blue">文本聊天</Tag>
+                                            )}
+                                            {currentModel.multimodal && (
+                                                <Tag color="purple">多模态</Tag>
+                                            )}
+                                            {currentModel.supportEmbed && (
+                                                <Tag color="orange">向量化</Tag>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            }
+                        }
+
+                        return <span>{option.label}</span>;
                     }}
                 />
             )}
@@ -333,6 +518,10 @@ const ModelNameInput: React.FC<{
                     checked={isCustomInput}
                     onChange={(checked) => {
                         setIsCustomInput(checked);
+                        // 切换时清空当前值
+                        onChange?.('');
+                        form.setFieldValue('llmModel', '');
+                        form.setFieldValue('llmExtraConfig.isCustomInput', checked);
                     }}
                     checkedChildren="自定义"
                     unCheckedChildren="选择"
@@ -341,7 +530,6 @@ const ModelNameInput: React.FC<{
         </div>
     );
 }
-
 
 const Llms: React.FC<{ paramsToUrl: boolean }> = () => {
 
@@ -355,32 +543,24 @@ const Llms: React.FC<{ paramsToUrl: boolean }> = () => {
     const customFormRenderFactory = (position: "edit" | "search", columnConfig: any, form: FormInstance): JSX.Element | null => {
         if (position === 'search') return null;
 
-
-        if (columnConfig.key === "brand") {
-            columnConfig.onValuesChange = (value: any) => {
-                const brandData = treeData.find(brand => {
-                    return brand.key === value.brand;
-                });
-
-                if (brandData) {
-                    const options = brandData.options;
-                    form.setFieldValue("llmEndpoint", options.llmEndpoint);
-                    form.setFieldValue("chatPath", options.chatPath);
-                    form.setFieldValue("embedPath", options.embedPath);
-
-
-                    form.setFieldValue("llmModel", undefined);
-                }
-
-            }
-        }
-
         // 自定义模型名称字段
         if (columnConfig.key === 'llmModel') {
-            return <ModelNameInput treeData={treeData} columnConfig={columnConfig} form={form}
-            />
+            return <ModelNameInput treeData={treeData} columnConfig={columnConfig} form={form}/>
         }
 
+        if (columnConfig.key === 'supportChat') {
+
+            const originOnValuesChange = columnConfig.onValuesChange;
+
+            columnConfig.onValuesChange = (values: any, allChangeValues: any) => {
+                if (originOnValuesChange) {
+                    originOnValuesChange(values, allChangeValues);
+                }
+                if (values.supportChat){
+                    form.setFieldValue("supportFunctionCalling", values.supportChat);
+                }
+            }
+        }
 
         return null;
     };
@@ -418,8 +598,6 @@ const Llms: React.FC<{ paramsToUrl: boolean }> = () => {
                 <CrudPage columnsConfig={columns} tableAlias="aiLlm" params={{brand: groupId}} key={groupId}
                           needHideSearchForm={true}
                           editLayout={{openType: "modal"}} ref={crudRef} formRenderFactory={customFormRenderFactory}/>
-                {/*<CrudPage columnsConfig={columns} tableAlias="aiLlm" params={{brand: groupId}} key={groupId} needHideSearchForm={true}*/}
-                {/*          editLayout={{openType: "modal"}} ref={crudRef}  />*/}
             </TreeClassifiedPage>
         </div>
     )
