@@ -186,7 +186,7 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
 
         AiBot aiBot = service.getById(botId);
 
-        if (aiBot.getOptions() == null || aiBot.getOptions().get("voiceEnabled") == null || !(boolean)aiBot.getOptions().get("voiceEnabled")){
+        if (aiBot == null || aiBot.getOptions() == null || aiBot.getOptions().get("voiceEnabled") == null || !(boolean)aiBot.getOptions().get("voiceEnabled")){
             throw new BusinessException("此bot不支持语音播报！");
         }
 
