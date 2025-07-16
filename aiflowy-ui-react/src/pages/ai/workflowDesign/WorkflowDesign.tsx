@@ -212,9 +212,11 @@ export const WorkflowDesign = () => {
             message.warning("流程已执行完毕，请重新发起。")
         }
         if (msg.execResult) {
+            message.success('执行完毕')
             setExecuteResult(msg.execResult)
         }
         if (msg.status === 'error') {
+            message.error('执行错误')
             setExecuteResult(msg)
             collapseItems.map((item: any) => {
                 item.extra = <Spin indicator={<ExclamationCircleOutlined style={{color: "#EABB00"}} />} />
@@ -249,6 +251,8 @@ export const WorkflowDesign = () => {
         }
     }
     const [confirmForm] = Form.useForm();
+
+    const confirmBtnRef = useRef<any>(null)
 
     const handleConfirmStep = (msg: any, item: any) => {
         //console.log(msg)
@@ -291,6 +295,7 @@ export const WorkflowDesign = () => {
                 <Form.Item>
                     <Space style={{float: "right"}}>
                         <Button
+                            ref={confirmBtnRef}
                             type="primary"
                             disabled={item.confirmBtnDisabled}
                             onClick={() => {
@@ -321,6 +326,9 @@ export const WorkflowDesign = () => {
     const handleConfirmSubmit = (values: any) => {
 
         setSubmitLoading(true)
+        if (confirmBtnRef.current) {
+            confirmBtnRef.current.disabled = true;
+        }
         runResume({
             data: {
                 ...values
