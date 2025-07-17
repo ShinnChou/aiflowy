@@ -581,9 +581,49 @@ const Llms: React.FC<{ paramsToUrl: boolean }> = () => {
                 }
                 if (values.supportChat) {
                     form.setFieldValue("supportFunctionCalling", values.supportChat);
+                    form.setFieldValue("supportEmbed",!values.supportChat)
                 }
+
             }
         }
+
+        if (columnConfig.key === 'supportEmbed') {
+
+            const originOnValuesChange = columnConfig.onValuesChange;
+
+            columnConfig.onValuesChange = (values: any, allChangeValues: any) => {
+                if (originOnValuesChange) {
+                    originOnValuesChange(values, allChangeValues);
+                }
+                if (values.supportEmbed) {
+                    form.setFieldValue("supportFunctionCalling", !values.supportEmbed);
+                    form.setFieldValue("supportChat",!values.supportEmbed)
+                    form.setFieldValue("options.multimodal",!values.supportEmbed);
+                }
+
+                console.log(2,values.supportEmbed);
+
+            }
+        }
+
+        if (columnConfig.key === 'options.multimodal') {
+
+            const originOnValuesChange = columnConfig.onValuesChange;
+
+            columnConfig.onValuesChange = (values: any, allChangeValues: any) => {
+                if (originOnValuesChange) {
+                    originOnValuesChange(values, allChangeValues);
+                }
+
+                const multimodal = form.getFieldValue("options.multimodal");
+
+                if (multimodal) {
+                    form.setFieldValue("supportEmbed",!multimodal)
+                }
+
+            }
+        }
+
 
         return null;
     };
