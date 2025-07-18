@@ -90,7 +90,7 @@ const columns: ColumnsConfig<any> = [
         key: 'llmEndpoint',
         hidden: true,
         editCondition: (data) => {
-            return data?.isCustomInput || data?.brand === "ollama"
+            return data?.isCustomInput || data?.brand === "ollama" && data?.brand !== "spark"
         }
 
     },
@@ -143,7 +143,7 @@ const columns: ColumnsConfig<any> = [
         hidden: true,
         form: {type: 'input'},
         editCondition: (data) => {
-            return data?.brand && data?.isCustomInput && data?.brand !== "ollama";
+            return data?.brand && data?.isCustomInput && data?.brand !== "ollama" && data?.brand !== "spark";
         },
     },
     {
@@ -153,7 +153,7 @@ const columns: ColumnsConfig<any> = [
         hidden: true,
         form: {type: 'input'},
         editCondition: (data) => {
-            return data?.brand && data?.isCustomInput && data?.brand !== "ollama";
+            return data?.brand && data?.isCustomInput && data?.brand !== "ollama" && data?.brand !== "spark";
         },
     },
     {
@@ -163,7 +163,7 @@ const columns: ColumnsConfig<any> = [
         hidden: true,
         form: {type: 'input'},
         editCondition: (data) => {
-            return data?.brand && data?.isCustomInput && data?.brand !== "ollama";
+            return data?.brand && data?.isCustomInput && data?.brand !== "ollama" && data?.brand !== "spark";
         },
     },
     {
