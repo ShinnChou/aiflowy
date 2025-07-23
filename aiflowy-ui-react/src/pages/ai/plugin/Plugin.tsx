@@ -41,6 +41,7 @@ import CustomClassifyIcon from "../../../components/CustomIcon/CustomClassifyIco
 import pluginNoDataLogon from '../../../assets/pluginNoData.png'
 import KeywordSearchForm from "../../../components/AntdCrud/KeywordSearchForm.tsx";
 import CustomCardDropdownMenuDeleteIcon from "../../../components/CustomIcon/CustomCardDropdownMenuDeleteIcon.tsx";
+import pluginIcon from "../../../assets/pluginIcon.png"
 
 interface Category {
 	id: number;
@@ -654,7 +655,7 @@ const Plugin: React.FC = () => {
 													]}
 												>
 													<Card.Meta
-														avatar={<Avatar src={item.icon || "/src/assets/pluginIcon.png"} style={{width: '48px', height: '48px'}} />}
+														avatar={<Avatar src={item.icon || pluginIcon} style={{width: '48px', height: '48px'}} />}
 														title={item.name}
 														description={
 															<Tooltip title={item.description}>
