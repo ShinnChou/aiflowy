@@ -41,6 +41,7 @@
         <fastexcel.version>1.2.0</fastexcel.version>
         <hutool.version>5.8.36</hutool.version>
         <websocket.version>1.5.3</websocket.version>
+        <snakeyaml.version>2.4</snakeyaml.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -124,7 +125,6 @@
                 <artifactId>Java-WebSocket</artifactId>
                 <version>${websocket.version}</version>
             </dependency>
-
 
 
             <dependency>
@@ -390,6 +390,14 @@
                 <groupId>tech.aiflowy</groupId>
                 <artifactId>aiflowy-starter</artifactId>
                 <version>${revision}</version>
+            </dependency>
+
+
+            <!--间接依赖-->
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
