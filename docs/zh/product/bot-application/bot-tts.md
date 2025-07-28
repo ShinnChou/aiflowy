@@ -3,10 +3,12 @@
 >在 bot 设置页面中，开启语音播报功能
 > 
 ![enable-tts.png](resource/enable-tts.png)
-> 在前端 .env 中（开发环境为 .env.development），配置 WebSocket 连接变量
-> 
+## 配置前端 WebSocket 连接
+在前端 .env 中（开发环境为 .env.development），配置 WebSocket 连接变量
+ 
 ![img.png](resource/websocket-config-1.png)
-> 在后端 application.yaml 配置火山引擎的 tts 服务（目前仅实现火山引擎）
+## 配置后端 tts 服务
+在后端 application.yaml 配置火山引擎的 tts 服务（目前仅实现火山引擎）
 ```yaml
 voiceInput:
   volcengine:
