@@ -15,10 +15,7 @@ import tech.aiflowy.ai.service.AiBotConversationMessageService;
 import tech.aiflowy.common.satoken.util.SaTokenUtil;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AiBotMessageIframeMemory implements ChatMemory {
@@ -106,6 +103,10 @@ public class AiBotMessageIframeMemory implements ChatMemory {
             aiMessage.setFunctions(JSON.toJSONString(functions, SerializerFeature.WriteClassName));
             aiMessage.setRole("user");
             Map<String, Object> metadataMap = hm.getMetadataMap();
+
+            if (metadataMap == null){
+                metadataMap = new HashMap<>();
+            }
 
             Object type = metadataMap.get("type");
             if (type != null) {

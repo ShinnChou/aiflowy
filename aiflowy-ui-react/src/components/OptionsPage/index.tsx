@@ -1,12 +1,13 @@
 import React, {useEffect} from 'react';
-import {App, Button, Form,} from "antd";
+import {App, Button, Form, FormInstance,} from "antd";
 import {useGetManual, usePostManual} from "../../hooks/useApis.ts";
 
 type Props = {
     children?: React.ReactNode
     style?: React.CSSProperties
+    onFormReady?: (form: FormInstance) => void
 }
-const OptionsPage: React.FC<Props> = ({children, style}) => {
+const OptionsPage: React.FC<Props> = ({children, style,onFormReady}) => {
 
     const [form] = Form.useForm();
     const {message} = App.useApp();
@@ -21,7 +22,16 @@ const OptionsPage: React.FC<Props> = ({children, style}) => {
         loadOptions({params: {keys}}).then((resp) => {
             form.setFieldsValue(resp?.data?.data)
         })
+
+
+
     }, []);
+
+    useEffect(() => {
+        if (onFormReady){
+            onFormReady(form)
+        }
+    }, [[form, onFormReady]]);
 
 
     const onFinish = (values: any) => {

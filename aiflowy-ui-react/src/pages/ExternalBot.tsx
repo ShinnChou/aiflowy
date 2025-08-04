@@ -254,26 +254,26 @@ export const ExternalBot: React.FC = () => {
     }, [chats])
 
 
-    // useEffect(() => {
-    //     if (isExternalIFrameRef.current) {
-    //         return;
-    //     }
-    //     const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
-    //     doGetBotInfo({params: {id: params?.id}}).then((r: any) => {
-    //
-    //         if (link) {
-    //             link.href = r?.data?.data?.icon || '/favicon.png';
-    //         }
-    //         document.title = r?.data?.data?.title;
-    //         setPresetOptions(r?.data?.data?.options?.presetQuestions)
-    //         setHelloMessage(r?.data?.data?.options?.welcomeMessage)
-    //
-    //
-    //
-    //     });
-    //
-    //
-    // }, [])
+    useEffect(() => {
+        if (isExternalIFrameRef.current) {
+            return;
+        }
+        const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+        doGetBotInfo({params: {id: params?.id}}).then((r: any) => {
+
+            if (link) {
+                link.href = r?.data?.data?.icon || '/favicon.png';
+            }
+            document.title = r?.data?.data?.title;
+            setPresetOptions(r?.data?.data?.options?.presetQuestions)
+            setHelloMessage(r?.data?.data?.options?.welcomeMessage)
+
+
+
+        });
+
+
+    }, [])
 
     const onAddConversation = () => {
         setNewExternalSessionId();

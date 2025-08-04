@@ -35,6 +35,8 @@ import tech.aiflowy.common.util.Maps;
 import cn.dev33.satoken.stp.StpUtil;
 import tech.aiflowy.common.satoken.util.SaTokenUtil;
 
+import static tech.aiflowy.ai.utils.AiBotChatUtil.LLM_BRAND_KEY;
+
 /**
  * 服务层实现。
  *
@@ -50,7 +52,6 @@ public class AiLlmServiceImpl extends ServiceImpl<AiLlmMapper, AiLlm> implements
     @Resource
     private Cache<String, Object> cache;
 
-    private static final String LLM_BRAND_KEY = "aiLlmBrand";
 
     @Override
     public Result addAiLlm(AiLlm entity) {

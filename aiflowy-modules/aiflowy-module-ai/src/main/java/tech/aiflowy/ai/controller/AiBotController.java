@@ -920,147 +920,6 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
         return Result.success();
     }
 
-    /**
-     * 外部用户调用智能体进行对话
-     * 需要用户传 apiKey 对用户进行身份验证
-     *
-     * @param stream [true: 返回sse false： 返回json
-     * @return
-     */
-    @SaIgnore
-    @PostMapping("externalChat")
-    public Object externalChat(@JsonBody(value = "messages", required = true)
-    List<AiBotMessage> messages, @JsonBody(value = "botId", required = true)
-    BigInteger botId, @JsonBody(value = "stream", required = false)
-    boolean stream, HttpServletResponse response, HttpServletRequest request) {
-        // 设置响应类型
-        if (stream) {
-            response.setContentType("text/event-stream");
-        } else {
-            response.setContentType("application/json");
-        }
-
-        // 获取 API Key 和 Bot 信息
-        String apiKey = request.getHeader("Authorization");
-        QueryWrapper queryWrapper = QueryWrapper.create()
-            .select("api_key", "status", "expired_at")
-            .from("tb_sys_api_key")
-            .where("api_key = ? ", apiKey);
-        SysApiKey aiBotApiKey = aiBotApiKeyMapper.selectOneByQuery(queryWrapper);
-        if (aiBotApiKey == null) {
-            return createResponse(stream, JSON.toJSONString(errorRespnseMsg(1, "该apiKey不存在")));
-        }
-        if (aiBotApiKey.getStatus() == 0) {
-            return createResponse(stream, JSON.toJSONString(errorRespnseMsg(2, "该apiKey未启用")));
-        }
-
-        if (aiBotApiKey.getExpiredAt().getTime() < new Date().getTime()) {
-            return createResponse(stream, JSON.toJSONString(errorRespnseMsg(3, "该apiKey已失效")));
-
-        }
-
-        AiBot aiBot = service.getById(botId);
-        if (aiBot == null) {
-            return createResponse(stream, JSON.toJSONString(errorRespnseMsg(4, "机器人不存在")));
-        }
-
-        Map<String, Object> llmOptions = aiBot.getLlmOptions();
-        String systemPrompt = llmOptions != null ? (String) llmOptions.get("systemPrompt") : null;
-
-        AiLlm aiLlm = aiLlmService.getById(aiBot.getLlmId());
-        if (aiLlm == null) {
-            return createResponse(stream, JSON.toJSONString(errorRespnseMsg(5, "LLM不存在")));
-        }
-
-        Llm llm = aiLlm.toLlm();
-        AiBotExternalMessageMemory messageMemory = new AiBotExternalMessageMemory(messages);
-        HistoriesPrompt historiesPrompt = new HistoriesPrompt();
-        if (llmOptions != null && llmOptions.get("maxMessageCount") != null) {
-            Object maxMessageCount = llmOptions.get("maxMessageCount");
-            historiesPrompt.setMaxAttachedMessageCount(Integer.parseInt(String.valueOf(maxMessageCount)));
-        }
-        if (systemPrompt != null) {
-            historiesPrompt.setSystemMessage(SystemMessage.of(systemPrompt));
-        }
-        historiesPrompt.setMemory(messageMemory);
-
-        String prompt = messages.get(messages.size() - 1).getContent();
-        boolean needEnglishName = AiBotChatUtil.needEnglishName(llm);
-
-        HumanMessage humanMessage = new HumanMessage();
-
-        // 添加插件、工作流、知识库相关的 Function Calling
-        appendPluginToolFunction(botId, humanMessage);
-        appendWorkflowFunctions(botId, humanMessage, needEnglishName);
-        appendKnowledgeFunctions(botId, humanMessage, needEnglishName);
-
-        historiesPrompt.addMessage(humanMessage);
-        ChatOptions chatOptions = getChatOptions(llmOptions);
-        // 根据 responseType 返回不同的响应
-        if (stream) {
-            MySseEmitter emitter = new MySseEmitter((long) (1000 * 60 * 2));
-            final Boolean[] needClose = {true};
-
-            if (humanMessage.getFunctions() != null && !humanMessage.getFunctions().isEmpty()) {
-                try {
-                    AiMessageResponse aiMessageResponse = llm.chat(historiesPrompt, chatOptions);
-                    function_call(aiMessageResponse, emitter, needClose, historiesPrompt, llm, prompt, true,
-                        chatOptions);
-                } catch (Exception e) {
-                    emitter.completeWithError(e);
-                }
-
-                if (needClose[0]) {
-                    emitter.complete();
-                }
-            } else {
-                llm.chatStream(historiesPrompt, new StreamResponseListener() {
-                    @Override
-                    public void onMessage(ChatContext context, AiMessageResponse response) {
-                        try {
-                            function_call(response, emitter, needClose, historiesPrompt, llm, prompt, true,
-                                chatOptions);
-                        } catch (Exception e) {
-                            emitter.completeWithError(e);
-                        }
-                    }
-
-                    @Override
-                    public void onStop(ChatContext context) {
-
-                        if (needClose[0]) {
-                            emitter.complete();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(ChatContext context, Throwable throwable) {
-                        emitter.completeWithError(throwable);
-                    }
-                }, chatOptions);
-            }
-
-            return emitter;
-        } else {
-            AiMessageResponse resultFunctionCall;
-            if (humanMessage.getFunctions() != null && !humanMessage.getFunctions().isEmpty()) {
-                try {
-                    AiMessageResponse aiMessageResponse = llm.chat(historiesPrompt, chatOptions);
-                    resultFunctionCall = jsonResultJsonFunctionCall(aiMessageResponse, historiesPrompt, llm, prompt,
-                        chatOptions);
-                    return JSON.toJSONString(resultFunctionCall.getMessage(), new SerializeConfig());
-                } catch (Exception e) {
-                    return createErrorResponse(e);
-                }
-            } else {
-                AiMessageResponse messageResponse = llm.chat(historiesPrompt, chatOptions);
-                resultFunctionCall = jsonResultJsonFunctionCall(messageResponse, historiesPrompt, llm, prompt,
-                    chatOptions);
-                AiBotExternalMsgJsonResult result = handleMessageResult(resultFunctionCall.getMessage());
-                return JSON.toJSONString(result, new SerializeConfig());
-            }
-        }
-    }
 
     private AiBotExternalMsgJsonResult handleMessageResult(AiMessage aiMessage) {
         AiBotExternalMsgJsonResult messageResult = new AiBotExternalMsgJsonResult();
@@ -1330,19 +1189,20 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
         queryWrapper = QueryWrapper.create();
         queryWrapper.select("plugin_tool_id").eq(AiBotPlugins::getBotId, botId);
         List<BigInteger> pluginToolIds = aiBotPluginsService.getMapper()
-            .selectListWithRelationsByQueryAs(queryWrapper, BigInteger.class);
-
-        if (pluginToolIds == null || pluginToolIds.isEmpty()) {
-            return functionList;
-        }
-
-        QueryWrapper queryTool = QueryWrapper.create().select("*").from("tb_ai_plugin_tool").in("id", pluginToolIds);
-        List<AiPluginTool> aiPluginTools = aiPluginToolService.getMapper().selectListWithRelationsByQuery(queryTool);
-        if (aiPluginTools != null && !aiPluginTools.isEmpty()) {
-            for (AiPluginTool aiPluginTool : aiPluginTools) {
-                functionList.add(aiPluginTool.toFunction());
+                .selectListWithRelationsByQueryAs(queryWrapper, BigInteger.class);
+        if (pluginToolIds != null && !pluginToolIds.isEmpty()) {
+            QueryWrapper queryTool = QueryWrapper.create()
+                .select("*")
+                .from("tb_ai_plugin_tool")
+                .in("id", pluginToolIds);
+            List<AiPluginTool> aiPluginTools = aiPluginToolService.getMapper().selectListWithRelationsByQuery(queryTool);
+            if (aiPluginTools != null && !aiPluginTools.isEmpty()) {
+                for (AiPluginTool aiPluginTool : aiPluginTools) {
+                    functionList.add(aiPluginTool.toFunction());
+                }
             }
         }
+        
 
         return functionList;
     }

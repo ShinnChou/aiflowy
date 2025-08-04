@@ -89,6 +89,7 @@ export type AiProChatProps = {
     options?: any;
     autoSize?: { minRows: number, maxRows: number};
     isBotDesign?: boolean;
+    isLocalBot?: boolean;
 };
 
 export const RenderMarkdown: React.FC<{ content: string, fileList?: Array<string> }> = ({content, fileList}) => {
@@ -138,7 +139,8 @@ export const AiProChat = forwardRef<AiProChatHandle, AiProChatProps>(
             sessionId,
             options,
             autoSize = { minRows: 4, maxRows: 4 },
-            isBotDesign = false
+            isBotDesign = false,
+            isLocalBot = false
         }: AiProChatProps,
         ref
     ) => {
@@ -471,6 +473,10 @@ export const AiProChat = forwardRef<AiProChatHandle, AiProChatProps>(
 
                 const aiMessage = newChats[lastAiIndex];
                 aiMessage.loading = false;
+                if (isLocalBot){
+                    localStorage.setItem("localBotChats", JSON.stringify(newChats));
+                }
+
 
                 return newChats;
             });
@@ -538,7 +544,9 @@ export const AiProChat = forwardRef<AiProChatHandle, AiProChatProps>(
                     aiMessage.updateAt = Date.now();
                 }
 
-
+                if (isLocalBot){
+                    localStorage.setItem("localBotChats", JSON.stringify(newChats));
+                }
                 return newChats;
             });
 
@@ -724,7 +732,9 @@ export const AiProChat = forwardRef<AiProChatHandle, AiProChatProps>(
                                 lastMsg.updateAt = Date.now();
                             }
 
-
+                            if (isLocalBot){
+                                localStorage.setItem("localBotChats", JSON.stringify(newChats));
+                            }
                             return newChats;
                         });
 
@@ -757,6 +767,10 @@ export const AiProChat = forwardRef<AiProChatHandle, AiProChatProps>(
                         // 正确地移除 "Final Answer:" 前缀
                         lastMessage.content = lastMessage.content.replace(/^Final Answer:\s*/i, "");
                     }
+                }
+
+                if (isLocalBot){
+                    localStorage.setItem("localBotChats", JSON.stringify(newChats));
                 }
                 return newChats;
             })
@@ -936,6 +950,10 @@ export const AiProChat = forwardRef<AiProChatHandle, AiProChatProps>(
                                     }
 
                                     lastMsg.updateAt = Date.now();
+                                }
+
+                                if (isLocalBot){
+                                    localStorage.setItem("localBotChats", JSON.stringify(newChats));
                                 }
                                 return newChats;
                             });

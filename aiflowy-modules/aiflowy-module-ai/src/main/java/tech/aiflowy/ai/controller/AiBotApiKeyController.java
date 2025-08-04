@@ -17,6 +17,7 @@ import tech.aiflowy.common.web.exceptions.BusinessException;
 import cn.dev33.satoken.annotation.SaIgnore;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 
 /**
  * bot apiKey 表 控制层。
@@ -26,14 +27,14 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @RestController
 @RequestMapping("/api/v1/aiBotApiKey")
-@SaIgnore
-// @UsePermission(moduleName = "/api/v1/aiBot")
+@UsePermission(moduleName = "/api/v1/aiBot")
 public class AiBotApiKeyController extends BaseCurdController<AiBotApiKeyService, AiBotApiKey> {
     public AiBotApiKeyController(AiBotApiKeyService service) {
         super(service);
     }
 
     @PostMapping("addKey")
+    @SaCheckPermission("/api/v1/aiBot/save")
     public Result addKey(@JsonBody(value = "botId",required = true)BigInteger botId){
 
         if (botId == null) {
@@ -44,7 +45,7 @@ public class AiBotApiKeyController extends BaseCurdController<AiBotApiKeyService
         return Result.success(apiKey);
     }
 
-
+    @SaIgnore
     @Override
     public Result list(AiBotApiKey entity, Boolean asTree, String sortKey, String sortType) {
 

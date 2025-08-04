@@ -147,6 +147,11 @@ const BotDesign: React.FC = () => {
             leftMenuCollapsed: true, showBreadcrumb: false,
             headerLeftEl: <span style={{marginLeft: "20px"}}>{detail?.data?.title}</span>,
         })
+
+        if(detail?.data?.options){
+            setReActModeEnabled(detail?.data?.options?.reActModeEnabled ?? false)
+        }
+
         return () => {
             setOptions({leftMenuCollapsed: false, showBreadcrumb: true, headerLeftEl: ''})
         }
@@ -708,42 +713,7 @@ const BotDesign: React.FC = () => {
                                     </div>
                                 ,
                             },
-                            {
-                                key: 'reActMode',
-                                label: <CollapseLabel text="ReAct 模式" onClick={() => {
-                                }} plusDisabled/>,
-                                children: <div
-                                    style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                                    <span>启用 ReAct 模式</span>
-                                    <Switch
-                                        checked={reActModeEnabled}
-                                        loading={reActModeSwitchLoading}
-                                        onChange={async (checked) => {
-
-                                            if (!botSavePermission) {
-                                                message.warning("你没有配置bot的权限！")
-                                                setReActModeEnabled(false)
-                                                return;
-                                            }
-
-
-                                            setReActModeSwitchLoading(true)
-                                            const resp = await updateBotOptions({
-                                                data: {
-                                                    options: {reActModeEnabled: checked},
-                                                    id: detail?.data?.id,
-                                                }
-                                            })
-                                            if (resp?.data?.errorCode === 0) {
-                                                const reGetResp = await reGetDetail();
-                                                setReActModeEnabled(reGetResp.data?.data?.options.reActModeEnabled)
-                                            }
-
-                                            setReActModeSwitchLoading(false)
-                                        }}
-                                    />
-                                </div>,
-                            },
+                            
                         ]} bordered={false}/>
 
                         <div className={"bot-design-container"}>
@@ -877,6 +847,42 @@ const BotDesign: React.FC = () => {
                                     />
                                 </div>,
                             },
+			    {
+                                key: 'reActMode',
+                                label: <CollapseLabel text="ReAct 模式" onClick={() => {
+                                }} plusDisabled/>,
+                                children: <div
+                                    style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                                    <span>启用 ReAct 模式</span>
+                                    <Switch
+                                        checked={reActModeEnabled}
+                                        loading={reActModeSwitchLoading}
+                                        onChange={async (checked) => {
+
+                                            if (!botSavePermission) {
+                                                message.warning("你没有配置bot的权限！")
+                                                setReActModeEnabled(false)
+                                                return;
+                                            }
+
+
+                                            setReActModeSwitchLoading(true)
+                                            const resp = await updateBotOptions({
+                                                data: {
+                                                    options: {reActModeEnabled: checked},
+                                                    id: detail?.data?.id,
+                                                }
+                                            })
+                                            if (resp?.data?.errorCode === 0) {
+                                                const reGetResp = await reGetDetail();
+                                                setReActModeEnabled(reGetResp.data?.data?.options.reActModeEnabled)
+                                            }
+
+                                            setReActModeSwitchLoading(false)
+                                        }}
+                                    />
+                                </div>,
+                            },
 
                         ]} bordered={false}/>
 
@@ -951,6 +957,12 @@ const BotDesign: React.FC = () => {
                                                               centered: true,
                                                               maskClosable: true,
                                                               onOk: async () => {
+
+                                                                  if (!botSavePermission){
+                                                                      message.warning("你没有配置 bot 的权限！")
+                                                                      return;
+                                                                  }
+
                                                                   const resp = await addApiKey({
                                                                       data: {
                                                                           botId: detail?.data?.id,
@@ -1005,8 +1017,8 @@ const BotDesign: React.FC = () => {
                                                                     color: "#1a1a1a",
                                                                     fontSize: "14px"
                                                                 }}>{item.apiKey}</div>
-                                                                <Button color="danger" variant="link"
-                                                                        icon={<CustomDeleteIcon/>} onClick={() => {
+                                                                {botSavePermission && <Button color="danger" variant="link"
+                                                                                              icon={<CustomDeleteIcon/>} onClick={() => {
 
                                                                     Modal.confirm({
                                                                         title: "确认",
@@ -1015,6 +1027,12 @@ const BotDesign: React.FC = () => {
                                                                         centered: true,
                                                                         maskClosable: true,
                                                                         onOk: async () => {
+
+                                                                            if (!botSavePermission){
+                                                                                message.warning("你没有配置 bot 的权限！")
+                                                                                return;
+                                                                            }
+
                                                                             doRemoveApiKey({
                                                                                 data: {
                                                                                     id: item.id,
@@ -1031,7 +1049,7 @@ const BotDesign: React.FC = () => {
 
                                                                 }}>
                                                                     删除
-                                                                </Button>
+                                                                </Button>}
                                                             </div>
                                                         </Fragment>
                                                     )
