@@ -78,6 +78,8 @@ public class TinyFlowConfigService {
         SaveToDatacenterNodeParser saveDaveParser = new SaveToDatacenterNodeParser();
         // 查询数据节点
         SearchDatacenterNodeParser searchDatacenterNodeParser = new SearchDatacenterNodeParser();
+        // 工作流节点
+        WorkflowNodeParser workflowNodeParser = new WorkflowNodeParser();
 
         ChainParser chainParser = tinyflow.getChainParser();
         chainParser.addNodeParser(docNodeParser.getNodeName(), docNodeParser);
@@ -87,6 +89,7 @@ public class TinyFlowConfigService {
         chainParser.addNodeParser(downloadNodeParser.getNodeName(), downloadNodeParser);
         chainParser.addNodeParser(saveDaveParser.getNodeName(), saveDaveParser);
         chainParser.addNodeParser(searchDatacenterNodeParser.getNodeName(), searchDatacenterNodeParser);
+        chainParser.addNodeParser(workflowNodeParser.getNodeName(), workflowNodeParser);
     }
 
     public void setSearchEngineProvider(Tinyflow tinyflow) {

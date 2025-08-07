@@ -13,11 +13,12 @@ export type BotDataItemProps = {
     icon?: string,
     isAdded?: boolean, //
     onButtonClick?: () => void,
-
+    allowRemove?: boolean,
+    onRemoveClick?: () => void,
 
 }
 
-export const BotDataItem: React.FC<BotDataItemProps> = ({title, description, icon = "/favicon.png", onButtonClick,isAdded = false, }) => {
+export const BotDataItem: React.FC<BotDataItemProps> = ({title, description, icon = "/favicon.png", onButtonClick,isAdded = false,allowRemove,onRemoveClick }) => {
     return (
         <div style={{
             display: "flex",
@@ -34,7 +35,7 @@ export const BotDataItem: React.FC<BotDataItemProps> = ({title, description, ico
                 <div style={{color: "#999999"}}>{description}</div>
             </div>
             <div>
-                <Button
+                {!allowRemove && <Button
                     onClick={() => {
                         if (!isAdded) {
                             onButtonClick?.()
@@ -44,7 +45,20 @@ export const BotDataItem: React.FC<BotDataItemProps> = ({title, description, ico
                     type={isAdded ? "default" : "primary"}
                 >
                     {isAdded ? "已添加" : "添加"}
-                </Button>
+                </Button>}
+                {allowRemove && <div><Button
+                    onClick={() => {
+                        if (!isAdded) {
+                            onButtonClick?.()
+                        } else {
+                            onRemoveClick?.()
+                        }
+                    }}
+                    type={"primary"}
+                    danger={isAdded}
+                >
+                    {isAdded ? "删除" : "添加"}
+                </Button></div>}
             </div>
         </div>
     )
@@ -58,7 +72,9 @@ export type BotModalProps = {
     addedItems?: any[],
     addedItemsKeyField?: string,
     onSelectedItem?: (item: any) => void,
-    onClose?: () => void
+    onClose?: () => void,
+    allowRemove?: boolean,
+    onRemoveItem?: (item: any) => void,
 } & ModalProps
 
 export const BotModal: React.FC<BotModalProps> = (props) => {
@@ -86,6 +102,7 @@ export const BotModal: React.FC<BotModalProps> = (props) => {
     const navigate = useNavigate();
 
     const isItemAdded = (item: any) => {
+        //console.log('add', addedItems)
         return addedItems.some(addedItem => {
                 return addedItem[addedItemsKeyField] === item['id'];
         });
@@ -243,6 +260,8 @@ export const BotModal: React.FC<BotModalProps> = (props) => {
                                     description={item.description}
                                     icon={item.icon}
                                     isAdded={isItemAdded(item)}
+                                    allowRemove={props.allowRemove}
+                                    onRemoveClick={() => props.onRemoveItem?.(item)}
                                 />
                             ))
                         )}

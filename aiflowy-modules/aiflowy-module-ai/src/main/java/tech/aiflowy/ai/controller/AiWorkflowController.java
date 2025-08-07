@@ -23,6 +23,7 @@ import com.mybatisflex.core.query.QueryWrapper;
 import dev.tinyflow.core.Tinyflow;
 import dev.tinyflow.core.parser.NodeParser;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -34,6 +35,7 @@ import tech.aiflowy.common.ai.MySseEmitter;
 import tech.aiflowy.common.constant.Constants;
 import tech.aiflowy.common.constant.RedisKey;
 import tech.aiflowy.common.domain.Result;
+import tech.aiflowy.common.entity.LoginAccount;
 import tech.aiflowy.common.satoken.util.SaTokenUtil;
 import tech.aiflowy.common.web.controller.BaseCurdController;
 import tech.aiflowy.common.web.jsonbody.JsonBody;
@@ -79,6 +81,9 @@ public class AiWorkflowController extends BaseCurdController<AiWorkflowService, 
         InputStream is = jsonFile.getInputStream();
         String content = IoUtil.read(is, StandardCharsets.UTF_8);
         workflow.setContent(content);
+        if (!StringUtils.hasLength(workflow.getAlias())){
+            workflow.setAlias(UUID.randomUUID().toString().replaceAll("-",""));
+        }
         save(workflow);
         return Result.success();
     }
@@ -364,6 +369,18 @@ public class AiWorkflowController extends BaseCurdController<AiWorkflowService, 
         chain.addNode(currentNode);
         Map<String, Object> res = chain.executeForResult(variables);
         return Result.success(res);
+    }
+
+    @GetMapping("/copy")
+    @SaCheckPermission("/api/v1/aiWorkflow/save")
+    public Result copy(BigInteger id) {
+        LoginAccount account = SaTokenUtil.getLoginAccount();
+        AiWorkflow workflow = service.getById(id);
+        workflow.setId(null);
+        workflow.setAlias(IdUtil.fastSimpleUUID());
+        commonFiled(workflow, account.getId(), account.getTenantId(), account.getDeptId());
+        service.save(workflow);
+        return Result.success();
     }
 
     /**

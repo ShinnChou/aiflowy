@@ -1,6 +1,6 @@
 import React, {useRef, useState} from 'react';
 import {
-    ClockCircleOutlined,
+    ClockCircleOutlined, CopyOutlined,
     DownloadOutlined,
     NodeIndexOutlined, PlayCircleOutlined, UploadOutlined,
 } from "@ant-design/icons";
@@ -174,6 +174,23 @@ const Workflow: React.FC<{ paramsToUrl: boolean }> = () => {
     const jobModaRef = useRef<any>(null);
     const [jobModalOpen, setJobModalOpen] = useState(false);
 
+    const {doGet: doCopy, loading: copyLoading} = useGetManual('/api/v1/aiWorkflow/copy')
+    const copyWorkflow = (item: any) => {
+
+        doCopy({
+            params: {
+                id: item.id
+            }
+        }).then(res => {
+            if (res.data.errorCode === 0) {
+                message.success(`复制成功`);
+                if (cardPageRef.current) {
+                    cardPageRef.current.refresh();
+                }
+            }
+        })
+    }
+
     return (
         <>
             <SysJobModal
@@ -224,7 +241,7 @@ const Workflow: React.FC<{ paramsToUrl: boolean }> = () => {
                     </Form.Item>
                 </Form>
             </Modal>
-            <Spin spinning={exportLoading}>
+            <Spin spinning={exportLoading || copyLoading}>
                 <CardPage ref={cardPageRef}
                           tableAlias={"aiWorkflow"}
                           editModalTitle={"新增/编辑工作流"}
@@ -251,11 +268,17 @@ const Workflow: React.FC<{ paramsToUrl: boolean }> = () => {
                                       <span>运行</span>
                                   </Space>
                                  ,
-                                  canSave&& <Space onClick={() => {
+                                  canSave && <Space onClick={() => {
                                       exportWorkflow(item)
                                   }}>
                                       <DownloadOutlined title="导出工作流"  />
                                       <span>导出</span>
+                                  </Space>,
+                                  canSave && <Space onClick={() => {
+                                      copyWorkflow(item)
+                                  }}>
+                                      <CopyOutlined />
+                                      <span>复制工作流</span>
                                   </Space>,
                                   hasJobSave && <Space onClick={() => {
                                       const obj = {

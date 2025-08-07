@@ -28,6 +28,8 @@ import {ConfirmItemMulti} from "./components/ConfirmItemMulti.tsx";
 import confirmIcon from '../../../assets/confirm-icon.png'
 import {SaveToDatacenterNode} from "./customNode/saveToDatacenter.ts"
 import {SearchDatacenterNode} from "./customNode/searchDatacenter.ts";
+import {WorkflowNode} from "./customNode/workflowNode.ts"
+import {WorkflowsModal} from "../botDesign/Workflows.tsx";
 
 export const WorkflowDesign = () => {
 
@@ -434,6 +436,19 @@ export const WorkflowDesign = () => {
         setChangeNodeData(() => updateNodeData)
         setPluginOpen(true)
     }
+
+    const [selectedWorkflow, setSelectedWorkflow] = useState<any>()
+    const [updateWorkflowNode, setUpdateWorkflowNode] = useState<any>()
+    const [workflowOpen, setWorkflowOpen] = useState(false)
+    const {doGet: getChainParams} = useGetManual("/api/v1/workflowNode/getChainParams")
+    const chooseWorkflow = (updateNodeData: any, value: any) => {
+        if (value) {
+            setSelectedWorkflow([{id: value}])
+        }
+        setUpdateWorkflowNode(() => updateNodeData)
+        setWorkflowOpen(true)
+    }
+
     const customNodes: any = {
         ...customNode,
         'plugin-node': PluginNode({
@@ -456,6 +471,9 @@ export const WorkflowDesign = () => {
                     value: item.id
                 }))
             ]:[{label: '请选择数据表', value: ''}]
+        }),
+        'workflow-node': WorkflowNode({
+            onChosen: chooseWorkflow
         })
     };
 
@@ -469,6 +487,45 @@ export const WorkflowDesign = () => {
 
     return (
         <>
+            <WorkflowsModal
+                open={workflowOpen}
+                onClose={() => setWorkflowOpen(false)}
+                onCancel={() => setWorkflowOpen(false)}
+                goToPage={"/ai/workflow"}
+                addedItems={selectedWorkflow}
+                addedItemsKeyField={"id"}
+                onSelectedItem={item => {
+                    setWorkflowOpen(false)
+                    if (updateWorkflowNode) {
+                        setPageLoading(true)
+                        getChainParams({
+                            params: {
+                                currentId: params.id,
+                                workflowId: item.id
+                            }
+                        }).then(res => {
+                            setPageLoading(false)
+                            if (res.data.errorCode === 0) {
+                                setSelectedWorkflow([{...item}])
+                                updateWorkflowNode(res.data.data)
+                            }
+                        })
+                    }
+                }}
+                allowRemove
+                onRemoveItem={_ => {
+                    setSelectedWorkflow([])
+                    setWorkflowOpen(false)
+                    if (updateWorkflowNode) {
+                        updateWorkflowNode({
+                            workflowId: '',
+                            workflowName: '',
+                            parameters: [],
+                            outputDefs: []
+                        })
+                    }
+                }}
+            />
             <PluginTools
                 selectedItem={selectedItem}
                 goToPage="/ai/plugin"
