@@ -300,13 +300,6 @@
       "chatPath":"/v1/chat/completions",
       "modelList":[
         {
-          "llmModel":"generalv3",
-          "supportChat":true,
-          "supportFunctionCalling":true,
-          "title":"Spark Pro",
-          "description":"专业级大语言模型，在医疗、教育和代码等场景进行专项优化，搜索场景延时更低。适用文本、智能问答等对性能和响应速度有更高要求的业务场景。"
-        },
-        {
           "llmModel":"generalv3.5",
           "supportChat":true,
           "supportFunctionCalling":true,
