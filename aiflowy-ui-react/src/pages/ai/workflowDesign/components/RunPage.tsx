@@ -1,14 +1,11 @@
 import {useParams} from "react-router-dom";
-import {Button, Col, Collapse, Empty, Form, Input, message, Row, Space, Spin} from "antd";
+import {Button, Col, Collapse, Empty, Form, message, Row, Space, Spin} from "antd";
 import css from './runpage.module.css'
 import {useGetManual} from "../../../../hooks/useApis.ts";
-import {Uploader} from "../../../../components/Uploader";
 import {
     CheckCircleOutlined, CloseCircleOutlined,
     ExclamationCircleOutlined,
     LoadingOutlined,
-    SendOutlined,
-    UploadOutlined
 } from "@ant-design/icons";
 import React, {useEffect, useRef, useState} from "react";
 import workflowIcon from "../../../../assets/wf-ex-icon.png"
@@ -18,6 +15,8 @@ import JsonView from "react18-json-view";
 import confirmIcon from "../../../../assets/confirm-icon.png";
 import {ConfirmItem} from "./ConfirmItem.tsx";
 import {ConfirmItemMulti} from "./ConfirmItemMulti.tsx";
+import {ExecResult} from "./ExecResult.tsx";
+import {WorkflowForm} from "./WorkflowForm.tsx";
 
 export const RunPage: React.FC = () => {
     const params = useParams();
@@ -47,8 +46,6 @@ export const RunPage: React.FC = () => {
     },[])
 
     const {result: res,doGet:getRunningParameters} = useGetManual("/api/v1/aiWorkflow/getRunningParameters");
-
-    const [form] = Form.useForm();
 
     const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -167,13 +164,13 @@ export const RunPage: React.FC = () => {
                 >
                     {msg.suspendForParameters.map((ops: any, i: number) => {
                         // formLabel formDescription
-                        if (ops.selectionMode === 'confirm') {
+                        if (ops.formType === 'confirm') {
                             return null
                         }
                         const selectKey = ops.name;
-                        const selectionDataType = ops.selectionDataType ? ops.selectionDataType : "text"
-                        const selectionMode = ops.selectionMode ? ops.selectionMode : "single"
-                        const selectionData = ops.selectionData
+                        const selectionDataType = ops.contentType ? ops.contentType : "text"
+                        const selectionMode = ops.formType ? ops.formType : "radio"
+                        const selectionData = ops.enums
 
                         return (
                             <div
@@ -218,7 +215,7 @@ export const RunPage: React.FC = () => {
                                     name={selectKey}
                                     rules={[{required: true, message: '请选择内容'}]}
                                 >
-                                    {selectionMode === 'single' ?
+                                    {selectionMode === 'radio' ?
                                         <ConfirmItem selectionDataType={selectionDataType}
                                                      selectionData={selectionData}/> :
                                         <ConfirmItemMulti selectionDataType={selectionDataType}
@@ -283,16 +280,6 @@ export const RunPage: React.FC = () => {
         })
     };
 
-    const onFinishFailed = (errorInfo: any) => {
-        setSubmitLoading(false)
-        if (errorInfo.errorFields) {
-            message.warning("请完善表单内容")
-        } else {
-            message.error("失败：" + errorInfo)
-        }
-        console.log('Failed:', errorInfo);
-    };
-
     const [activeCol, setActiveCol] = useState('')
     const [collapseItems, setCollapseItems] = useState<any[]>([])
 
@@ -317,63 +304,11 @@ export const RunPage: React.FC = () => {
                             <div className={css.paramTitle}>
                                 参数
                             </div>
-                            <Form
-                                form={form}
-                                name="basic"
-                                labelCol={{span: 4}}
-                                wrapperCol={{span: 20}}
-                                onFinish={onFinish}
-                                onFinishFailed={onFinishFailed}
-                                autoComplete="off"
-                            >
-                                {res && res.parameters?.map((item: any) => {
-                                    let inputComponent;
-                                    switch (item.dataType) {
-                                        case "File":
-                                            inputComponent = (
-                                                <Uploader
-                                                    maxCount={1}
-                                                    action={'/api/v1/commons/uploadAntd'}
-                                                    children={<Button icon={<UploadOutlined/>}>上传</Button>}
-                                                    onChange={({file}) => {
-                                                        if (file.status === 'done') {
-                                                            let url = file.response?.response.url;
-                                                            if (url.indexOf('http') < 0) {
-                                                                url = window.location.origin + url;
-                                                            }
-                                                            form.setFieldsValue({
-                                                                [item.name]: url,
-                                                            });
-                                                        }
-                                                    }}
-                                                />);
-                                            break;
-                                        default:
-                                            inputComponent = <Input/>;
-                                    }
-
-                                    return (
-                                        <Form.Item
-                                            key={item.name}
-                                            label={item.description || item.name}
-                                            name={item.name}
-                                            rules={[{required: item.required}]}
-                                            //extra={item.description}
-                                        >
-                                            {inputComponent}
-                                        </Form.Item>
-                                    );
-                                })}
-
-                                <Form.Item
-                                    style={{display: "flex",
-                                        justifyContent: "flex-end",}}
-                                >
-                                    <Button disabled={submitLoading} loading={submitLoading} type="primary" htmlType="submit">
-                                        <SendOutlined/> 开始运行
-                                    </Button>
-                                </Form.Item>
-                            </Form>
+                            <WorkflowForm
+                                workflowInfo={res}
+                                submitLoading={submitLoading}
+                                onExecute={onFinish}
+                            />
                         </div>
                     </Col>
                     <Col span={24}>
@@ -383,7 +318,7 @@ export const RunPage: React.FC = () => {
                             </div>
                             <div className={css.resultContainer}>
                                 {executeResult ?
-                                    <JsonView src={executeResult}/> :
+                                    <ExecResult nodes={collapseItems} result={executeResult} /> :
                                     <Empty style={{lineHeight: "280px"}} image={Empty.PRESENTED_IMAGE_SIMPLE} />
                                 }
                             </div>

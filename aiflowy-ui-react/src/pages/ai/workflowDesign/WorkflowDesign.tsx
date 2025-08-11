@@ -1,7 +1,7 @@
 // @ts-ignore
 import React, {useEffect, useRef, useState} from 'react';
 import {useLayout} from '../../../hooks/useLayout.tsx';
-import {App, Button, Collapse, Drawer, Empty, Form, Input, Skeleton, Space, Spin} from "antd";
+import {App, Button, Collapse, Drawer, Empty, Form, Skeleton, Space, Spin} from "antd";
 import {useParams} from "react-router-dom";
 import {useDetail, useGet, useGetManual, useUpdate} from "../../../hooks/useApis.ts";
 import {
@@ -10,11 +10,9 @@ import {
     FormOutlined,
     LoadingOutlined,
     SendOutlined,
-    UploadOutlined
 } from "@ant-design/icons";
 import {Tinyflow, TinyflowHandle} from '@tinyflow-ai/react';
 import '@tinyflow-ai/react/dist/index.css'
-import {Uploader} from "../../../components/Uploader";
 import customNode from './customNode/index.ts'
 import {PluginNode} from './customNode/pluginNode.ts'
 import {PluginTools} from "../botDesign/PluginTools.tsx";
@@ -30,6 +28,7 @@ import {SaveToDatacenterNode} from "./customNode/saveToDatacenter.ts"
 import {SearchDatacenterNode} from "./customNode/searchDatacenter.ts";
 import {WorkflowNode} from "./customNode/workflowNode.ts"
 import {WorkflowsModal} from "../botDesign/Workflows.tsx";
+import {WorkflowForm} from "./components/WorkflowForm.tsx";
 
 export const WorkflowDesign = () => {
 
@@ -41,7 +40,7 @@ export const WorkflowDesign = () => {
     const {doUpdate} = useUpdate("aiWorkflow");
     const {result: llms} = useGet('/api/v1/aiLlm/list')
     const {result: knowledge} = useGet('/api/v1/aiKnowledge/list')
-    const [parameters, setParameters] = useState<any[]>()
+
     const [workflowData, setWorkflowData] = useState<any>({})
     const [saveLoading, setSaveLoading] = useState(false);
     const [runLoading, setRunLoading] = useState(false);
@@ -147,7 +146,7 @@ export const WorkflowDesign = () => {
     }, []);
 
 
-    const {doGet: getRunningParameters} = useGetManual("/api/v1/aiWorkflow/getRunningParameters");
+    const {result: res, doGet: getRunningParameters} = useGetManual("/api/v1/aiWorkflow/getRunningParameters");
     //const {doPost: tryRunning} = usePostManual("/api/v1/aiWorkflow/tryRunning");
     const [selectedItem, setSelectedItem] = useState<any>([]);
     const showRunningParameters = async () => {
@@ -165,7 +164,6 @@ export const WorkflowDesign = () => {
         }).then((resp) => {
             if (resp.data.errorCode === 0) {
                 showDrawer()
-                setParameters(resp.data.parameters)
             }
             setRunLoading(false)
         })
@@ -303,13 +301,13 @@ export const WorkflowDesign = () => {
                 >
                     {msg.suspendForParameters.map((ops: any, i: number) => {
                         // formLabel formDescription
-                        if (ops.selectionMode === 'confirm') {
+                        if (ops.formType === 'confirm') {
                             return null
                         }
                         const selectKey = ops.name;
-                        const selectionDataType = ops.selectionDataType ? ops.selectionDataType : "text"
-                        const selectionMode = ops.selectionMode ? ops.selectionMode : "single"
-                        const selectionData = ops.selectionData
+                        const selectionDataType = ops.contentType ? ops.contentType : "text"
+                        const selectionMode = ops.formType ? ops.formType : "radio"
+                        const selectionData = ops.enums
 
                         return (
                             <div
@@ -354,7 +352,7 @@ export const WorkflowDesign = () => {
                                     name={selectKey}
                                     rules={[{required: true, message: '请选择内容'}]}
                                 >
-                                    {selectionMode === 'single' ?
+                                    {selectionMode === 'radio' ?
                                         <ConfirmItem selectionDataType={selectionDataType}
                                                      selectionData={selectionData}/> :
                                         <ConfirmItemMulti selectionDataType={selectionDataType}
@@ -421,12 +419,6 @@ export const WorkflowDesign = () => {
 
     const [activeCol, setActiveCol] = useState('')
 
-    const onFinishFailed = (errorInfo: any) => {
-        setSubmitLoading(false)
-        //message.error("失败：" + errorInfo)
-        console.log('Failed:', errorInfo);
-    };
-
     const [changeNodeData, setChangeNodeData] = useState<any>()
 
     const handleChosen = (updateNodeData: any, value: any) => {
@@ -476,8 +468,6 @@ export const WorkflowDesign = () => {
             onChosen: chooseWorkflow
         })
     };
-
-    const [form] = Form.useForm();
 
     const [submitLoading, setSubmitLoading] = useState(false);
     const [pluginOpen, setPluginOpen] = useState(false)
@@ -569,64 +559,11 @@ export const WorkflowDesign = () => {
                 onClose={onClose}
                 open={open}
             >
-
-                <Form
-                    form={form}
-                    name="basic"
-                    labelCol={{span: 6}}
-                    wrapperCol={{span: 18}}
-                    onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
-                    autoComplete="off"
-                >
-
-                    {parameters && parameters.map((item) => {
-                        let inputComponent;
-                        switch (item.dataType) {
-                            case "File":
-                                inputComponent = (
-                                    <Uploader
-                                        maxCount={1}
-                                        action={'/api/v1/commons/uploadAntd'}
-                                        children={<Button icon={<UploadOutlined/>}>上传</Button>}
-                                        onChange={({file}) => {
-                                            if (file.status === 'done') {
-                                                let url = file.response?.response.url;
-                                                if (url.indexOf('http') < 0) {
-                                                    url = window.location.origin + url;
-                                                }
-                                                form.setFieldsValue({
-                                                    [item.name]: url,
-                                                });
-                                            }
-                                        }}
-                                    />);
-                                break;
-                            default:
-                                inputComponent = <Input/>;
-                        }
-
-                        return (
-                            <Form.Item
-                                key={item.name}
-                                label={item.name}
-                                name={item.name}
-                                rules={[{required: item.required}]}
-                                extra={item.description}
-                            >
-                                {inputComponent}
-                            </Form.Item>
-                        );
-                    })}
-
-
-                    <Form.Item wrapperCol={{offset: 4, span: 18}}>
-                        <Button disabled={submitLoading} loading={submitLoading} type="primary" htmlType="submit">
-                            <SendOutlined/> 开始运行
-                        </Button>
-                    </Form.Item>
-                </Form>
-
+                <WorkflowForm
+                    workflowInfo={res}
+                    submitLoading={submitLoading}
+                    onExecute={onFinish}
+                />
                 <div>
                     <div style={{marginBottom: "10px"}}>执行结果：</div>
                     <div style={{
