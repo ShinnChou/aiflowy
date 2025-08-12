@@ -299,7 +299,6 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
             throw new BusinessException("提示词不能为空！");
         }
 
-        prompt = prompt.replaceAll("[\"']", "");
 
         AiBot aiBot = service.getById(botId);
 
@@ -505,18 +504,10 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
         Map<String, Object> aiLlmOptions = aiLlm.getOptions();
 
         if (!"ollama".equals(aiLlm.getBrand()) && !"spark".equals(aiLlm.getBrand())) {
-            HashMap<String, Object> promptMap = new HashMap<>();
-            promptMap.put("prompt", promptTemplate);
-            promptMap.put("fileList", fileList);
 
-            String promptJson = JSON.toJSONString(promptMap);
-
-            System.out.println("--------------------------------------------");
-            System.out.println(promptJson);
-            System.out.println("--------------------------------------------");
-
-            reActAgent.setPromptTemplate(promptJson);
+            reActAgent.setPromptTemplate(promptTemplate);
             MultimodalMessageBuilder multimodalMessageBuilder = new MultimodalMessageBuilder();
+            multimodalMessageBuilder.setFileList(fileList);
             reActAgent.setMessageBuilder(multimodalMessageBuilder);
         } else {
 
