@@ -30,5 +30,11 @@
             <groupId>tech.aiflowy</groupId>
             <artifactId>aiflowy-common-satoken</artifactId>
         </dependency>
+        <!-- Javassist for line number -->
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.29.2-GA</version>
+        </dependency>
     </dependencies>
 </project>
