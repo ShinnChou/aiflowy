@@ -12,8 +12,9 @@ public class Result<T> implements Serializable {
 
     /**
      * 返回状态码
-     * @see EnumRes
+     *
      * @mock 0
+     * @see EnumRes
      */
     private Integer errorCode;
 
@@ -29,6 +30,32 @@ public class Result<T> implements Serializable {
      */
     private T data;
 
+    public Result<T> message(String message) {
+        this.message = message;
+        return this;
+    }
+
+    public Result<T> data(T data) {
+        this.data = data;
+        return this;
+    }
+
+    public Result<T> success() {
+        this.errorCode = EnumRes.SUCCESS.getCode();
+        return this;
+    }
+
+    public Result<T> fail() {
+        this.errorCode = EnumRes.FAIL.getCode();
+        return this;
+    }
+
+
+    public Result<T> fail(int errorCode) {
+        this.errorCode = errorCode;
+        return this;
+    }
+
     public static Result<Void> ok() {
         Result<Void> Result = new Result<>();
         Result.setErrorCode(EnumRes.SUCCESS.getCode());
@@ -36,12 +63,12 @@ public class Result<T> implements Serializable {
         return Result;
     }
 
-    public static Result<Void> ok(String msg) {
-        Result<Void> Result = new Result<>();
-        Result.setErrorCode(EnumRes.SUCCESS.getCode());
-        Result.setMessage(msg);
-        return Result;
-    }
+//    public static Result<Void> ok(String msg) {
+//        Result<Void> Result = new Result<>();
+//        Result.setErrorCode(EnumRes.SUCCESS.getCode());
+//        Result.setMessage(msg);
+//        return Result;
+//    }
 
     public static <T> Result<T> ok(T data) {
         Result<T> Result = new Result<>();
