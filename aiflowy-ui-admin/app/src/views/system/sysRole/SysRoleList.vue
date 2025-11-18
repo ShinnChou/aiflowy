@@ -15,18 +15,16 @@ import {
 } from 'element-plus';
 
 import { api } from '#/api/request';
-import DictSelect from '#/components/dict/DictSelect.vue';
 import PageData from '#/components/page/PageData.vue';
 import { $t } from '#/locales';
 
-import SysAccountModal from './sysAccountModal.vue';
+import SysRoleModal from './SysRoleModal.vue';
 
 const formRef = ref<FormInstance>();
 const pageDataRef = ref();
 const saveDialog = ref();
 const formInline = ref({
-  loginName: '',
-  accountType: '',
+  id: '',
 });
 function search(formEl: FormInstance | undefined) {
   formEl?.validate((valid) => {
@@ -51,7 +49,7 @@ function remove(row: any) {
       if (action === 'confirm') {
         instance.confirmButtonLoading = true;
         api
-          .post('/api/v1/sysAccount/remove', { id: row.id })
+          .post('/api/v1/sysRole/remove', { id: row.id })
           .then((res) => {
             instance.confirmButtonLoading = false;
             if (res.errorCode === 0) {
@@ -73,17 +71,10 @@ function remove(row: any) {
 
 <template>
   <div class="page-container">
-    <SysAccountModal ref="saveDialog" @reload="reset" />
+    <SysRoleModal ref="saveDialog" @reload="reset" />
     <ElForm ref="formRef" :inline="true" :model="formInline">
-      <ElFormItem label="用户类型" prop="accountType">
-        <DictSelect
-          style="width: 200px"
-          v-model="formInline.accountType"
-          dict-code="accountType"
-        />
-      </ElFormItem>
-      <ElFormItem label="账号" prop="loginName">
-        <ElInput v-model="formInline.loginName" placeholder="请输入账号" />
+      <ElFormItem label="查询字段" prop="id">
+        <ElInput v-model="formInline.id" placeholder="请输入查询字段" />
       </ElFormItem>
       <ElFormItem>
         <ElButton @click="search(formRef)" type="primary">
@@ -94,20 +85,39 @@ function remove(row: any) {
         </ElButton>
       </ElFormItem>
     </ElForm>
-    <ElButton @click="showDialog({})" type="primary">
-      {{ $t('button.add') }}
-    </ElButton>
-    <PageData
-      ref="pageDataRef"
-      page-url="/api/v1/sysAccount/page"
-      :page-size="10"
-      :init-query-params="{ status: 1 }"
-    >
+    <div class="handle-div">
+      <ElButton @click="showDialog({})" type="primary">
+        {{ $t('button.add') }}
+      </ElButton>
+    </div>
+    <PageData ref="pageDataRef" page-url="/api/v1/sysRole/page" :page-size="10">
       <template #default="{ pageList }">
         <ElTable :data="pageList" border>
-          <ElTableColumn prop="loginName" label="账号" width="180" />
-          <ElTableColumn prop="nickname" label="昵称" width="180" />
-          <ElTableColumn prop="avatar" label="头像" />
+          <ElTableColumn prop="roleName" label="角色名称">
+            <template #default="{ row }">
+              {{ row.roleName }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn prop="roleKey" label="角色标识">
+            <template #default="{ row }">
+              {{ row.roleKey }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn prop="status" label="数据状态">
+            <template #default="{ row }">
+              {{ row.status }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn prop="created" label="创建时间">
+            <template #default="{ row }">
+              {{ row.created }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn prop="remark" label="备注">
+            <template #default="{ row }">
+              {{ row.remark }}
+            </template>
+          </ElTableColumn>
           <ElTableColumn>
             <template #default="{ row }">
               <ElButton @click="showDialog(row)" type="primary">
