@@ -7,5 +7,8 @@
     "export": "Export",
     "import": "Import",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "addLlm": "New large model added",
+    "oneClickAdd": "One-click add"
 }

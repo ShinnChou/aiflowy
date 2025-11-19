@@ -3,5 +3,9 @@
   "noticeTitle": "Notice",
   "ok": "Yes",
   "cancel": "No",
-  "required": "Item is required"
+  "required": "Item is required",
+  "saveOkMessage": "Saved successfully",
+  "saveFailMessage": "Save failed",
+  "deleteOkMessage": "Deleted successfully",
+  "deleteFailMessage": "Delete failed"
 }

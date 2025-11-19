@@ -3,5 +3,9 @@
   "noticeTitle": "提示",
   "ok": "确定",
   "cancel": "取消",
-  "required": "该项为必填项"
+  "required": "该项为必填项",
+  "saveOkMessage": "保存成功！",
+  "saveFailMessage": "保存失败！",
+  "deleteOkMessage": "删除成功！",
+  "deleteFailMessage": "删除失败！"
 }

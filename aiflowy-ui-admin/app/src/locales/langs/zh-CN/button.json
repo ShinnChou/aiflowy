@@ -7,5 +7,8 @@
     "export": "导出",
     "import": "导入",
     "save": "保存",
-    "cancel": "取消"
+    "cancel": "取消",
+    "confirm": "确认",
+    "addLlm": "新增大模型",
+    "oneClickAdd": "一键添加"
 }

@@ -1,10 +1,11 @@
 <script setup>
-import { markRaw, onMounted, ref } from 'vue';
+import { markRaw, nextTick, onMounted, ref } from 'vue';
+
+import { $t } from '@aiflowy/locales';
 
 import { Delete, Edit, Plus } from '@element-plus/icons-vue';
 import {
   ElButton,
-  ElDialog,
   ElIcon,
   ElImage,
   ElTable,
@@ -15,11 +16,9 @@ import { getLlmBrandList } from '#/api/ai/llm.js';
 import CategoryPanel from '#/components/categoryPanel/CategoryPanel.vue';
 import HeaderSearch from '#/components/headerSearch/HeaderSearch.vue';
 import PageData from '#/components/page/PageData.vue';
-import Upload from '#/components/upload/Upload.vue';
-import UploadAvatar from '#/components/upload/UploadAvatar.vue';
+import LlmModal from '#/views/ai/llm/LlmModal.vue';
 
 const brandListData = ref([]);
-const dialogTitle = ref('新增');
 const LlmAddOrUpdateDialog = ref(false);
 onMounted(() => {
   getLlmBrandList().then((res) => {
@@ -36,22 +35,27 @@ const uploadSuccess = (res) => {
 const headerButtons = ref([
   {
     key: 'add',
-    text: '新增大模型',
+    text: $t('button.addLlm'),
     icon: markRaw(Plus),
     type: 'primary',
     data: { action: 'addLlm' },
   },
   {
     key: 'edit',
-    text: '一键添加',
+    text: $t('button.oneClickAdd'),
     type: 'primary',
     icon: markRaw(Plus),
     data: { action: 'oneClickAdd' },
   },
 ]);
 
-const addLlm = () => {
-  LlmAddOrUpdateDialog.value = true;
+const LlmAddOrUpdateDialogRef = ref(null);
+
+const addLlm = async () => {
+  await nextTick();
+  if (LlmAddOrUpdateDialogRef.value) {
+    LlmAddOrUpdateDialogRef.value.openAddDialog();
+  }
 };
 
 const oneClickAdd = () => {};
@@ -73,13 +77,10 @@ const handleButtonClick = (event) => {
     }
   }
 };
-
-const handleClose = () => {};
 </script>
 
 <template>
   <div class="llm-container">
-    <Upload @success="uploadSuccess" :multiple="false" />
     <div class="llm-header">
       <HeaderSearch
         :buttons="headerButtons"
@@ -106,7 +107,7 @@ const handleClose = () => {};
           :init-query-params="{ status: 1 }"
         >
           <template #default="{ pageList }">
-            <ElTable :data="pageList" style="width: 100%">
+            <ElTable :data="pageList" style="width: 100%" border size="large">
               <ElTableColumn prop="icon" label="Icon" width="80">
                 <template #default="scope">
                   <ElImage
@@ -116,7 +117,6 @@ const handleClose = () => {};
                   />
                 </template>
               </ElTableColumn>
-              <ElTableColumn prop="id" label="id" width="180" />
               <ElTableColumn prop="title" label="名称" width="180" />
               <ElTableColumn
                 prop="description"
@@ -130,13 +130,13 @@ const handleClose = () => {};
                     <ElIcon class="mr-1">
                       <Edit />
                     </ElIcon>
-                    编辑
+                    {{ $t('button.edit') }}
                   </ElButton>
                   <ElButton link type="primary">
                     <ElIcon class="mr-1">
                       <Delete />
                     </ElIcon>
-                    删除
+                    {{ $t('button.delete') }}
                   </ElButton>
                 </template>
               </ElTableColumn>
@@ -146,25 +146,11 @@ const handleClose = () => {};
       </div>
     </div>
 
-    <!--    新增大模型对话框-->
-    <ElDialog
-      v-model="LlmAddOrUpdateDialog"
-      :title="dialogTitle"
-      width="500"
-      :before-close="handleClose"
-    >
-      <div class="llm-dialog-container">
-        <UploadAvatar :allowed-image-types="['image/jpeg']" />
-      </div>
-      <template #footer>
-        <div class="dialog-footer">
-          <ElButton @click="LlmAddOrUpdateDialog = false">Cancel</ElButton>
-          <ElButton type="primary" @click="LlmAddOrUpdateDialog = false">
-            Confirm
-          </ElButton>
-        </div>
-      </template>
-    </ElDialog>
+    <!--   大模型模态框-->
+    <LlmModal
+      ref="LlmAddOrUpdateDialogRef"
+      @close="LlmAddOrUpdateDialog = false"
+    />
   </div>
 </template>
 
@@ -185,11 +171,5 @@ const handleClose = () => {};
 
 .llm-table {
   width: 100%;
-}
-
-.llm-dialog-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 </style>
