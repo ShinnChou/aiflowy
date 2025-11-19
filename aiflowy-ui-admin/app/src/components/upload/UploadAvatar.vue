@@ -14,6 +14,14 @@ const props = defineProps({
     type: String,
     default: '/api/v1/commons/upload',
   },
+  fileSize: {
+    type: Number,
+    default: 2,
+  },
+  allowedImageTypes: {
+    type: Array<string>,
+    default: () => ['image/gif', 'image/jpeg', 'image/png', 'image/webp'],
+  },
 });
 
 const accessStore = useAccessStore();
@@ -25,19 +33,22 @@ const imageUrl = ref('');
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
-const handleAvatarSuccess: UploadProps['onSuccess'] = (
-  response,
-  uploadFile,
-) => {
+const handleAvatarSuccess: UploadProps['onSuccess'] = (uploadFile) => {
   imageUrl.value = URL.createObjectURL(uploadFile.raw!);
 };
 
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-  if (rawFile.type !== 'image/jpeg') {
-    ElMessage.error('Avatar picture must be JPG format!');
+  if (!props.allowedImageTypes.includes(rawFile.type)) {
+    const formatTypes = props.allowedImageTypes
+      .map((type: string) => {
+        const parts = type.split('/');
+        return parts[1] ? parts[1].toUpperCase() : '';
+      })
+      .filter(Boolean);
+    ElMessage.error(`头像只能是${formatTypes.join(', ')}格式`);
     return false;
-  } else if (rawFile.size / 1024 / 1024 > 2) {
-    ElMessage.error('Avatar picture size can not exceed 2MB!');
+  } else if (rawFile.size / 1024 / 1024 > props.fileSize) {
+    ElMessage.error(`头像限制 ${props.fileSize} M`);
     return false;
   }
   return true;
@@ -69,7 +80,7 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
 <style>
 .avatar-uploader .el-upload {
   border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
+  border-radius: 50%;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -82,7 +93,7 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
 
 .el-icon.avatar-uploader-icon {
   font-size: 28px;
-  color: #8c939d;
+  color: var(--el-text-color-secondary);
   width: 150px;
   height: 150px;
   text-align: center;
