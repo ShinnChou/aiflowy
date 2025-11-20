@@ -40,10 +40,6 @@
     "catalog": "pnpx codemod pnpm/catalog"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "catalog:",
-    "@changesets/cli": "catalog:",
-    "@playwright/test": "catalog:",
-    "@types/node": "catalog:",
     "@aiflowy/commitlint-config": "workspace:*",
     "@aiflowy/eslint-config": "workspace:*",
     "@aiflowy/prettier-config": "workspace:*",
@@ -53,6 +49,10 @@
     "@aiflowy/turbo-run": "workspace:*",
     "@aiflowy/vite-config": "workspace:*",
     "@aiflowy/vsh": "workspace:*",
+    "@changesets/changelog-github": "catalog:",
+    "@changesets/cli": "catalog:",
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
     "@vitejs/plugin-vue": "catalog:",
     "@vitejs/plugin-vue-jsx": "catalog:",
     "@vue/test-utils": "catalog:",
