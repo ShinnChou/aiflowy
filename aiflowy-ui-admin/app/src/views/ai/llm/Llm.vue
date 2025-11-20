@@ -20,7 +20,7 @@ import CategoryPanel from '#/components/categoryPanel/CategoryPanel.vue';
 import HeaderSearch from '#/components/headerSearch/HeaderSearch.vue';
 import PageData from '#/components/page/PageData.vue';
 import LlmModal from '#/views/ai/llm/LlmModal.vue';
-import QuickAddLlm from '#/views/ai/llm/QuickAddLlm.vue';
+import QuickAddLlmModal from '#/views/ai/llm/QuickAddLlmModal.vue';
 
 const brandListData = ref([]);
 const LlmAddOrUpdateDialog = ref(false);
@@ -220,7 +220,7 @@ const handleSuccess = () => {
       @close="LlmAddOrUpdateDialog = false"
     />
     <!--    一键添加大模型模态框-->
-    <QuickAddLlm ref="oneClickAddLlmRef" @success="handleSuccess" />
+    <QuickAddLlmModal ref="oneClickAddLlmRef" @success="handleSuccess" />
   </div>
 </template>
 

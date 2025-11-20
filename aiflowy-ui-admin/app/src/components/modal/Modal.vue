@@ -16,7 +16,7 @@ import {
 
 import { getLlmBrandList, quickAddLlm } from '#/api/ai/llm';
 
-interface LlmFormType {
+interface basicFormType {
   brand: string;
   apiKey: string;
 }
@@ -26,30 +26,27 @@ interface brandDataType {
 }
 
 const emit = defineEmits(['success']);
-const quickAddLlmDialog = ref(false);
-const openQuickAddLlmDialog = () => {
+const dialogVisible = ref(false);
+const openDialog = () => {
   nextTick(() => {
-    llmFormRef.value?.resetFields();
+    basicFormRef.value?.resetFields();
   });
-  quickAddLlmDialog.value = true;
+  dialogVisible.value = true;
 };
 
-const llmForm: LlmFormType = reactive({
-  brand: '',
-  apiKey: '',
-});
-const llmFormRef = ref();
+const basicForm: basicFormType = reactive({});
+const basicFormRef = ref();
 defineExpose({
-  openQuickAddLlmDialog,
+  openDialog,
 });
 const handleConfirm = () => {
-  llmFormRef.value.validate().then(() => {
-    quickAddLlm(JSON.stringify(llmForm)).then((res) => {
+  basicFormRef.value.validate().then(() => {
+    quickAddLlm(JSON.stringify(basicForm)).then((res) => {
       if (res.errorCode === 0) {
         ElMessage.success($t('message.saveOkMessage'));
-        quickAddLlmDialog.value = false;
+        dialogVisible.value = false;
         emit('success');
-        quickAddLlmDialog.value = false;
+        dialogVisible.value = false;
       }
     });
   });
@@ -80,15 +77,15 @@ onMounted(() => {
 
 <template>
   <ElDialog
-    v-model="quickAddLlmDialog"
-    :title="$t('llm.llmModal.QuickAddLlm')"
+    v-model="dialogVisible"
+    :title="$t('button.add')"
     width="700"
     align-center
   >
     <ElForm
-      ref="llmFormRef"
+      ref="basicFormRef"
       style="width: 100%; margin-top: 20px"
-      :model="llmForm"
+      :model="basicForm"
       :rules="rules"
       label-width="auto"
     >
@@ -98,7 +95,7 @@ onMounted(() => {
         label-position="right"
       >
         <ElSelect
-          v-model="llmForm.brand"
+          v-model="basicForm.brand"
           :placeholder="$t('llm.placeholder.brand')"
         >
           <ElOption
@@ -115,13 +112,13 @@ onMounted(() => {
         prop="apiKey"
         label-position="right"
       >
-        <ElInput v-model="llmForm.apiKey" />
+        <ElInput v-model="basicForm.apiKey" />
       </ElFormItem>
     </ElForm>
 
     <template #footer>
       <div class="dialog-footer">
-        <ElButton @click="quickAddLlmDialog = false">
+        <ElButton @click="dialogVisible = false">
           {{ $t('button.cancel') }}
         </ElButton>
         <ElButton type="primary" @click="handleConfirm">
