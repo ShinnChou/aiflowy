@@ -11,7 +11,7 @@ export const APP_DOC_URL = 'https://doc.aiflowy.tech';
 /**
  * @zh_CN AIFlowy Logo
  */
-export const APP_LOGO_URL = 'http://mm.agentscenter.cn/tabIcon.svg';
+export const APP_LOGO_URL = '/favicon.svg';
 
 /**
  * @zh_CN AIFlowy Admin 首页地址

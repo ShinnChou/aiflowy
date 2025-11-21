@@ -65,7 +65,7 @@ const defaultPreferences: Preferences = {
   logo: {
     enable: true,
     fit: 'contain',
-    source: 'http://mm.agentscenter.cn/tabIcon.svg',
+    source: '/favicon.svg',
   },
   navigation: {
     accordion: true,
