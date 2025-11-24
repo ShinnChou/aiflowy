@@ -1,0 +1,14 @@
+{
+    "id": "Id",
+    "deptId": "DeptId",
+    "tenantId": "TenantId",
+    "tableName": "TableName",
+    "tableDesc": "TableDesc",
+    "actualTable": "ActualTable",
+    "status": "Status",
+    "created": "Created",
+    "createdBy": "CreatedBy",
+    "modified": "Modified",
+    "modifiedBy": "ModifiedBy",
+    "options": "Options"
+}

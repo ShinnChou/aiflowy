@@ -1,0 +1,14 @@
+{
+    "id": "主键",
+    "deptId": "部门ID",
+    "tenantId": "租户ID",
+    "tableName": "数据表名",
+    "tableDesc": "数据表描述",
+    "actualTable": "物理表名",
+    "status": "数据状态",
+    "created": "创建时间",
+    "createdBy": "创建者",
+    "modified": "修改时间",
+    "modifiedBy": "修改者",
+    "options": "扩展项"
+}
