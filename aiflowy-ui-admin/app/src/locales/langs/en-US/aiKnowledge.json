@@ -48,14 +48,17 @@
     "fileSize": "File size"
   },
   "splitterDoc": {
-    "fileType": "fileType",
-    "splitterName": "segmenter",
-    "chunkSize": "segmentLength",
-    "overlapSize": "segmentOverlap",
-    "regex": "regularExpression",
-    "document": "document",
+    "fileType": "FileType",
+    "splitterName": "Segmenter",
+    "chunkSize": "SegmentLength",
+    "overlapSize": "SegmentOverlap",
+    "regex": "RegularExpression",
+    "document": "Document",
     "simpleDocumentSplitter": "SimpleDocumentSplitter",
     "simpleTokenizeSplitter": "SimpleTokenizeSplitter",
-    "regexDocumentSplitter": "RegexDocumentSplitter"
+    "regexDocumentSplitter": "RegexDocumentSplitter",
+    "uploadStatus": "UploadStatus",
+    "pendingUpload": "PendingUpload",
+    "completed": "Completed"
   }
 }

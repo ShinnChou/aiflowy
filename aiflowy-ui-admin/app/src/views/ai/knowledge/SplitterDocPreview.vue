@@ -6,12 +6,6 @@ import { api } from '#/api/request';
 import CategoryPanel from '#/components/categoryPanel/CategoryPanel.vue';
 import PreviewSearchKnowledge from '#/views/ai/knowledge/PreviewSearchKnowledge.vue';
 
-interface docPreviewType {
-  filePath: string;
-  fileName: string;
-  content: Array<string>;
-  sorting: number;
-}
 export interface FileInfo {
   filePath: string;
   fileName: string;
@@ -47,28 +41,51 @@ defineExpose({
   },
 });
 const knowledgeIdRef = ref<string>((route.query.id as string) || '');
+const selectedCategory = ref<any>();
+
 watch(
   () => props.pageNumber,
   (newVal) => {
-    splitterDocPreview(
-      newVal,
-      props.pageSize,
-      props.fliesList[0]!.filePath,
-      'textSplit',
-      props.fliesList[0]!.fileName,
-    );
+    if (selectedCategory.value) {
+      splitterDocPreview(
+        newVal,
+        props.pageSize,
+        selectedCategory.value.value,
+        'textSplit',
+        selectedCategory.value.label,
+      );
+    } else {
+      splitterDocPreview(
+        newVal,
+        props.pageSize,
+        props.fliesList[0]!.filePath,
+        'textSplit',
+        props.fliesList[0]!.fileName,
+      );
+    }
   },
 );
+
 watch(
   () => props.pageSize,
   (newVal) => {
-    splitterDocPreview(
-      props.pageNumber,
-      newVal,
-      props.fliesList[0]!.filePath,
-      'textSplit',
-      props.fliesList[0]!.fileName,
-    );
+    if (selectedCategory.value) {
+      splitterDocPreview(
+        props.pageNumber,
+        newVal,
+        selectedCategory.value.value,
+        'textSplit',
+        selectedCategory.value.label,
+      );
+    } else {
+      splitterDocPreview(
+        props.pageNumber,
+        newVal,
+        props.fliesList[0]!.filePath,
+        'textSplit',
+        props.fliesList[0]!.fileName,
+      );
+    }
   },
 );
 function splitterDocPreview(
@@ -113,6 +130,16 @@ onMounted(() => {
     props.fliesList[0]!.fileName,
   );
 });
+const changeCategory = (category: any) => {
+  selectedCategory.value = category;
+  splitterDocPreview(
+    props.pageNumber,
+    props.pageSize,
+    category.value,
+    'textSplit',
+    category.label,
+  );
+};
 </script>
 
 <template>
@@ -124,6 +151,7 @@ onMounted(() => {
       :expand-width="200"
       value-key="filePath"
       :default-selected-category="fliesList[0]!.filePath"
+      @click="changeCategory"
     />
     <PreviewSearchKnowledge :data="documentList" :hide-score="true" />
   </div>

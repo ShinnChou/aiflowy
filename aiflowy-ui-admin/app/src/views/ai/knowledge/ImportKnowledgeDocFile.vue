@@ -6,6 +6,7 @@ import { $t } from '@aiflowy/locales';
 import { Back } from '@element-plus/icons-vue';
 import { ElButton, ElPagination, ElStep, ElSteps } from 'element-plus';
 
+import ComfirmImportDocument from '#/views/ai/knowledge/ComfirmImportDocument.vue';
 import ImportKnowledgeFileContainer from '#/views/ai/knowledge/ImportKnowledgeFileContainer.vue';
 import SegmenterDoc from '#/views/ai/knowledge/SegmenterDoc.vue';
 import SplitterDocPreview from '#/views/ai/knowledge/SplitterDocPreview.vue';
@@ -18,6 +19,7 @@ const files = ref([]);
 const splitterParams = ref({});
 const activeStep = ref(1);
 const fileUploadRef = ref();
+const confirmImportRef = ref();
 const segmenterDocRef = ref();
 const pagination = ref({
   pageSize: 10,
@@ -32,8 +34,6 @@ const goToNextStep = () => {
   }
   if (activeStep.value === 2 && segmenterDocRef.value) {
     splitterParams.value = segmenterDocRef.value.getSplitterFormValues(); // 调用子组件暴露的方法
-    console.log('父组件获取到子组件的 segmenterData：', files);
-    console.log('父组件获取到子组件的 segmenterData：', splitterParams);
   }
 
   activeStep.value += 1;
@@ -42,16 +42,17 @@ const goToPreviousStep = () => {
   activeStep.value -= 1;
 };
 const handleSizeChange = (val: number) => {
-  console.log('分页大小改变：', val);
   pagination.value.pageSize = val;
 };
 const handleCurrentChange = (val: number) => {
-  console.log('分页页码改变：', val);
   pagination.value.currentPage = val;
 };
 const handleTotalUpdate = (newTotal: number) => {
-  console.log('分页总页数改变：', newTotal);
   pagination.value.total = newTotal; // 同步到父组件的 pagination.total
+};
+const confirmImport = () => {
+  // 确认导入
+  confirmImportRef.value.handleSave();
 };
 </script>
 
@@ -89,6 +90,14 @@ const handleTotalUpdate = (newTotal: number) => {
             @update-total="handleTotalUpdate"
           />
         </div>
+        <!--        确认导入-->
+        <div class="knw-file-confirm" v-if="activeStep === 4">
+          <ComfirmImportDocument
+            :splitter-params="splitterParams"
+            :files-list="files"
+            ref="confirmImportRef"
+          />
+        </div>
       </div>
     </div>
 
@@ -105,8 +114,11 @@ const handleTotalUpdate = (newTotal: number) => {
       <ElButton @click="goToPreviousStep" type="primary" v-if="activeStep > 1">
         {{ $t('button.previousStep') }}
       </ElButton>
-      <ElButton @click="goToNextStep" type="primary">
+      <ElButton @click="goToNextStep" type="primary" v-if="activeStep < 4">
         {{ $t('button.nextStep') }}
+      </ElButton>
+      <ElButton @click="confirmImport" type="primary" v-if="activeStep === 4">
+        {{ $t('button.startImport') }}
       </ElButton>
     </div>
   </div>
@@ -136,5 +148,8 @@ const handleTotalUpdate = (newTotal: number) => {
 }
 .imp-doc-page-container {
   margin-right: 12px;
+}
+.knw-file-confirm {
+  width: 100%;
 }
 </style>

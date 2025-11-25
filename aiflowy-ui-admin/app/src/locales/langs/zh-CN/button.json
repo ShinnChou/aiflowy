@@ -24,5 +24,6 @@
   "nextStep": "下一步",
   "previousStep": "上一步",
   "addLine": "增加行",
-  "batchImport": "批量导入"
+  "batchImport": "批量导入",
+  "startImport": "开始导入"
 }

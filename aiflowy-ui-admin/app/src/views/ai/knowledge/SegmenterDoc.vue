@@ -99,7 +99,7 @@ defineExpose({
         :label="$t('aiKnowledge.splitterDoc.chunkSize')"
         v-if="
           form.splitterName === 'SimpleDocumentSplitter' ||
-          form.splitterName === 'SimpleDocumentSplitter'
+          form.splitterName === 'SimpleTokenizeSplitter'
         "
         prop="chunkSize"
       >
