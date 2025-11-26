@@ -11,6 +11,7 @@ import {
   ElDropdown,
   ElDropdownItem,
   ElDropdownMenu,
+  ElIcon,
   ElTooltip,
 } from 'element-plus';
 
@@ -98,7 +99,14 @@ const hiddenActions = computed(() => {
                     :key="idx"
                     @click="action.onClick(item)"
                   >
-                    <div :class="action.className">{{ action.text }}</div>
+                    <template #default>
+                      <div :class="`${action.className} handle-div`">
+                        <ElIcon v-if="action.icon">
+                          <component :is="action.icon" />
+                        </ElIcon>
+                        {{ action.text }}
+                      </div>
+                    </template>
                   </ElDropdownItem>
                 </ElDropdownMenu>
               </template>
@@ -129,7 +137,12 @@ const hiddenActions = computed(() => {
   overflow-x: auto;
   padding: 10px 0;
 }
-
+.handle-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
+}
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
