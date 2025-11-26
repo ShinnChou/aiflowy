@@ -30,30 +30,38 @@ const actions: ActionButton[] = [
   {
     icon: Edit,
     text: $t('button.edit'),
-    action: 'edit',
     className: '',
     permission: '',
+    onClick: (row: any) => {
+      showDialog(row);
+    },
   },
   {
     icon: Tools,
     text: $t('button.design'),
-    action: 'design',
     className: '',
     permission: '',
+    onClick: (row: any) => {
+      toDesignPage(row);
+    },
   },
   {
     icon: VideoPlay,
     text: $t('button.run'),
-    action: 'run',
     className: '',
     permission: '',
+    onClick: (row: any) => {
+      alert(row.id);
+    },
   },
   {
     icon: Delete,
     text: $t('button.delete'),
-    action: 'delete',
     className: 'item-danger',
     permission: '',
+    onClick: (row: any) => {
+      remove(row);
+    },
   },
 ];
 onMounted(() => {
@@ -110,25 +118,6 @@ function remove(row: any) {
     },
   }).catch(() => {});
 }
-function handleAction(row: any, action: string) {
-  switch (action) {
-    case 'delete': {
-      remove(row);
-      break;
-    }
-    case 'design': {
-      toDesignPage(row);
-      break;
-    }
-    case 'edit': {
-      showDialog(row);
-      break;
-    }
-    case 'run': {
-      break;
-    }
-  }
-}
 function toDesignPage(row: any) {
   router.push({
     name: 'WorkflowDesign',
@@ -181,7 +170,6 @@ function toDesignPage(row: any) {
           :default-icon="workflowIcon"
           :data="pageList"
           :actions="actions"
-          @on-action="handleAction"
         />
       </template>
     </PageData>

@@ -17,9 +17,9 @@ import {
 export interface ActionButton {
   icon: any;
   text: string;
-  action: string;
   className: string;
   permission: string;
+  onClick: (row: any) => void;
 }
 
 export interface CardListProps {
@@ -36,7 +36,6 @@ const props = withDefaults(defineProps<CardListProps>(), {
   descField: 'description',
   actions: () => [],
 });
-const emit = defineEmits(['onAction']);
 const { hasAccessByCodes } = useAccess();
 const filterActions = computed(() => {
   return props.actions.filter((action) => {
@@ -51,9 +50,6 @@ const visibleActions = computed(() => {
 const hiddenActions = computed(() => {
   return filterActions.value.length > 3 ? filterActions.value.slice(3) : [];
 });
-function handleAction(row: any, action: any) {
-  emit('onAction', row, action);
-}
 </script>
 
 <template>
@@ -89,7 +85,7 @@ function handleAction(row: any, action: any) {
               :key="idx"
               :icon="action.icon"
               link
-              @click="handleAction(item, action.action)"
+              @click="action.onClick(item)"
             >
               {{ action.text }}
             </ElButton>
@@ -100,7 +96,7 @@ function handleAction(row: any, action: any) {
                   <ElDropdownItem
                     v-for="(action, idx) in hiddenActions"
                     :key="idx"
-                    @click="handleAction(item, action.action)"
+                    @click="action.onClick(item)"
                   >
                     <div :class="action.className">{{ action.text }}</div>
                   </ElDropdownItem>
