@@ -17,9 +17,11 @@ import {
 } from 'element-plus';
 
 import { api } from '#/api/request';
+import workflowIcon from '#/assets/ai/workflow/workflowIcon.png';
 import CardList from '#/components/page/CardList.vue';
 import PageData from '#/components/page/PageData.vue';
 import { $t } from '#/locales';
+import { router } from '#/router';
 import { useDictStore } from '#/store';
 
 import AiWorkflowModal from './AiWorkflowModal.vue';
@@ -28,30 +30,38 @@ const actions: ActionButton[] = [
   {
     icon: Edit,
     text: $t('button.edit'),
-    action: 'edit',
     className: '',
     permission: '',
+    onClick: (row: any) => {
+      showDialog(row);
+    },
   },
   {
     icon: Tools,
     text: $t('button.design'),
-    action: 'design',
     className: '',
     permission: '',
+    onClick: (row: any) => {
+      toDesignPage(row);
+    },
   },
   {
     icon: VideoPlay,
     text: $t('button.run'),
-    action: 'run',
     className: '',
     permission: '',
+    onClick: (row: any) => {
+      alert(row.id);
+    },
   },
   {
     icon: Delete,
     text: $t('button.delete'),
-    action: 'delete',
     className: 'item-danger',
     permission: '',
+    onClick: (row: any) => {
+      remove(row);
+    },
   },
 ];
 onMounted(() => {
@@ -61,7 +71,7 @@ const formRef = ref<FormInstance>();
 const pageDataRef = ref();
 const saveDialog = ref();
 const formInline = ref({
-  id: '',
+  title: '',
 });
 const dictStore = useDictStore();
 function initDict() {
@@ -108,23 +118,13 @@ function remove(row: any) {
     },
   }).catch(() => {});
 }
-function handleAction(row: any, action: string) {
-  switch (action) {
-    case 'delete': {
-      remove(row);
-      break;
-    }
-    case 'design': {
-      break;
-    }
-    case 'edit': {
-      showDialog(row);
-      break;
-    }
-    case 'run': {
-      break;
-    }
-  }
+function toDesignPage(row: any) {
+  router.push({
+    name: 'WorkflowDesign',
+    query: {
+      id: row.id,
+    },
+  });
 }
 </script>
 
@@ -132,8 +132,11 @@ function handleAction(row: any, action: string) {
   <div class="page-container">
     <AiWorkflowModal ref="saveDialog" @reload="reset" />
     <ElForm ref="formRef" :inline="true" :model="formInline">
-      <ElFormItem :label="$t('aiWorkflow.id')" prop="id">
-        <ElInput v-model="formInline.id" :placeholder="$t('aiWorkflow.id')" />
+      <ElFormItem :label="$t('aiWorkflow.title')" prop="title">
+        <ElInput
+          v-model="formInline.title"
+          :placeholder="$t('aiWorkflow.title')"
+        />
       </ElFormItem>
       <ElFormItem>
         <ElButton @click="search(formRef)" type="primary">
@@ -164,9 +167,9 @@ function handleAction(row: any, action: string) {
     >
       <template #default="{ pageList }">
         <CardList
+          :default-icon="workflowIcon"
           :data="pageList"
           :actions="actions"
-          @on-action="handleAction"
         />
       </template>
     </PageData>

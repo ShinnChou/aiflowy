@@ -8,18 +8,20 @@ import {
   ElAvatar,
   ElButton,
   ElCard,
+  ElDivider,
   ElDropdown,
   ElDropdownItem,
   ElDropdownMenu,
+  ElIcon,
   ElTooltip,
 } from 'element-plus';
 
 export interface ActionButton {
   icon: any;
   text: string;
-  action: string;
   className: string;
   permission: string;
+  onClick: (row: any) => void;
 }
 
 export interface CardListProps {
@@ -27,6 +29,7 @@ export interface CardListProps {
   titleField?: string;
   descField?: string;
   actions?: ActionButton[];
+  defaultIcon: any;
   data: any[];
 }
 const props = withDefaults(defineProps<CardListProps>(), {
@@ -35,7 +38,6 @@ const props = withDefaults(defineProps<CardListProps>(), {
   descField: 'description',
   actions: () => [],
 });
-const emit = defineEmits(['onAction']);
 const { hasAccessByCodes } = useAccess();
 const filterActions = computed(() => {
   return props.actions.filter((action) => {
@@ -50,9 +52,6 @@ const visibleActions = computed(() => {
 const hiddenActions = computed(() => {
   return filterActions.value.length > 3 ? filterActions.value.slice(3) : [];
 });
-function handleAction(row: any, action: any) {
-  emit('onAction', row, action);
-}
 </script>
 
 <template>
@@ -66,7 +65,7 @@ function handleAction(row: any, action: any) {
       >
         <div class="card-content">
           <div>
-            <ElAvatar :src="item[iconField]" />
+            <ElAvatar :src="item[iconField] || defaultIcon" />
           </div>
           <div style="width: 80%">
             <ElTooltip :content="item[titleField]" placement="top">
@@ -83,15 +82,21 @@ function handleAction(row: any, action: any) {
         </div>
         <template #footer>
           <div :class="visibleActions.length > 2 ? 'footer-div' : ''">
-            <ElButton
-              v-for="(action, idx) in visibleActions"
-              :key="idx"
-              :icon="action.icon"
-              link
-              @click="handleAction(item, action.action)"
-            >
-              {{ action.text }}
-            </ElButton>
+            <template v-for="(action, idx) in visibleActions" :key="idx">
+              <ElButton
+                :icon="action.icon"
+                style="color: var(--el-color-info-light-3)"
+                link
+                @click="action.onClick(item)"
+              >
+                {{ action.text }}
+              </ElButton>
+              <ElDivider
+                v-if="visibleActions.length > 1"
+                direction="vertical"
+              />
+            </template>
+
             <ElDropdown v-if="hiddenActions.length > 0" trigger="click">
               <ElButton :icon="MoreFilled" link />
               <template #dropdown>
@@ -99,9 +104,16 @@ function handleAction(row: any, action: any) {
                   <ElDropdownItem
                     v-for="(action, idx) in hiddenActions"
                     :key="idx"
-                    @click="handleAction(item, action.action)"
+                    @click="action.onClick(item)"
                   >
-                    <div :class="action.className">{{ action.text }}</div>
+                    <template #default>
+                      <div :class="`${action.className} handle-div`">
+                        <ElIcon v-if="action.icon">
+                          <component :is="action.icon" />
+                        </ElIcon>
+                        {{ action.text }}
+                      </div>
+                    </template>
                   </ElDropdownItem>
                 </ElDropdownMenu>
               </template>
@@ -115,6 +127,7 @@ function handleAction(row: any, action: any) {
 
 <style scoped>
 :deep(.el-card__footer) {
+  border-top: none;
   background:
     linear-gradient(
       180deg,
@@ -132,7 +145,12 @@ function handleAction(row: any, action: any) {
   overflow-x: auto;
   padding: 10px 0;
 }
-
+.handle-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
+}
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
