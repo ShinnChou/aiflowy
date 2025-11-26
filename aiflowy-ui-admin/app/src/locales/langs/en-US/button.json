@@ -27,5 +27,6 @@
   "batchImport": "BatchImport",
   "startImport": "StartImport",
   "design": "Design",
-  "run": "Run"
+  "run": "Run",
+  "runTest": "RunTest"
 }
