@@ -6,11 +6,12 @@ import { getOptions } from '@aiflowy/utils';
 
 import { ArrowLeft, Position } from '@element-plus/icons-vue';
 import { Tinyflow } from '@tinyflow-ai/vue';
-import { ElButton, ElMessage, ElSkeleton } from 'element-plus';
+import { ElButton, ElDrawer, ElMessage, ElSkeleton } from 'element-plus';
 
 import { api } from '#/api/request';
 import { $t } from '#/locales';
 import { router } from '#/router';
+import WorkflowForm from '#/views/ai/workflow/components/WorkflowForm.vue';
 
 import { getCustomNode } from './customNode/index';
 
@@ -38,6 +39,7 @@ onUnmounted(() => {
 const tinyflowRef = ref<InstanceType<typeof Tinyflow> | null>(null);
 const workflowId = ref(route.query.id);
 const workflowInfo = ref<any>({});
+const runParams = ref<any>(null);
 const tinyFlowData = ref<any>(null);
 const llmList = ref<any>([]);
 const knowledgeList = ref<any>([]);
@@ -63,7 +65,8 @@ const handleKeydown = (event: KeyboardEvent) => {
     }
   }
 };
-
+const drawerVisible = ref(false);
+const submitLoading = ref(false);
 watch(
   [() => tinyFlowData.value, () => llmList.value, () => knowledgeList.value],
   ([tinyFlowData, llmList, knowledgeList]) => {
@@ -75,12 +78,14 @@ watch(
 // functions
 async function runWorkflow() {
   if (!saveLoading.value) {
-    await handleSave();
+    await handleSave().then(() => {
+      getRunningParams();
+    });
   }
 }
 async function handleSave(showMsg: boolean = false) {
   saveLoading.value = true;
-  api
+  await api
     .post('/api/v1/aiWorkflow/update', {
       id: workflowId.value,
       content: tinyflowRef.value?.getData(),
@@ -110,10 +115,28 @@ function getKnowledgeList() {
     knowledgeList.value = res.data;
   });
 }
+function getRunningParams() {
+  api
+    .get(`/api/v1/aiWorkflow/getRunningParameters?id=${workflowId.value}`)
+    .then((res) => {
+      runParams.value = res.data;
+      drawerVisible.value = true;
+    });
+}
 </script>
 
 <template>
   <div class="head-div h-full w-full">
+    <ElDrawer
+      v-model="drawerVisible"
+      title="I am the title"
+      size="600px"
+    >
+      <WorkflowForm
+        :submit-loading="submitLoading"
+        :workflow-params="runParams"
+      />
+    </ElDrawer>
     <div class="flex items-center justify-between border-b p-2.5">
       <div>
         <ElButton :icon="ArrowLeft" link @click="router.back()">
