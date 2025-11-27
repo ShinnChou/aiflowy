@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { $t } from '@aiflowy/locales';
@@ -20,13 +20,6 @@ import { api } from '#/api/request';
 const route = useRoute();
 const router = useRouter();
 
-interface AccordionItem {
-  id: number;
-  title: string;
-  isOpen: boolean;
-  isEdit: boolean;
-}
-
 const toolId = ref<string>((route.query.id as string) || '');
 
 onMounted(() => {
@@ -35,7 +28,13 @@ onMounted(() => {
   }
   getPluginToolInfo();
 });
-const pluginToolInfo = ref<any>({});
+const pluginToolInfo = ref<any>({
+  name: '',
+  englishName: '',
+  description: '',
+  basePath: '',
+  requestMethod: '',
+});
 const pluginInfo = ref<any>({});
 
 function getPluginToolInfo() {
@@ -51,80 +50,137 @@ function getPluginToolInfo() {
     });
 }
 
-const accordionData = ref<AccordionItem[]>([
-  {
-    id: 1,
-    title: $t('aiPluginTool.pluginToolEdit.basicInfo'),
-    isOpen: true,
-    isEdit: false,
-  },
-  {
-    id: 2,
-    title: $t('aiPluginTool.pluginToolEdit.configureInputParameters'),
-    isOpen: false,
-    isEdit: false,
-  },
-  {
-    id: 3,
-    title: $t('aiPluginTool.pluginToolEdit.configureOutputParameters'),
-    isOpen: false,
-    isEdit: false,
-  },
-]);
+const pluginBasicCollapse = ref({
+  title: $t('aiPluginTool.pluginToolEdit.basicInfo'),
+  isOpen: true,
+  isEdit: false,
+});
+const pluginBasicCollapseInputParams = ref({
+  title: $t('aiPluginTool.pluginToolEdit.configureInputParameters'),
+  isOpen: true,
+  isEdit: false,
+});
+const configureOutputParameters = ref({
+  title: $t('aiPluginTool.pluginToolEdit.configureOutputParameters'),
+  isOpen: true,
+  isEdit: false,
+});
+const handleClickHeader = (index: number) => {
+  switch (index) {
+    case 1: {
+      pluginBasicCollapse.value.isOpen = !pluginBasicCollapse.value.isOpen;
+      break;
+    }
+    case 2: {
+      pluginBasicCollapseInputParams.value.isOpen =
+        !pluginBasicCollapseInputParams.value.isOpen;
+
+      break;
+    }
+    case 3: {
+      configureOutputParameters.value.isOpen =
+        !configureOutputParameters.value.isOpen;
+
+      break;
+    }
+    // No default
+  }
+};
 
 const back = () => {
   router.back();
 };
-const allowMultiple = ref(true);
-const togglePanel = (index: number) => {
-  const item = accordionData.value[index];
+const rules = reactive({
+  name: [{ required: true, message: $t('message.required'), trigger: 'blur' }],
+  requestMethod: [
+    {
+      required: true,
+      message: $t('message.required'),
+      trigger: 'blur',
+    },
+  ],
+  basePath: [
+    { required: true, message: $t('message.required'), trigger: 'blur' },
+  ],
+  englishName: [
+    { required: true, message: $t('message.required'), trigger: 'blur' },
+  ],
+  description: [
+    {
+      required: true,
+      message: $t('message.required'),
+      trigger: 'blur',
+      whiteSpace: true,
+    },
+  ],
+});
+const saveForm = ref();
 
-  if (!item) return;
-
-  if (!allowMultiple.value) {
-    accordionData.value.forEach((otherItem, i) => {
-      if (i !== index && otherItem) {
-        otherItem.isOpen = false;
-      }
-    });
-  }
-
-  item.isOpen = !item.isOpen;
-};
-const updatePluginTool = () => {
-  api
-    .post('/api/v1/aiPluginTool/tool/update', {
-      id: toolId.value,
-      name: pluginToolInfo.value.name,
-      englishName: pluginToolInfo.value.englishName,
-      description: pluginToolInfo.value.description,
-      basePath: pluginToolInfo.value.basePath,
-      requestMethod: pluginToolInfo.value.requestMethod,
-    })
-    .then((res) => {
-      if (res.errorCode === 0) {
-        ElMessage.success($t('message.updateOkMessage'));
-      }
-    });
+const updatePluginTool = (index: number) => {
+  if (!saveForm.value) return;
+  saveForm.value.validate((valid: boolean) => {
+    if (valid) {
+      api
+        .post('/api/v1/aiPluginTool/tool/update', {
+          id: toolId.value,
+          name: pluginToolInfo.value.name,
+          englishName: pluginToolInfo.value.englishName,
+          description: pluginToolInfo.value.description,
+          basePath: pluginToolInfo.value.basePath,
+          requestMethod: pluginToolInfo.value.requestMethod,
+        })
+        .then((res) => {
+          if (res.errorCode === 0) {
+            ElMessage.success($t('message.updateOkMessage'));
+            if (index === 1) {
+              pluginBasicCollapse.value.isEdit = false;
+            }
+          }
+        });
+    }
+  });
 };
 const handleEdit = (index: number) => {
-  const item = accordionData.value[index];
-  if (!item) return;
-  item.isEdit = true;
+  switch (index) {
+    case 1: {
+      pluginBasicCollapse.value.isEdit = true;
+      break;
+    }
+    case 2: {
+      pluginBasicCollapseInputParams.value.isEdit = true;
+      break;
+    }
+    case 3: {
+      configureOutputParameters.value.isEdit = true;
+      break;
+    }
+    // No default
+  }
 };
 const handleSave = (index: number) => {
-  updatePluginTool();
-  const item = accordionData.value[index];
-  if (!item) return;
-  item.isEdit = false;
+  updatePluginTool(index);
 };
 const handleCancel = (index: number) => {
   getPluginToolInfo();
-  const item = accordionData.value[index];
-  if (!item) return;
-  item.isEdit = false;
+  switch (index) {
+    case 1: {
+      pluginBasicCollapse.value.isEdit = false;
+
+      break;
+    }
+    case 2: {
+      pluginBasicCollapseInputParams.value.isEdit = false;
+
+      break;
+    }
+    case 3: {
+      configureOutputParameters.value.isEdit = false;
+
+      break;
+    }
+    // No default
+  }
 };
-const saveForm = ref<any>();
 const requestMethodOptions = [
   {
     label: 'POST',
@@ -161,38 +217,40 @@ const requestMethodOptions = [
     </div>
     <!-- 折叠面板列表 -->
     <div class="accordion-list">
+      <!--      基本信息-->
       <div
-        v-for="(item, index) in accordionData"
-        :key="item.id"
         class="accordion-item"
-        :class="{ 'accordion-item--active': item.isOpen }"
+        :class="{ 'accordion-item--active': pluginBasicCollapse.isOpen }"
       >
         <!-- 面板头部 -->
-        <div class="accordion-header" @click="togglePanel(index)">
+        <div class="accordion-header" @click="handleClickHeader(1)">
           <div class="column-header-container">
             <div
               class="accordion-icon"
-              :class="{ 'accordion-icon--rotated': item.isOpen }"
+              :class="{ 'accordion-icon--rotated': pluginBasicCollapse.isOpen }"
             >
               ▼
             </div>
-            <h3 class="accordion-title">{{ item.title }}</h3>
+            <h3 class="accordion-title">{{ pluginBasicCollapse.title }}</h3>
           </div>
           <div>
             <ElButton
-              @click.stop="handleEdit(index)"
+              @click.stop="handleEdit(1)"
               type="primary"
-              v-if="!item.isEdit"
+              v-if="!pluginBasicCollapse.isEdit"
             >
               {{ $t('button.edit') }}
             </ElButton>
-            <ElButton @click.stop="handleCancel(index)" v-if="item.isEdit">
+            <ElButton
+              @click.stop="handleCancel(1)"
+              v-if="pluginBasicCollapse.isEdit"
+            >
               {{ $t('button.cancel') }}
             </ElButton>
             <ElButton
-              @click.stop="handleSave(index)"
+              @click.stop="handleSave(1)"
               type="primary"
-              v-if="item.isEdit"
+              v-if="pluginBasicCollapse.isEdit"
             >
               {{ $t('button.save') }}
             </ElButton>
@@ -202,105 +260,165 @@ const requestMethodOptions = [
         <!-- 面板内容 -->
         <div
           class="accordion-content"
-          :class="{ 'accordion-content--open': item.isOpen }"
+          :class="{ 'accordion-content--open': pluginBasicCollapse.isOpen }"
         >
           <div class="accordion-content-inner">
-            <div v-if="index === 0">
-              <!--编辑基本信息-->
-              <div v-if="item.isEdit">
-                <div class="plugin-tool-info-edit-container">
-                  <ElForm
-                    ref="saveForm"
-                    :model="pluginToolInfo"
-                    label-width="80px"
-                    status-icon
+            <!--编辑基本信息-->
+            <div v-show="pluginBasicCollapse.isEdit">
+              <div class="plugin-tool-info-edit-container">
+                <ElForm
+                  ref="saveForm"
+                  :model="pluginToolInfo"
+                  label-width="80px"
+                  status-icon
+                  :rules="rules"
+                >
+                  <ElFormItem :label="$t('aiPluginTool.name')" prop="name">
+                    <ElInput v-model.trim="pluginToolInfo.name" />
+                  </ElFormItem>
+                  <ElFormItem
+                    :label="$t('aiPluginTool.englishName')"
+                    prop="englishName"
                   >
-                    <ElFormItem :label="$t('aiPluginTool.name')" prop="name">
-                      <ElInput v-model.trim="pluginToolInfo.name" />
-                    </ElFormItem>
-                    <ElFormItem
-                      :label="$t('aiPluginTool.englishName')"
-                      prop="englishName"
+                    <ElInput v-model.trim="pluginToolInfo.englishName" />
+                  </ElFormItem>
+                  <ElFormItem
+                    :label="$t('aiPluginTool.pluginToolEdit.toolPath')"
+                    prop="basePath"
+                  >
+                    <ElInput v-model.trim="pluginToolInfo.basePath">
+                      <template #prepend>{{ pluginInfo.baseUrl }}</template>
+                    </ElInput>
+                  </ElFormItem>
+                  <ElFormItem
+                    :label="$t('aiPluginTool.description')"
+                    prop="description"
+                  >
+                    <ElInput
+                      v-model.trim="pluginToolInfo.description"
+                      type="textarea"
+                      :rows="4"
+                    />
+                  </ElFormItem>
+                  <ElFormItem
+                    :label="$t('aiPluginTool.pluginToolEdit.requestMethod')"
+                    prop="requestMethod"
+                  >
+                    <ElSelect
+                      v-model="pluginToolInfo.requestMethod"
+                      placeholder="请选择"
                     >
-                      <ElInput v-model.trim="pluginToolInfo.englishName" />
-                    </ElFormItem>
-                    <ElFormItem
-                      :label="$t('aiPluginTool.pluginToolEdit.toolPath')"
-                      prop="basePath"
-                    >
-                      <ElInput v-model.trim="pluginToolInfo.basePath">
-                        <template #prepend>{{ pluginInfo.baseUrl }}</template>
-                      </ElInput>
-                    </ElFormItem>
-                    <ElFormItem
-                      :label="$t('aiPluginTool.description')"
-                      prop="description"
-                    >
-                      <ElInput
-                        v-model.trim="pluginToolInfo.description"
-                        type="textarea"
-                        :rows="4"
+                      <ElOption
+                        v-for="option in requestMethodOptions"
+                        :key="option.value"
+                        :label="option.label"
+                        :value="option.value"
                       />
-                    </ElFormItem>
-                    <ElFormItem
-                      :label="$t('aiPluginTool.pluginToolEdit.requestMethod')"
-                      prop="requestMethod"
-                    >
-                      <ElSelect
-                        v-model="pluginToolInfo.requestMethod"
-                        placeholder="请选择"
-                      >
-                        <ElOption
-                          v-for="option in requestMethodOptions"
-                          :key="option.value"
-                          :label="option.label"
-                          :value="option.value"
-                        />
-                      </ElSelect>
-                    </ElFormItem>
-                  </ElForm>
-                </div>
+                    </ElSelect>
+                  </ElFormItem>
+                </ElForm>
               </div>
-              <!--显示基本信息-->
-              <div v-else class="plugin-tool-info-view-container">
-                <div class="plugin-tool-view-item">
-                  <div class="view-item-title">
-                    {{ $t('aiPluginTool.name') }}:
-                  </div>
-                  <div>{{ pluginToolInfo.name }}</div>
+            </div>
+            <!--显示基本信息-->
+            <div
+              v-show="!pluginBasicCollapse.isEdit"
+              class="plugin-tool-info-view-container"
+            >
+              <div class="plugin-tool-view-item">
+                <div class="view-item-title">
+                  {{ $t('aiPluginTool.name') }}:
                 </div>
-                <div class="plugin-tool-view-item">
-                  <div class="view-item-title">
-                    {{ $t('aiPluginTool.englishName') }}:
-                  </div>
-                  <div>{{ pluginToolInfo.englishName }}</div>
+                <div>{{ pluginToolInfo.name }}</div>
+              </div>
+              <div class="plugin-tool-view-item">
+                <div class="view-item-title">
+                  {{ $t('aiPluginTool.englishName') }}:
                 </div>
-                <div class="plugin-tool-view-item">
-                  <div class="view-item-title">
-                    {{ $t('aiPluginTool.description') }}:
-                  </div>
-                  <div>{{ pluginToolInfo.description }}</div>
+                <div>{{ pluginToolInfo.englishName }}</div>
+              </div>
+              <div class="plugin-tool-view-item">
+                <div class="view-item-title">
+                  {{ $t('aiPluginTool.description') }}:
                 </div>
-                <div class="plugin-tool-view-item">
-                  <div class="view-item-title">
-                    {{ $t('aiPluginTool.pluginToolEdit.toolPath') }}:
-                  </div>
-                  <div>
-                    {{ pluginInfo.baseUrl }}{{ pluginToolInfo.basePath }}
-                  </div>
+                <div>{{ pluginToolInfo.description }}</div>
+              </div>
+              <div class="plugin-tool-view-item">
+                <div class="view-item-title">
+                  {{ $t('aiPluginTool.pluginToolEdit.toolPath') }}:
                 </div>
-                <div class="plugin-tool-view-item">
-                  <div class="view-item-title">
-                    {{ $t('aiPluginTool.pluginToolEdit.requestMethod') }}:
-                  </div>
-                  <div>
-                    {{ pluginToolInfo.requestMethod }}
-                  </div>
+                <div>{{ pluginInfo.baseUrl }}{{ pluginToolInfo.basePath }}</div>
+              </div>
+              <div class="plugin-tool-view-item">
+                <div class="view-item-title">
+                  {{ $t('aiPluginTool.pluginToolEdit.requestMethod') }}:
+                </div>
+                <div>
+                  {{ pluginToolInfo.requestMethod }}
                 </div>
               </div>
             </div>
-            <div v-if="index === 1">1</div>
-            <div v-if="index === 2">2</div>
+          </div>
+        </div>
+      </div>
+      <!--      输入参数-->
+      <div
+        class="accordion-item"
+        :class="{
+          'accordion-item--active': pluginBasicCollapseInputParams.isOpen,
+        }"
+      >
+        <!-- 面板头部 -->
+        <div class="accordion-header" @click="handleClickHeader(2)">
+          <div class="column-header-container">
+            <div
+              class="accordion-icon"
+              :class="{
+                'accordion-icon--rotated':
+                  pluginBasicCollapseInputParams.isOpen,
+              }"
+            >
+              ▼
+            </div>
+            <h3 class="accordion-title">
+              {{ pluginBasicCollapseInputParams.title }}
+            </h3>
+          </div>
+          <div>
+            <ElButton
+              @click.stop="handleEdit(2)"
+              type="primary"
+              v-if="!pluginBasicCollapseInputParams.isEdit"
+            >
+              {{ $t('button.edit') }}
+            </ElButton>
+            <ElButton
+              @click.stop="handleCancel(2)"
+              v-if="pluginBasicCollapseInputParams.isEdit"
+            >
+              {{ $t('button.cancel') }}
+            </ElButton>
+            <ElButton
+              @click.stop="handleSave(2)"
+              type="primary"
+              v-if="pluginBasicCollapseInputParams.isEdit"
+            >
+              {{ $t('button.save') }}
+            </ElButton>
+          </div>
+        </div>
+
+        <!-- 面板内容 -->
+        <div
+          class="accordion-content"
+          :class="{
+            'accordion-content--open': pluginBasicCollapseInputParams.isOpen,
+          }"
+        >
+          <div class="accordion-content-inner">
+            <!--编辑基本信息-->
+            <div v-show="pluginBasicCollapseInputParams.isEdit">
+              <div class="plugin-tool-info-edit-container">222</div>
+            </div>
           </div>
         </div>
       </div>
