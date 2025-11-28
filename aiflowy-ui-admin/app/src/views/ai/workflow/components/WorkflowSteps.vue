@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import type { ServerSentEventMessage } from 'fetch-event-stream';
 
-import { computed, reactive, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
-import { sortNodes } from '@aiflowy/utils';
+import { preferences } from '@aiflowy/preferences';
 
-import { ElCollapse, ElCollapseItem } from 'element-plus';
+import { CircleCloseFilled, SuccessFilled } from '@element-plus/icons-vue';
+import { ElCollapse, ElCollapseItem, ElIcon } from 'element-plus';
+import { JsonViewer } from 'vue3-json-viewer';
+
+import 'vue3-json-viewer/dist/vue3-json-viewer.css';
 
 export interface WorkflowStepsProps {
   workflowId: any;
@@ -13,44 +17,46 @@ export interface WorkflowStepsProps {
   nodeJson: any;
 }
 const props = defineProps<WorkflowStepsProps>();
-const nodeStates = reactive<Record<string, string>>({});
-const nodeResults = reactive<Record<string, any>>({});
+const themeMode = ref(preferences.theme.mode);
 watch(
-  () => props.executeMessage,
-  (newMessage) => {
-    if (newMessage && newMessage.data) {
-      try {
-        const parsedMessage = JSON.parse(newMessage.data).content;
-        if (parsedMessage && parsedMessage.nodeId && parsedMessage.status) {
-          nodeStates[parsedMessage.nodeId] = parsedMessage.status;
-          if (parsedMessage.status === 'end') {
-            nodeResults[parsedMessage.nodeId] = parsedMessage.res;
-          }
-        }
-      } catch (error) {
-        console.error('解析消息失败:', error);
-      }
+  () => preferences.theme.mode,
+  (newVal) => {
+    themeMode.value = newVal;
+  },
+);
+const nodes = ref<any[]>([]);
+watch(
+  () => props.nodeJson,
+  (newVal) => {
+    if (nodes.value.length === 0 && newVal && newVal.length > 0) {
+      nodes.value = [...newVal];
     }
   },
   { immediate: true },
 );
-
-const nodes = computed(() => {
-  const sortedNodes = sortNodes(props.nodeJson);
-
-  // 为每个节点设置初始状态
-  sortedNodes.forEach((node) => {
-    if (!nodeStates[node.key]) {
-      nodeStates[node.key] = node.status || 'pending';
+watch(
+  () => props.executeMessage,
+  (newMsg) => {
+    if (newMsg && newMsg.data) {
+      try {
+        const msg = JSON.parse(newMsg.data).content;
+        if (msg.nodeId && msg.status) {
+          // 直接在原数组中找到该对象
+          const targetNode = nodes.value.find(
+            (node) => node.key === msg.nodeId,
+          );
+          if (targetNode) {
+            targetNode.status = msg.status;
+            targetNode.content = msg.res || msg.errorMsg;
+          }
+        }
+      } catch (error) {
+        console.error('parse sse message error:', error);
+      }
     }
-  });
-
-  return sortedNodes.map((node) => ({
-    ...node,
-    status: nodeStates[node.key] || node.status || 'pending',
-    result: nodeResults[node.key] || '',
-  }));
-});
+  },
+  { deep: true },
+);
 const activeName = ref('1');
 </script>
 
@@ -58,15 +64,51 @@ const activeName = ref('1');
   <div>
     <ElCollapse v-model="activeName" accordion expand-icon-position="left">
       <ElCollapseItem
-        v-for="(node, idx) in nodes"
-        :key="idx"
+        v-for="node in nodes"
+        :key="node.key"
         :title="`${node.label}-${node.status}`"
         :name="node.key"
       >
-        {{ node.key }} - {{ node.result }}
+        <template #title>
+          <div class="flex items-center justify-between">
+            <div>
+              {{ node.label }}
+            </div>
+            <div class="flex items-center">
+              <ElIcon v-if="node.status === 'end'" color="green" size="20">
+                <SuccessFilled />
+              </ElIcon>
+              <div v-if="node.status === 'start'" class="spinner"></div>
+              <ElIcon v-if="node.status === 'nodeError'" color="red" size="20">
+                <CircleCloseFilled />
+              </ElIcon>
+            </div>
+          </div>
+        </template>
+        <div>
+          <JsonViewer :value="node.content || {}" copyable :theme="themeMode" />
+        </div>
       </ElCollapseItem>
     </ElCollapse>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--el-color-primary);
+  border-right-color: var(--el-color-primary);
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>

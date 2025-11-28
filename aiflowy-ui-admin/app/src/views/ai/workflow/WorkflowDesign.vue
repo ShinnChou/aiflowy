@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
-import { getOptions } from '@aiflowy/utils';
+import { getOptions, sortNodes } from '@aiflowy/utils';
 
 import { ArrowLeft, Position } from '@element-plus/icons-vue';
 import { Tinyflow } from '@tinyflow-ai/vue';
@@ -140,7 +140,7 @@ function onExecuting(msg: any) {
       <WorkflowSteps
         :workflow-id="workflowId"
         :execute-message="executeMessage"
-        :node-json="tinyFlowData"
+        :node-json="sortNodes(tinyFlowData)"
       />
     </ElDrawer>
     <div class="flex items-center justify-between border-b p-2.5">
