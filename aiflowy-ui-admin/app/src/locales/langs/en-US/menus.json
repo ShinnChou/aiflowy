@@ -14,6 +14,14 @@
     "title": "AI",
     "resources": "Resources",
     "datacenter": "Datacenter",
-    "workflow": "Workflow"
+    "workflow": "Workflow",
+    "plugin": "Plugin",
+    "llm": "LLM",
+    "knowledge": "Knowledge"
+  },
+  "settings": {
+    "title": "SettingsConfiguration",
+    "settingsConfig": "SettingsConfig",
+    "apiKey": "API Key"
   }
 }

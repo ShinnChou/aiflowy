@@ -14,6 +14,14 @@
     "title": "AI能力",
     "resources": "素材库",
     "datacenter": "数据中枢",
-    "workflow": "工作流"
+    "workflow": "工作流",
+    "plugin": "插件",
+    "llm": "大模型",
+    "knowledge": "知识库"
+  },
+  "settings": {
+    "title": "系统配置",
+    "settingsConfig": "系统设置",
+    "apiKey": "API密钥"
   }
 }

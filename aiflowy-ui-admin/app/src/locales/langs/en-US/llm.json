@@ -41,5 +41,11 @@
     "brand": "Please enter the brand",
     "llmModel": "Please enter the llmModel",
     "description": "Please enter the description"
+  },
+  "actions": {
+    "verifyConfiguration": "Verify Configuration"
+  },
+  "message": {
+    "verifySuccess": "Verification successful"
   }
 }

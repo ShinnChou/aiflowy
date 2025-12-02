@@ -17,6 +17,7 @@ import {
 } from 'element-plus';
 
 import { getLlmBrandList, saveLlm, updateLlm } from '#/api/ai/llm.js';
+import { api } from '#/api/request';
 import UploadAvatar from '#/components/upload/UploadAvatar.vue';
 import { $t } from '#/locales';
 
@@ -276,6 +277,19 @@ const handleConfirm = () => {
     }
   });
 };
+const handleVerify = () => {
+  api
+    .post('/api/v1/aiLlm/verifyLlmConfig', {
+      ...llmForm,
+    })
+    .then((res) => {
+      if (res.errorCode === 0) {
+        ElMessage.success($t('llm.message.verifySuccess'));
+      } else {
+        ElMessage.error(res.message);
+      }
+    });
+};
 </script>
 
 <template>
@@ -477,6 +491,9 @@ const handleConfirm = () => {
     </div>
     <template #footer>
       <div class="dialog-footer">
+        <ElButton @click="handleVerify()">
+          {{ $t('llm.actions.verifyConfiguration') }}
+        </ElButton>
         <ElButton @click="LlmAddOrUpdateDialog = false">
           {{ $t('button.cancel') }}
         </ElButton>
@@ -493,6 +510,8 @@ const handleConfirm = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: calc(100vh - 161px);
+  overflow: auto;
 }
 .model-select-container {
   display: flex;

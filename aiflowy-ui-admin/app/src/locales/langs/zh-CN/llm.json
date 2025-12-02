@@ -38,5 +38,11 @@
     "brand": "请选择品牌",
     "llmModel": "请输入大模型名称",
     "description": "请输入描述"
+  },
+  "actions": {
+    "verifyConfiguration": "验证配置"
+  },
+  "message": {
+    "verifySuccess": "验证成功"
   }
 }
