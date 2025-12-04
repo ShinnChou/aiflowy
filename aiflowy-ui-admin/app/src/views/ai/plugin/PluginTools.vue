@@ -52,7 +52,6 @@ const pluginToolRef = ref();
     <div class="plugin-tools-header">
       <HeaderSearch
         :buttons="headerButtons"
-        search-placeholder="搜索用户"
         @search="handleSearch"
         @button-click="handleButtonClick"
       />

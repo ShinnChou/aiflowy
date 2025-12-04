@@ -27,6 +27,7 @@ const emit = defineEmits(['reload']);
 const entity = reactive({
   pluginId: '',
   name: '',
+  englishName: '',
   description: '',
 });
 
@@ -34,9 +35,17 @@ const saveForm = ref<FormInstance>();
 const dialogVisible = ref(false);
 const isAdd = ref(true);
 const btnLoading = ref(false);
-
+const ENGLISH_NAME_REG = /^[\w-]{1,64}$/;
 const rules = ref({
   name: [{ required: true, message: $t('message.required'), trigger: 'blur' }],
+  englishName: [
+    {
+      required: true,
+      message: $t('message.englishNameRule'),
+      trigger: 'blur',
+      pattern: ENGLISH_NAME_REG,
+    },
+  ],
 });
 
 // 安全地打开对话框
@@ -159,6 +168,9 @@ defineExpose({
     >
       <ElFormItem :label="$t('aiPluginTool.name')" prop="name">
         <ElInput v-model.trim="entity.name" />
+      </ElFormItem>
+      <ElFormItem :label="$t('aiPluginTool.englishName')" prop="englishName">
+        <ElInput v-model.trim="entity.englishName" />
       </ElFormItem>
       <ElFormItem :label="$t('aiPluginTool.description')" prop="description">
         <ElInput v-model.trim="entity.description" type="textarea" :rows="4" />
