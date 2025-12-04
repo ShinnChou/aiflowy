@@ -103,6 +103,7 @@ public class AiLlm extends AiLlmBase {
         openAIChatConfig.setEndpoint(getLlmEndpoint());
         openAIChatConfig.setApiKey(getLlmApiKey());
         openAIChatConfig.setModel(getLlmModel());
+        openAIChatConfig.setLogEnabled(false);
         Properties properties = PropertiesUtil.textToProperties(getLlmExtraConfig() == null ? "" : getLlmExtraConfig());
         String chatPath = properties.getProperty("chatPath");
         Map<String, Object> options = getOptions();

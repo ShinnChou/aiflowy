@@ -1,5 +1,6 @@
 package tech.aiflowy.ai.entity;
 
+import com.agentsflex.core.model.chat.tool.Tool;
 import tech.aiflowy.ai.entity.base.AiPluginsBase;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Table;
@@ -23,5 +24,9 @@ public class AiPlugins extends AiPluginsBase {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Tool toTool() {
+        return new AiPluginsFunction(this);
     }
 }
