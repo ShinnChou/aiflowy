@@ -1,5 +1,6 @@
 package tech.aiflowy.ai.entity;
 
+import com.agentsflex.core.model.chat.tool.Tool;
 import com.agentsflex.core.store.DocumentStore;
 import com.agentsflex.store.aliyun.AliyunVectorStore;
 import com.agentsflex.store.aliyun.AliyunVectorStoreConfig;
@@ -88,5 +89,9 @@ public class AiKnowledge extends AiKnowledgeBase {
 
     private <T> T getStoreConfig(Class<T> clazz) {
         return PropertiesUtil.propertiesTextToEntity(this.getVectorStoreConfig(), clazz);
+    }
+
+    public Tool toFunction(boolean needEnglishName) {
+        return new AiKnowledgeFunction(this, needEnglishName);
     }
 }
