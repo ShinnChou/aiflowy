@@ -10,6 +10,7 @@ import com.agentsflex.core.model.chat.response.AiMessageResponse;
 import com.agentsflex.core.model.chat.tool.GlobalToolInterceptors;
 import com.agentsflex.core.model.client.StreamContext;
 import com.agentsflex.core.prompt.MemoryPrompt;
+import com.agentsflex.core.prompt.SimplePrompt;
 import com.agentsflex.core.util.CollectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,27 +89,25 @@ public class AiBotServiceImpl extends ServiceImpl<AiBotMapper, AiBot> implements
     public SseEmitter startChat(BigInteger botId, ChatModel chatModel, String prompt, MemoryPrompt memoryPrompt, ChatOptions chatOptions, String sessionId) {
 
         GlobalToolInterceptors.addInterceptor(new ToolLoggingInterceptor());
-
-        // 完成时移除emitter
-        String currentUserId = StpUtil.getLoginIdAsString();
+        String emitterKey = StpUtil.getLoginIdAsString() + "_" + sessionId;
         SseEmitter emitter = ChatSseEmitter.create();
         emitter.onCompletion(() -> {
-            emitters.remove(currentUserId);
-            log.debug("SSE连接完成，移除用户[{}]的Emitter", currentUserId);
+            emitters.remove(emitterKey);
+            log.debug("SSE连接完成，移除用户[{}]的Emitter", emitterKey);
         });
         emitter.onTimeout(() -> {
-            emitters.remove(currentUserId);
+            emitters.remove(emitterKey);
             emitter.complete();
-            log.warn("SSE连接超时，移除用户[{}]的Emitter", currentUserId);
+            log.warn("SSE连接超时，移除用户[{}]的Emitter", emitterKey);
         });
         emitter.onError((e) -> {
-            emitters.remove(currentUserId);
+            emitters.remove(emitterKey);
             emitter.completeWithError(e);
-            log.error("SSE连接异常，移除用户[{}]的Emitter", currentUserId, e);
+            log.error("SSE连接异常，移除用户[{}]的Emitter", emitterKey, e);
         });
-        System.out.println("emitters大小" + emitters.size()) ;
-        emitters.put(currentUserId, emitter);
-        log.debug("新增SSE连接，用户[{}]，当前活跃连接数：{}", currentUserId, emitters.size());
+        System.out.println("emitters大小" + emitters.size());
+        emitters.put(emitterKey, emitter);
+        log.debug("新增SSE连接，用户[{}]，当前活跃连接数：{}", emitterKey, emitters.size());
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         threadPoolTaskExecutor.execute(() -> {
             final boolean[] hasFinished = {false};
@@ -117,23 +116,35 @@ public class AiBotServiceImpl extends ServiceImpl<AiBotMapper, AiBot> implements
             final StreamResponseListener streamResponseListener = new StreamResponseListener() {
                 @Override
                 public void onMessage(StreamContext streamContext, AiMessageResponse aiMessageResponse) {
-                    AiMessage aiMessage = aiMessageResponse.getMessage();
-                    if (aiMessage == null) {
-                        return;
-                    }
-
-                    if (aiMessage.isFinalDelta() && aiMessageResponse.hasToolCalls()) {
-                        List<ToolMessage> toolMessages = aiMessageResponse.executeToolCallsAndGetToolMessages();
-                        for (ToolMessage toolMessage : toolMessages) {
-                            memoryPrompt.addMessage(toolMessage);
-                        }
-                        chatModel.chatStream(memoryPrompt, this);
-                    }
-
 
                     try {
-                        if (currentUserId != null) {
-                            SseEmitter emitter = emitters.get(currentUserId);
+                        AiMessage aiMessage = aiMessageResponse.getMessage();
+                        if (aiMessage == null) {
+                            return;
+                        }
+
+                        if (aiMessage.isFinalDelta() && aiMessageResponse.hasToolCalls()) {
+                            List<ToolMessage> toolMessages = aiMessageResponse.executeToolCallsAndGetToolMessages();
+                            for (ToolMessage toolMessage : toolMessages) {
+                                memoryPrompt.addMessage(toolMessage);
+                            }
+                            String newPrompt = "请根据以下内容回答用户，内容是:\n" + toolMessages + "\n 用户的问题是：" + prompt;
+
+                            SimplePrompt simplePrompt = new SimplePrompt(newPrompt);
+
+                            try {
+                                chatModel.chatStream(simplePrompt, this);;
+                            } catch (Exception e) {
+                                log.error("AI流式请求异常", e);
+                                SseEmitter emitter = emitters.get(emitterKey);
+                                if (emitter != null) {
+                                    emitter.completeWithError(e);
+                                }
+                            }
+
+
+                        }
+                            SseEmitter emitter = emitters.get(emitterKey);
                             if (emitter != null) {
                                 String fullText = aiMessageResponse.getMessage().getFullContent();
                                 String delta = aiMessageResponse.getMessage().getContent();
@@ -141,7 +152,6 @@ public class AiBotServiceImpl extends ServiceImpl<AiBotMapper, AiBot> implements
                                     emitter.send(delta);
                                 }
                             }
-                        }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -156,30 +166,7 @@ public class AiBotServiceImpl extends ServiceImpl<AiBotMapper, AiBot> implements
 
                 @Override
                 public void onStop(StreamContext context) {
-                    RequestContextHolder.setRequestAttributes(sra, true);
-                    if (hasFinished[0]) {
-                        return;
-                    }
-                    AiMessage aiMessage = context.getAiMessage();
-                    String finishReason = aiMessage.getFinishReason();
-                    if (!StringUtil.hasText(finishReason)) {
-                        return;
-                    }
-                    // 检查是否有工具调用请求
-                    if (aiMessage.getFinished() && "stop".equals(aiMessage.getFinishReason()) && CollectionUtil.hasItems(aiMessage.getToolCalls())) {
-                        hasFinished[0] = true;
-                        AiMessageResponse aiMessageResponse = new AiMessageResponse(context.getChatContext(), prompt, aiMessage);
-                        List<ToolMessage> toolMessages = aiMessageResponse.executeToolCallsAndGetToolMessages();
-                        String newPrompt = "请根据以下内容回答用户，内容是:\n" + toolMessages + "\n 用户的问题是：" + prompt;
-
-                        chatFunctionCallStream(newPrompt, chatModel, emitter, chatOptions);
-                    }
-                    if ("stop".equals(finishReason) && !CollectionUtil.hasItems(aiMessage.getToolCalls())) {
-                        hasFinished[0] = true;
-                        emitter.complete();
-                        emitters.remove(currentUserId);
-                    }
-
+                    System.out.println("onStop");
                 }
 
                 @Override

@@ -3,6 +3,10 @@ package tech.aiflowy.ai.entity;
 
 import com.agentsflex.core.model.chat.ChatModel;
 import com.agentsflex.core.model.embedding.EmbeddingModel;
+import com.agentsflex.embedding.ollama.OllamaEmbeddingConfig;
+import com.agentsflex.embedding.ollama.OllamaEmbeddingModel;
+import com.agentsflex.embedding.openai.OpenAIEmbeddingConfig;
+import com.agentsflex.embedding.openai.OpenAIEmbeddingModel;
 import com.agentsflex.llm.ollama.OllamaChatConfig;
 import com.agentsflex.llm.ollama.OllamaChatModel;
 import com.agentsflex.llm.openai.OpenAIChatConfig;
@@ -127,16 +131,37 @@ public class AiLlm extends AiLlmBase {
     }
 
     public EmbeddingModel toEmbeddingModel() {
+        Map<String, Object> options = getOptions();
+        String embedPath = "";
+        if (options != null) {
+            String embedPathFromOptions = (String) options.get("embedPath");
+            if (StringUtils.hasLength(embedPathFromOptions)) {
+                embedPath = embedPathFromOptions;
+            }
+        }
         String brand = getBrand();
         if (StringUtil.noText(brand)) {
             return null;
         }
         switch (brand.toLowerCase()) {
-//            case "ollama":
-//                return ollamaLlm();
+            case "ollama":
+                OllamaEmbeddingConfig ollamaEmbeddingConfig = new OllamaEmbeddingConfig();
+                ollamaEmbeddingConfig.setEndpoint(getLlmEndpoint());
+                ollamaEmbeddingConfig.setApiKey(getLlmApiKey());
+                ollamaEmbeddingConfig.setModel(getLlmModel());
+                if (StringUtils.hasLength(embedPath)) {
+                    ollamaEmbeddingConfig.setRequestPath(embedPath);
+                }
+                return new OllamaEmbeddingModel(ollamaEmbeddingConfig);
             default:
-//                EmbeddingModel model = new OpenAIEmbeddingModel(config);
-                return null;
+                OpenAIEmbeddingConfig openAIEmbeddingConfig = new OpenAIEmbeddingConfig();
+                openAIEmbeddingConfig.setEndpoint(getLlmEndpoint());
+                openAIEmbeddingConfig.setApiKey(getLlmApiKey());
+                openAIEmbeddingConfig.setModel(getLlmModel());
+                if (StringUtils.hasLength(embedPath)) {
+                    openAIEmbeddingConfig.setRequestPath(embedPath);
+                }
+                return new OpenAIEmbeddingModel(openAIEmbeddingConfig);
         }
     }
 }
