@@ -7,7 +7,7 @@ import { useRoute } from 'vue-router';
 import { $t } from '@aiflowy/locales';
 import { tryit } from '@aiflowy/utils';
 
-import { Plus } from '@element-plus/icons-vue';
+import { Delete, Plus } from '@element-plus/icons-vue';
 import { useDebounceFn } from '@vueuse/core';
 import {
   ElCol,
@@ -24,6 +24,7 @@ import {
 
 import { getAiLlmList, updateLlmId, updateLlmOptions } from '#/api';
 import { api } from '#/api/request';
+import ProblemPresupposition from '#/components/chat/ProblemPresupposition.vue';
 import CollapseViewItem from '#/components/collapseViewItem/CollapseViewItem.vue';
 import CommonSelectDataModal from '#/components/commonSelectModal/CommonSelectDataModal.vue';
 
@@ -109,12 +110,26 @@ const getAiBotWorkflowList = async () => {
       workflowIdsData.value = res.data.map((item: any) => item.workflowId);
     });
 };
-
+const botInfo = ref<BotInfo>();
+const getBotDetail = async () => {
+  api
+    .get('/api/v1/aiBot/detail', {
+      params: {
+        id: botId.value,
+      },
+    })
+    .then((res) => {
+      if (res.errorCode === 0) {
+        botInfo.value = res.data;
+      }
+    });
+};
 onMounted(async () => {
   const [, res] = await tryit(getAiLlmList({ supportFunctionCalling: true }));
   getAiBotPluginToolList();
   getAiBotKnowledgeList();
   getAiBotWorkflowList();
+  getBotDetail();
   if (res?.errorCode === 0) {
     options.value = res.data;
   }
@@ -283,6 +298,31 @@ const deleteWorkflow = (item: any) => {
       if (res.errorCode === 0) {
         ElMessage.success($t('message.deleteOkMessage'));
         getAiBotWorkflowList();
+      } else {
+        ElMessage.error(res.message);
+      }
+    });
+};
+
+const problemPresuppositionRef = ref();
+const handleAddPresetQuestion = () => {
+  problemPresuppositionRef.value.openDialog(
+    botInfo.value?.options.presetQuestions,
+  );
+};
+
+const handleProblemPresuppositionSuccess = (data: any) => {
+  api
+    .post('/api/v1/aiBot/updateOptions', {
+      id: botId.value,
+      options: {
+        presetQuestions: data,
+      },
+    })
+    .then((res) => {
+      if (res.errorCode === 0) {
+        ElMessage.success($t('message.updateOkMessage'));
+        getBotDetail();
       } else {
         ElMessage.error(res.message);
       }
@@ -530,11 +570,35 @@ const deleteWorkflow = (item: any) => {
             <template #title>
               <div class="flex items-center justify-between pr-2">
                 <span>问题预设</span>
-                <ElIcon>
-                  <Plus />
-                </ElIcon>
+                <span @click="handleAddPresetQuestion()">
+                  <ElIcon>
+                    <Plus />
+                  </ElIcon>
+                </span>
               </div>
             </template>
+            <div>
+              <div
+                v-for="(item, index) in botInfo?.options.presetQuestions"
+                :key="index"
+              >
+                <div class="presetQues-container" v-if="item.description">
+                  <span>{{ item.description }}</span>
+                  <span
+                    class="preset-delete"
+                    @click="
+                      handleProblemPresuppositionSuccess(
+                        botInfo?.options.presetQuestions.splice(index, 1),
+                      )
+                    "
+                  >
+                    <ElIcon>
+                      <Delete />
+                    </ElIcon>
+                  </span>
+                </div>
+              </div>
+            </div>
           </ElCollapseItem>
           <ElCollapseItem title="欢迎语">
             <div>
@@ -589,6 +653,12 @@ const deleteWorkflow = (item: any) => {
       page-url="/api/v1/aiWorkflow/page"
       @get-data="confirmUpdateAiBotWorkflow"
     />
+
+    <!--预设问题-->
+    <ProblemPresupposition
+      ref="problemPresuppositionRef"
+      @success="handleProblemPresuppositionSuccess"
+    />
   </div>
 </template>
 
@@ -617,5 +687,14 @@ const deleteWorkflow = (item: any) => {
   font-weight: 500;
   line-height: 1;
   vertical-align: middle;
+}
+.presetQues-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+}
+.preset-delete {
+  cursor: pointer;
 }
 </style>

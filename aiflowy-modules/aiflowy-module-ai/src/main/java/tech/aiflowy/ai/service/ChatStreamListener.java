@@ -8,6 +8,7 @@ import com.agentsflex.core.model.chat.response.AiMessageResponse;
 import com.agentsflex.core.model.client.StreamContext;
 import com.agentsflex.core.prompt.MemoryPrompt;
 import com.alibaba.fastjson.JSON;
+import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import tech.aiflowy.ai.entity.AiBotMessageDefaultMemory;
 import tech.aiflowy.common.util.StringUtil;
@@ -41,13 +42,11 @@ public class ChatStreamListener implements StreamResponseListener {
                 return;
             }
             if ((aiMessage.getFinished() != null) && StringUtil.hasText(aiMessage.getFullReasoningContent()) && aiMessage.isFinalDelta()){
-                System.out.println("最终结果触发");
                 aiMessage.setContent(aiMessage.getFullReasoningContent());
                 memoryPrompt.addMessage(aiMessage);
                 return;
             }
             if (aiMessage.isFinalDelta() && aiMessageResponse.hasToolCalls()) {
-                System.out.println("有工具调用");
                 List<ToolMessage> toolMessages = aiMessageResponse.executeToolCallsAndGetToolMessages();
                 for (ToolMessage toolMessage : toolMessages) {
                     memoryPrompt.addMessage(toolMessage);
@@ -85,6 +84,8 @@ public class ChatStreamListener implements StreamResponseListener {
 
     @Override
     public void onFailure(StreamContext context, Throwable throwable) {
-        StreamResponseListener.super.onFailure(context, throwable);
+        if (throwable != null && throwable.getCause() instanceof ClientAbortException) {
+            sseEmitter.complete();
+        }
     }
 }

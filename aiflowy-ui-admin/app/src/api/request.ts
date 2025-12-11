@@ -129,7 +129,7 @@ export interface SseOptions {
 }
 
 export const sse = () => {
-  const ctrl = new AbortController();
+  let ctrl: AbortController | null = null;
   const accessStore = useAccessStore();
   const sseHeaders = {
     Accept: 'text/event-stream',
@@ -137,9 +137,14 @@ export const sse = () => {
   };
   return {
     stop() {
-      ctrl.abort();
+      if (ctrl) {
+        ctrl.abort();
+        ctrl = null;
+      }
     },
     postSse: async (url: string, data?: any, options?: SseOptions) => {
+      stop();
+      ctrl = new AbortController();
       const res = await fetch(apiURL + url, {
         method: 'post',
         signal: ctrl.signal,

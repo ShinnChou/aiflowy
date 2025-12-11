@@ -27,6 +27,7 @@ import MarkdownRenderer from '#/components/chat/MarkdownRenderer.vue';
 
 import BotAvatar from '../botAvatar/botAvatar.vue';
 import SendingIcon from '../icons/SendingIcon.vue';
+import ProblemPresupposition from "#/components/chat/ProblemPresupposition.vue";
 
 const props = defineProps<{
   bot?: BotInfo;
@@ -40,8 +41,7 @@ interface historyMessageType {
 }
 const route = useRoute();
 const botId = ref<string>((route.params.id as string) || '');
-
-const { postSse } = sse();
+const { postSse, stop } = sse();
 const router = useRouter();
 const userStore = useUserStore();
 const bubbleItems = ref<BubbleListProps<ChatMessage>['list']>([]);
@@ -51,6 +51,12 @@ const sending = ref(false);
 const sessionId = ref(
   props.sessionId && props.sessionId.length > 0 ? props.sessionId : uuid(),
 );
+defineExpose({
+  clear() {
+    bubbleItems.value = [];
+    messages.value = [];
+  },
+});
 const getMessagesHistory = () => {
   // 如果是外部地址获取记录
   if (props.isExternalMsg === 0) {
@@ -109,9 +115,16 @@ watchEffect(async () => {
 });
 const lastUserMessage = ref('');
 const messages = ref<historyMessageType[]>([]);
+const stopSse = () => {
+  stop();
+  sending.value = false;
+};
 const handleSubmit = async (refreshContent: string) => {
-  sending.value = true;
   const currentPrompt = refreshContent || senderValue.value.trim();
+  if (!currentPrompt) {
+    return;
+  }
+  sending.value = true;
   lastUserMessage.value = currentPrompt;
   if (props.isExternalMsg === 0) {
     messages.value.push({
@@ -323,7 +336,7 @@ const handleRefresh = () => {
               <ElIcon><Microphone /></ElIcon>
               <!-- <ElIcon color="#0066FF"><RecordingIcon /></ElIcon> -->
             </ElButton>
-            <ElButton v-if="sending" circle>
+            <ElButton v-if="sending" circle @click="stopSse">
               <ElIcon size="30" color="#409eff"><SendingIcon /></ElIcon>
             </ElButton>
             <ElButton v-else circle color="#0066FF" @click="handleSubmit('')">

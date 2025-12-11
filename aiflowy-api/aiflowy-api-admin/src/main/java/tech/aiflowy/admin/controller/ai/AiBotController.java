@@ -87,9 +87,8 @@ public class AiBotController extends BaseCurdController<AiBotService, AiBot> {
 
     @PostMapping("updateOptions")
     @SaCheckPermission("/api/v1/aiBot/save")
-    public Result<Void> updateOptions(@JsonBody("id")
-                                      BigInteger id, @JsonBody("options")
-                                      Map<String, Object> options) {
+    public Result<Void> updateOptions(@JsonBody("id") BigInteger id,
+                                      @JsonBody("options") Map<String, Object> options) {
         AiBot aiBot = service.getById(id);
         Map<String, Object> existOptions = aiBot.getOptions();
         if (existOptions == null) {

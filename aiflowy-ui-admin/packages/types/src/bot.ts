@@ -22,7 +22,7 @@ interface BotInfo {
   options: {
     anonymousEnabled: boolean;
     EncodingAESKey: string;
-    presetQuestions: string[];
+    presetQuestions: presetQuestionsType[];
     reActModeEnabled: boolean;
     voiceEnabled: boolean;
     weChatMpAesKey: string;
@@ -39,6 +39,11 @@ interface Session {
   botId: string;
   sessionId: string;
   title: string;
+}
+
+interface presetQuestionsType {
+  key: string;
+  description: string;
 }
 
 interface ChatMessage {

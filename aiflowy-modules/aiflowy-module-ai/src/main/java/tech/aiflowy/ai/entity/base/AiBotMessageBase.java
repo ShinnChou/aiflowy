@@ -43,12 +43,6 @@ public class AiBotMessageBase extends DateEntity implements Serializable {
 
     private String image;
 
-    private Integer promptTokens;
-
-    private Integer completionTokens;
-
-    private Integer totalTokens;
-
     /**
      * 方法定义
      */
@@ -116,30 +110,6 @@ public class AiBotMessageBase extends DateEntity implements Serializable {
 
     public void setImage(String image) {
         this.image = image;
-    }
-
-    public Integer getPromptTokens() {
-        return promptTokens;
-    }
-
-    public void setPromptTokens(Integer promptTokens) {
-        this.promptTokens = promptTokens;
-    }
-
-    public Integer getCompletionTokens() {
-        return completionTokens;
-    }
-
-    public void setCompletionTokens(Integer completionTokens) {
-        this.completionTokens = completionTokens;
-    }
-
-    public Integer getTotalTokens() {
-        return totalTokens;
-    }
-
-    public void setTotalTokens(Integer totalTokens) {
-        this.totalTokens = totalTokens;
     }
 
     public String getFunctions() {
