@@ -23,6 +23,7 @@ import {
   ElInput,
   ElInputNumber,
   ElMessage,
+  ElMessageBox,
   ElTooltip,
 } from 'element-plus';
 
@@ -117,6 +118,33 @@ function handleSubmit() {
     }
   });
 }
+function remove(row: any) {
+  ElMessageBox.confirm($t('message.deleteAlert'), $t('message.noticeTitle'), {
+    confirmButtonText: $t('message.ok'),
+    cancelButtonText: $t('message.cancel'),
+    type: 'warning',
+    beforeClose: (action, instance, done) => {
+      if (action === 'confirm') {
+        instance.confirmButtonLoading = true;
+        api
+          .post(props.deleteUrl, { id: row.id })
+          .then((res) => {
+            instance.confirmButtonLoading = false;
+            if (res.errorCode === 0) {
+              ElMessage.success(res.message);
+              done();
+              getList();
+            }
+          })
+          .catch(() => {
+            instance.confirmButtonLoading = false;
+          });
+      } else {
+        done();
+      }
+    },
+  }).catch(() => {});
+}
 const listData = computed(() => {
   return [
     {
@@ -205,7 +233,7 @@ const formRules = computed(() => {
                 <ElDropdownItem @click="showDialog(item)">
                   {{ $t('button.edit') }}
                 </ElDropdownItem>
-                <ElDropdownItem>
+                <ElDropdownItem @click="remove(item)" style="color: red">
                   {{ $t('button.delete') }}
                 </ElDropdownItem>
               </ElDropdownMenu>
@@ -233,14 +261,11 @@ const formRules = computed(() => {
         :label="field.label"
         :prop="field.prop"
       >
-        <!-- 输入框 -->
         <ElInput
           v-if="!field.type || field.type === 'input'"
           v-model="formData[field.prop]"
           :placeholder="field.placeholder"
         />
-
-        <!-- 数字输入框 -->
         <ElInputNumber
           v-else-if="field.type === 'number'"
           v-model="formData[field.prop]"
