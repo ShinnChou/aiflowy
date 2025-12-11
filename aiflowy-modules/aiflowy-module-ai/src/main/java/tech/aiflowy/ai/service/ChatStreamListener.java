@@ -9,6 +9,7 @@ import com.agentsflex.core.model.client.StreamContext;
 import com.agentsflex.core.prompt.MemoryPrompt;
 import com.alibaba.fastjson.JSON;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import tech.aiflowy.ai.entity.AiBotMessageDefaultMemory;
 import tech.aiflowy.common.util.StringUtil;
 
 import java.io.IOException;
@@ -43,6 +44,7 @@ public class ChatStreamListener implements StreamResponseListener {
                 System.out.println("最终结果触发");
                 aiMessage.setContent(aiMessage.getFullReasoningContent());
                 memoryPrompt.addMessage(aiMessage);
+                return;
             }
             if (aiMessage.isFinalDelta() && aiMessageResponse.hasToolCalls()) {
                 System.out.println("有工具调用");
@@ -71,6 +73,9 @@ public class ChatStreamListener implements StreamResponseListener {
     public void onStop(StreamContext context) {
         System.out.println("onStop");
         try {
+            if (this.memoryPrompt.getMemory() instanceof AiBotMessageDefaultMemory) {
+                memoryPrompt.addMessage(context.getAiMessage());
+            }
             sseEmitter.send(SseEmitter.event().name("finish").data("finish"));
         } catch (IOException e) {
             throw new RuntimeException(e);

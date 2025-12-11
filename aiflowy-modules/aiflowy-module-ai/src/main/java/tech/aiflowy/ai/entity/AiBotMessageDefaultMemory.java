@@ -31,7 +31,7 @@ public class AiBotMessageDefaultMemory extends DefaultChatMemory {
         List<Message> list = new ArrayList<>(messages.size());
         for (Map<String, String> msg : messages) {
             AiBotMessage aiBotMessage = new AiBotMessage();
-            aiBotMessage.setRole(msg.get("role").toString());
+            aiBotMessage.setRole(msg.get("role"));
             aiBotMessage.setContent(msg.get("content"));
             Message message = parseByRole(aiBotMessage);
             list.add(message);

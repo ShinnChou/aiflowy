@@ -8,6 +8,7 @@ import { onMounted, ref, watchEffect } from 'vue';
 import { BubbleList, Sender } from 'vue-element-plus-x';
 import { useRoute, useRouter } from 'vue-router';
 
+import { $t } from '@aiflowy/locales';
 import { useUserStore } from '@aiflowy/stores';
 import { cn, tryit, uuid } from '@aiflowy/utils';
 
@@ -18,7 +19,7 @@ import {
   Promotion,
   Refresh,
 } from '@element-plus/icons-vue';
-import { ElAvatar, ElButton, ElIcon, ElSpace } from 'element-plus';
+import { ElAvatar, ElButton, ElIcon, ElMessage, ElSpace } from 'element-plus';
 
 import { getMessageList } from '#/api';
 import { api, sse } from '#/api/request';
@@ -106,27 +107,25 @@ watchEffect(async () => {
     bubbleItems.value = [];
   }
 });
+const lastUserMessage = ref('');
 const messages = ref<historyMessageType[]>([]);
-const handleSubmit = async () => {
+const handleSubmit = async (refreshContent: string) => {
   sending.value = true;
-  if (props.isExternalMsg === 0){
+  const currentPrompt = refreshContent || senderValue.value.trim();
+  lastUserMessage.value = currentPrompt;
+  if (props.isExternalMsg === 0) {
     messages.value.push({
       role: 'user',
-      content: senderValue.value,
+      content: currentPrompt,
     });
-  }
-  if (messages.value.length > 1) {
-    messages.value.shift();
   }
   const data = {
     botId: botId.value,
-    prompt: senderValue.value,
+    prompt: currentPrompt,
     sessionId: sessionId.value,
-    isSettingsChat: true,
     messages: messages.value,
   };
-
-  const mockMessages = generateMockMessages();
+  const mockMessages = generateMockMessages(refreshContent);
   bubbleItems.value.push(...mockMessages);
   senderRef.value?.clear();
 
@@ -139,10 +138,17 @@ const handleSubmit = async () => {
         return;
       }
       const content = message.data!.replace(/^Final Answer:\s*/i, '');
-      if (event === 'needSaveMessage') {
+      if (event === 'needSaveMessage' && message.data) {
         const dataObj = JSON.parse(message.data);
         const role = dataObj.role;
         const contentObj = JSON.parse(dataObj.content);
+        if (
+          messages.value.length > 0 &&
+          messages.value[messages.value.length - 1]?.role === 'user' &&
+          role === 'user'
+        ) {
+          messages.value.pop();
+        }
         messages.value.push({
           role,
           content: contentObj,
@@ -179,12 +185,13 @@ const handleComplete = (_: TypewriterInstance, index: number) => {
   }
 };
 
-const generateMockMessages = () => {
+const generateMockMessages = (refreshContent: string) => {
+
   const userMessage: ChatMessage = {
     role: 'user',
     id: Date.now().toString(),
     fileList: [],
-    content: senderValue.value,
+    content: refreshContent || senderValue.value,
     created: Date.now(),
     updateAt: Date.now(),
     placement: 'end',
@@ -201,6 +208,17 @@ const generateMockMessages = () => {
   };
 
   return [userMessage, assistantMessage];
+};
+
+const handleCopy = (content: string) => {
+  navigator.clipboard
+    .writeText(content)
+    .then(() => ElMessage.success($t('message.copySuccess')))
+    .catch(() => ElMessage.error($t('message.copyFail')));
+};
+
+const handleRefresh = () => {
+  handleSubmit(lastUserMessage.value);
 };
 </script>
 
@@ -245,9 +263,7 @@ const generateMockMessages = () => {
               }}
             </div>
           </template>
-          <!-- 核心：使用 MarkdownRenderer 渲染助手消息 -->
           <template #content="{ item }">
-            <!-- 助手消息：渲染 Markdown -->
             <MarkdownRenderer :content="item.content" />
           </template>
           <!-- 自定义底部 -->
@@ -255,6 +271,7 @@ const generateMockMessages = () => {
             <ElSpace :size="10">
               <ElSpace>
                 <ElButton
+                  @click="handleRefresh()"
                   v-if="item.role === 'assistant'"
                   type="info"
                   :icon="Refresh"
@@ -262,6 +279,7 @@ const generateMockMessages = () => {
                   circle
                 />
                 <ElButton
+                  @click="handleCopy(item.content)"
                   color="#626aef"
                   :icon="DocumentCopy"
                   size="small"

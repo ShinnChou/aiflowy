@@ -21,5 +21,7 @@
   "notSupported": "暂不支持",
   "englishNameRule": "请输入由字母、数字、下划线、连字符组成的字符，且长度不超过64位",
   "downloadSuccess": "下载成功",
-  "downloadFail": "下载失败"
+  "downloadFail": "下载失败",
+  "copySuccess": "复制成功",
+  "copyFail": "复制失败"
 }
