@@ -91,45 +91,47 @@ const handleSearch = (query: string) => {
       >
         <template #default="{ pageList }">
           <template v-if="isSelectPlugin">
-            <ElCollapse
-              accordion
-              v-for="(item, index) in pageList"
-              :key="index"
-            >
-              <ElCollapseItem>
-                <template #title="{ isActive }">
-                  <div
-                    class="title-wrapper"
-                    :class="[{ 'is-active': isActive }]"
-                  >
-                    <div>
-                      <ElAvatar :src="item.icon" v-if="item.icon" />
-                      <ElAvatar v-else src="/favicon.png" shape="circle" />
-                    </div>
-                    <div class="title-right-container">
-                      <div class="title">{{ item.name }}</div>
-                      <div class="desc">{{ item.description }}</div>
-                    </div>
-                  </div>
-                </template>
-                <div v-for="tool in item.tools" :key="tool.id">
-                  <div class="content-title-wrapper">
-                    <div class="content-left-container">
+            <div class="container-second">
+              <ElCollapse
+                accordion
+                v-for="(item, index) in pageList"
+                :key="index"
+              >
+                <ElCollapseItem>
+                  <template #title="{ isActive }">
+                    <div
+                      class="title-wrapper"
+                      :class="[{ 'is-active': isActive }]"
+                    >
+                      <div>
+                        <ElAvatar :src="item.icon" v-if="item.icon" />
+                        <ElAvatar v-else src="/favicon.png" shape="circle" />
+                      </div>
                       <div class="title-right-container">
-                        <div class="title">{{ tool.name }}</div>
-                        <div class="desc">{{ tool.description }}</div>
+                        <div class="title">{{ item.name }}</div>
+                        <div class="desc">{{ item.description }}</div>
                       </div>
                     </div>
-                    <div>
-                      <ElCheckbox
-                        :model-value="isSelected(tool.id)"
-                        @change="(val) => toggleSelection(tool.id, val)"
-                      />
+                  </template>
+                  <div v-for="tool in item.tools" :key="tool.id">
+                    <div class="content-title-wrapper">
+                      <div class="content-left-container">
+                        <div class="title-right-container">
+                          <div class="title">{{ tool.name }}</div>
+                          <div class="desc">{{ tool.description }}</div>
+                        </div>
+                      </div>
+                      <div>
+                        <ElCheckbox
+                          :model-value="isSelected(tool.id)"
+                          @change="(val) => toggleSelection(tool.id, val)"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </ElCollapseItem>
-            </ElCollapse>
+                </ElCollapseItem>
+              </ElCollapse>
+            </div>
           </template>
           <template v-else>
             <div class="container-second">
@@ -286,4 +288,121 @@ const handleSearch = (query: string) => {
   gap: 12px;
   padding: 20px 20px;
 }
+
+.select-modal-container :deep(.el-collapse-item__header) {
+  background-color: var(--el-bg-color);
+  border-color: #dee2e6;
+  color: #333;
+}
+
+.select-modal-container :deep(.el-collapse-item__header:hover) {
+  background-color: #e9ecef;
+}
+
+.select-modal-container
+  :deep(.el-collapse-item.is-active .el-collapse-item__header) {
+  color: #1976d2;
+}
+
+.select-modal-container :deep(.el-collapse-item__content) {
+  background-color: #ffffff;
+  padding: 0;
+}
+
+.select-modal-container
+  :deep(.el-collapse-item__header .el-collapse-item__arrow) {
+  color: #666;
+}
+.select-modal-container
+  :deep(.el-collapse-item.is-active .el-collapse-item__arrow) {
+  color: #1976d2;
+}
+
+.select-modal-container
+  :deep(.el-collapse-item__content)
+  .content-title-wrapper {
+  background-color: #f9fafb;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.select-modal-container
+  :deep(.el-collapse-item__content)
+  .content-title-wrapper:hover {
+  background-color: #f0f7ff;
+  border-color: #e6f4ff;
+}
+
+.select-modal-container
+  :deep(.el-collapse-item__content)
+  .content-title-wrapper:last-child {
+  margin-bottom: 0;
+}
+
+.select-modal-container :deep(.el-collapse) {
+  border: none;
+  background-color: #ffffff;
+}
+
+.select-modal-container :deep(.el-collapse-item__header) {
+  height: auto;
+  line-height: normal;
+  padding: 12px;
+  border-radius: 4px;
+  background-color: #ffffff !important;
+  color: #333;
+}
+
+.select-modal-container :deep(.el-collapse-item__header:hover) {
+  background-color: #ffffff !important;
+  border-color: #e4e7ed;
+}
+
+.select-modal-container
+  :deep(.el-collapse-item.is-active .el-collapse-item__header) {
+  border-bottom-color: transparent;
+  background-color: #ffffff !important;
+  color: #1976d2;
+  border: none;
+}
+
+.select-modal-container :deep(.el-collapse-item__content) {
+  padding: 12px;
+  background-color: #ffffff !important;
+  border: none;
+}
+
+.select-modal-container :deep(.el-collapse-item__wrap) {
+  border: none;
+  background-color: #ffffff;
+}
+
+.select-modal-container :deep(.el-collapse-item) {
+  margin-bottom: 8px;
+  background-color: #ffffff;
+}
+
+.select-modal-container
+  :deep(.el-collapse-item__content)
+  .content-title-wrapper {
+  background-color: #f9fafc;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  margin-top: 12px;
+}
+
+.select-modal-container
+  :deep(.el-collapse-item__content)
+  .content-title-wrapper:hover {
+  background-color: #f8f9fa;
+  border-color: #e6f4ff;
+}
+
+.select-modal-container :deep(.el-collapse) {
+  border: none;
+  background-color: #ffffff;
+}
+
 </style>
