@@ -1,4 +1,4 @@
-![banner.png](docs/assets/images/banner.png)
+![banner.png](docs/assets/images/banner_en.png)
 
 # AIFlowy: The Foundation and Cornerstone of AI Products
 
