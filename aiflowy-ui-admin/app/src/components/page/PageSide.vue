@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T extends { icon?: any; [key: string]: any }">
 import type { Component } from 'vue';
 
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 import { cn } from '@aiflowy/utils';
 
@@ -12,7 +12,7 @@ import {
   ElDropdownItem,
   ElDropdownMenu,
   ElEmpty,
-  ElIcon
+  ElIcon,
 } from 'element-plus';
 
 interface Props {
@@ -20,7 +20,7 @@ interface Props {
   menus: T[];
   labelKey: string;
   valueKey: string;
-  iconSize: number;
+  iconSize?: number;
   controlBtns?: {
     icon?: any;
     label: string;
@@ -47,6 +47,20 @@ const handleChange = (item: T) => {
   selected.value = item[props.valueKey];
   emits('change', item);
 };
+// 监听 defaultSelected 的变化
+watch(
+  () => props.defaultSelected,
+  (newVal) => {
+    if (newVal) {
+      selected.value = newVal;
+      const item = props.menus.find((menu) => menu[props.valueKey] === newVal);
+      if (item) {
+        emits('change', item);
+      }
+    }
+  },
+  { immediate: true },
+);
 const handleMouseEvent = (id?: string) => {
   if (id === undefined) {
     setTimeout(() => {
