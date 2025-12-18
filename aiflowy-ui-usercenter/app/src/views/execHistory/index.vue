@@ -179,7 +179,7 @@ function getDateRange() {
               >
                 <template #default="{ pageList }">
                   <div
-                    class="text-foreground/90 hover:bg-accent grid h-[60px] grid-cols-5 place-items-center text-sm"
+                    class="text-foreground/90 grid h-[60px] grid-cols-5 place-items-center text-sm hover:bg-[var(--el-fill-color-light)]"
                     v-for="record in pageList"
                     :key="record.id"
                   >

@@ -2,8 +2,8 @@
 import { ref } from 'vue';
 import { Sender } from 'vue-element-plus-x';
 
-import { Promotion } from '@element-plus/icons-vue';
-import { ElButton, ElIcon } from 'element-plus';
+import { Paperclip, Promotion } from '@element-plus/icons-vue';
+import { ElButton } from 'element-plus';
 
 import { sseClient } from '#/api/request';
 
@@ -82,15 +82,15 @@ function getDisabled() {
     </template> -->
 
     <template #action-list>
-      <div style="display: flex; align-items: center; gap: 8px">
+      <div class="flex items-center gap-2">
+        <ElButton :icon="Paperclip" link />
         <ElButton
+          type="primary"
+          :icon="Promotion"
           :disabled="getDisabled()"
           @click="sendMessage"
           round
-          color="#626aef"
-        >
-          <ElIcon><Promotion /></ElIcon>
-        </ElButton>
+        />
       </div>
     </template>
   </Sender>

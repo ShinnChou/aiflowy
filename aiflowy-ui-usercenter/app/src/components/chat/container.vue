@@ -79,7 +79,7 @@ function getMessageList() {
       </Card>
       <ElButton
         class="mt-6 !h-10 w-full !text-sm"
-        color="#0066FF"
+        type="primary"
         :icon="createIconifyIcon('mdi:chat-plus-outline')"
         plain
         @click="addSession"
