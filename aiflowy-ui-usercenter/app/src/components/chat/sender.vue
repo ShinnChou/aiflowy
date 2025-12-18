@@ -15,14 +15,7 @@ interface Props {
 const props = defineProps<Props>();
 const senderValue = ref('');
 const btnLoading = ref(false);
-// {
-//   key: 0,
-//     role: 'user',
-//   placement: 'end',
-//   content: '哈哈哈，让我试试',
-//   typing: true,
-// }
-const msgKey = ref();
+
 function sendMessage() {
   const data = {
     sessionId: props.sessionId,
@@ -31,26 +24,29 @@ function sendMessage() {
   };
   btnLoading.value = true;
   props.addMessage?.({
-    key: Date.now(),
+    key: crypto.randomUUID(),
     role: 'user',
     placement: 'end',
     content: senderValue.value,
     typing: true,
   });
-  msgKey.value = Date.now();
+  senderValue.value = '';
+  const msgKey = crypto.randomUUID();
+  let str = '';
   sseClient.post('/userCenter/aiBot/chat', data, {
     onMessage(res) {
       const msg = {
         key: msgKey,
         role: 'assistant',
         placement: 'start',
-        content: res.data,
+        content: (str += res.data),
         typing: true,
-        loading: res.event !== 'finish',
       };
-      props.addMessage?.(msg);
       if (res.event === 'finish') {
         btnLoading.value = false;
+      }
+      if (str !== res.data && res.event !== 'finish') {
+        props.addMessage?.(msg);
       }
     },
     onError(err) {

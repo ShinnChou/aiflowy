@@ -42,10 +42,13 @@ function getSessionList() {
     });
 }
 function addSession() {
-  sessionList.value.push({
-    sessionId: crypto.randomUUID(),
+  const data = {
+    botId: props.bot.id,
     title: '新对话',
-  });
+    sessionId: crypto.randomUUID(),
+  };
+  sessionList.value.push(data);
+  api.post('/userCenter/conversation/save', data);
 }
 function clickSession(session: any) {
   currentSession.value = session;

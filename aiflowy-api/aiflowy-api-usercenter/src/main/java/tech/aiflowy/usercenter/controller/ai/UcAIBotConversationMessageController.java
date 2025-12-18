@@ -11,6 +11,7 @@ import tech.aiflowy.common.satoken.util.SaTokenUtil;
 import tech.aiflowy.common.web.controller.BaseCurdController;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -39,6 +40,7 @@ public class UcAIBotConversationMessageController extends BaseCurdController<AiB
     @Override
     protected Result<?> onSaveOrUpdateBefore(AiBotConversationMessage entity, boolean isSave) {
         entity.setAccountId(SaTokenUtil.getLoginAccount().getId());
+        entity.setCreated(new Date());
         return super.onSaveOrUpdateBefore(entity, isSave);
     }
 }
