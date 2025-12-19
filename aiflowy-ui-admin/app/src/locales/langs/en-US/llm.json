@@ -48,7 +48,7 @@
   "message": {
     "verifySuccess": "Verification successful"
   },
-  "addProvider": "Add Provider",
+  "addProvider": "Provider list",
   "modelType": "ModelType",
   "llmModel": "ModelName",
   "title": "name",

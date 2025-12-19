@@ -13,7 +13,6 @@ const providerOptions =
  * @returns 匹配到的icon字符串，未匹配到返回空字符串
  */
 export const getIconByValue = (targetValue: string): string => {
-  console.log('getIconByValue', targetValue);
   const matchItem = providerOptions.value.find(
     (item) => item.value === targetValue,
   );

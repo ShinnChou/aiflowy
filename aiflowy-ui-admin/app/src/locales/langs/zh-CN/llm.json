@@ -45,7 +45,7 @@
   "message": {
     "verifySuccess": "验证成功"
   },
-  "addProvider": "添加供应商",
+  "addProvider": "供应商列表",
   "modelType": "模型类型",
   "llmModel": "模型名称",
   "title": "名称",

@@ -48,6 +48,13 @@ const checkAndFillDefaultIcon = (list) => {
 };
 const chatModelListData = ref([]);
 const embeddingModelListData = ref([]);
+const rerankModelListData = ref([]);
+
+const modelListMap = ref({
+  chatModel: chatModelListData,
+  embeddingModel: embeddingModelListData,
+  rerankModel: rerankModelListData,
+});
 const getLlmDetailList = (providerId) => {
   api
     .get(`/api/v1/aiLlm/getList?providerId=${providerId}&added=true`, {})
@@ -70,6 +77,15 @@ const getLlmDetailList = (providerId) => {
         // 处理embeddingModel数据
         const embeddingModelMap = res.data.embeddingModel || {};
         embeddingModelListData.value = Object.entries(embeddingModelMap).map(
+          ([groupName, llmList]) => ({
+            groupName,
+            llmList,
+          }),
+        );
+
+        // 处理rerankModel数据
+        const rerankModelMap = res.data.rerankModel || {};
+        rerankModelListData.value = Object.entries(rerankModelMap).map(
           ([groupName, llmList]) => ({
             groupName,
             llmList,
@@ -331,11 +347,16 @@ const handleTest = () => {
         </ElForm>
         <div class="llm-manage-container">
           <div
-            v-for="model in modelTypes"
+            v-for="(model, index) in modelTypes"
             :key="model.value"
             class="model-container"
           >
-            <div class="model-common-title">{{ model.label }}</div>
+            <div
+              class="model-common-title"
+              :class="[index === 0 ? 'first-model-title' : '']"
+            >
+              {{ model.label }}
+            </div>
 
             <!-- 对话模型（chatModel）遍历 -->
             <div
@@ -380,6 +401,42 @@ const handleTest = () => {
               <ElCollapse expand-icon-position="left">
                 <ElCollapseItem
                   v-for="group in embeddingModelListData"
+                  :key="group.groupName"
+                  :title="group.groupName"
+                  :name="group.groupName"
+                >
+                  <template #title>
+                    <div class="flex items-center justify-between pr-2">
+                      <span>{{ group.groupName }}</span>
+                      <span
+                        @click.stop="handleGroupNameDelete(group.groupName)"
+                      >
+                        <ElIcon>
+                          <Minus />
+                        </ElIcon>
+                      </span>
+                    </div>
+                  </template>
+                  <LlmViewItemOperation
+                    :llm-list="group.llmList"
+                    :icon="defaultIcon"
+                    @delete-llm="handleDeleteLlm"
+                    @edit-llm="handleEditLlm"
+                  />
+                </ElCollapseItem>
+              </ElCollapse>
+            </div>
+
+            <!-- 重排模型（rerankModel）遍历-->
+            <div
+              v-if="
+                model.value === 'rerankModel' &&
+                embeddingModelListData.length > 0
+              "
+            >
+              <ElCollapse expand-icon-position="left">
+                <ElCollapseItem
+                  v-for="group in rerankModelListData"
                   :key="group.groupName"
                   :title="group.groupName"
                   :name="group.groupName"
@@ -491,7 +548,11 @@ const handleTest = () => {
   line-height: 20px;
   text-align: left;
   font-style: normal;
-  margin: 20px 0;
+  margin: 24px 0 12px 0;
+}
+
+.first-model-title {
+  margin: 0 0 12px 0;
 }
 
 /* 折叠面板容器 */
@@ -503,56 +564,46 @@ const handleTest = () => {
   gap: 12px;
 }
 
-/* 折叠面板项目 - 确保高度统一 */
 :deep(.el-collapse-item) {
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 0;
 }
 
-/* 折叠面板头部 - 固定高度38px */
 :deep(.el-collapse-item__header) {
   background-color: #f9fafc;
   padding: 0 9px 0 17px;
-  border-radius: 8px;
+  border-radius: 8px 8px 0 0;
   border: 1px solid #f0f0f0;
-  height: 20px !important; /* 强制设置高度为38px */
-  line-height: 20px !important; /* 垂直居中 */
+  height: 20px !important;
+  line-height: 20px !important;
   font-size: 14px;
   color: #333333;
 }
 
-/* 折叠面板箭头图标位置调整 */
 :deep(.el-collapse-item__arrow) {
   line-height: 38px;
   margin-right: 8px;
 }
 
-/* 折叠面板内容区域 */
 :deep(.el-collapse-item__wrap) {
   border: none;
   background: transparent;
 }
 
-/* 折叠面板内容 - 可以设置滚动 */
 :deep(.el-collapse-item__content) {
   border: 1px solid #f0f0f0;
   background: #ffffff;
   border-radius: 0 0 8px 8px;
   padding: 12px;
-  max-height: 300px; /* 设置最大高度，超出滚动 */
+  max-height: 300px;
   overflow-y: auto;
   box-sizing: border-box;
-  border-top: none; /* 去掉顶部边框，与头部无缝连接 */
+  border-top: none;
 }
 
-/* 最后一个折叠面板项目的头部 */
 :deep(.el-collapse-item:last-child) {
   margin-bottom: 0;
-}
-
-:deep(.el-collapse-item:last-child .el-collapse-item__header) {
-  border-radius: 8px;
 }
 
 .model-operation-container {
@@ -563,7 +614,6 @@ const handleTest = () => {
   margin-top: 12px;
 }
 
-/* 确保自定义标题区域也符合38px高度 */
 .flex.items-center.justify-between.pr-2 {
   height: 100%;
   width: 100%;

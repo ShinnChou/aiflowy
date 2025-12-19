@@ -9,5 +9,6 @@
   "rerankPath": "RerankPath",
   "embeddingModel": "EmbeddingModel",
   "chatModel": "ChatModel",
+  "rerankModel": "RerankModel",
   "model": "Model"
 }

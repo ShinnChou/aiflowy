@@ -9,4 +9,8 @@ export const modelTypes = [
     label: $t('llmProvider.embeddingModel'),
     value: 'embeddingModel',
   },
+  {
+    label: $t('llmProvider.rerankModel'),
+    value: 'rerankModel',
+  },
 ];

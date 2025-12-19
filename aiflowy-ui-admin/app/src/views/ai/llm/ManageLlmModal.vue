@@ -42,18 +42,17 @@ const chatModelTabList = [
   // },
 ];
 const embeddingModelTabList = [
-  // {
-  //   label: $t('llm.all'),
-  //   name: 'all',
-  // },
   {
     label: $t('llmProvider.embeddingModel'),
     name: 'embeddingModel',
   },
-  // {
-  //   label: $t('llm.modelAbility.free'),
-  //   name: 'supportFree',
-  // },
+];
+
+const rerankModelTabList = [
+  {
+    label: $t('llmProvider.rerankModel'),
+    name: 'rerankModel',
+  },
 ];
 const formDataRef = ref();
 const providerInfo = ref<any>();
@@ -88,10 +87,20 @@ const selectedProviderId = ref('');
 defineExpose({
   // providerId: 供应商id， clickModelType 父组件点击的是什么类型的模型 可以是chatModel or embeddingModel
   openDialog(providerId: string, clickModelType: string) {
-    if (clickModelType === 'chatModel') {
-      tabList.value = [...chatModelTabList];
-    } else if (clickModelType === 'embeddingModel') {
-      tabList.value = [...embeddingModelTabList];
+    switch (clickModelType) {
+      case 'chatModel': {
+        tabList.value = [...chatModelTabList];
+        break;
+      }
+      case 'embeddingModel': {
+        tabList.value = [...embeddingModelTabList];
+        break;
+      }
+      case 'rerankModel': {
+        tabList.value = [...rerankModelTabList];
+        break;
+      }
+      // No default
     }
     selectedProviderId.value = providerId;
     formDataRef.value?.resetFields();
@@ -312,5 +321,9 @@ const handleRefresh = () => {
   height: 300px;
   gap: 12px;
   color: var(--el-text-color-secondary);
+}
+:deep(.el-tabs__nav-wrap::after) {
+  height: 1px !important;
+  background-color: #e4e7ed !important;
 }
 </style>

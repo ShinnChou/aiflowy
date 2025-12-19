@@ -89,21 +89,6 @@ public class AiLlmController extends BaseCurdController<AiLlmService, AiLlm> {
         return Result.ok();
     }
 
-    @PostMapping("quickAdd")
-    @SaCheckPermission("/api/v1/aiLlm/save")
-    public Result<Void> quickAdd(@JsonBody(value = "brand",required = true) String brand,@JsonBody(value = "apiKey",required = true) String apiKey){
-
-
-        if (!StringUtils.hasLength(brand)){
-            throw new BusinessException("请选择供应商！");
-        }
-
-
-        aiLlmService.quickAdd(brand,apiKey);
-
-        return Result.ok();
-    }
-
     @PostMapping("/removeByEntity")
     @SaCheckPermission("/api/v1/aiLlm/remove")
     public Result<?> removeByEntity(@RequestBody AiLlm entity) {
@@ -118,7 +103,6 @@ public class AiLlmController extends BaseCurdController<AiLlmService, AiLlm> {
         queryWrapper.orderBy(buildOrderBy(sortKey, sortType, getDefaultOrderBy()));
         BaseMapper<AiLlm> mapper = service.getMapper();
         List<AiLlm> totalList = mapper.selectListWithRelationsByQuery(queryWrapper);
-//        List<AiLlm> totalList = Tree.tryToTree(service.list(queryWrapper), asTree);
         Map<String, List<AiLlm>> groupList = totalList.stream().collect(Collectors.groupingBy(AiLlm::getGroupName));
         return Result.ok(groupList);
     }

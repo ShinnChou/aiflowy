@@ -20,8 +20,6 @@ public interface AiLlmService extends IService<AiLlm> {
 
     void verifyLlmConfig(AiLlm llm);
 
-    void quickAdd(String brand, String apiKey);
-
     Map<String, Map<String, List<AiLlm>>> getList(AiLlm  entity);
 
     void removeByEntity(AiLlm entity);
