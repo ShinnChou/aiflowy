@@ -59,6 +59,9 @@ public class AiLlmController extends BaseCurdController<AiLlmService, AiLlm> {
         QueryWrapper queryWrapper = QueryWrapper.create(entity, buildOperators(entity));
         queryWrapper.orderBy(buildOrderBy(sortKey, sortType, getDefaultOrderBy()));
         List<AiLlm> list = Tree.tryToTree(aiLlmMapper.selectListWithRelationsByQuery(queryWrapper), asTree);
+        list.forEach(item -> {
+            item.setTitle(item.getAiLlmProvider().getProviderName()  + "/" + item.getTitle());
+        });
         return Result.ok(list);
     }
 
