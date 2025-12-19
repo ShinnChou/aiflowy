@@ -320,7 +320,7 @@ const problemPresuppositionRef = ref();
 
 const handleAddPresetQuestion = () => {
   problemPresuppositionRef.value.openDialog(
-    botInfo.value?.options.presetQuestions,
+    botInfo.value?.options?.presetQuestions,
   );
 };
 
@@ -680,7 +680,7 @@ const handleUpdatePublishWx = () => {
           <ElCollapseItem title="发布到微信公众号">
             <div class="publish-wx-container">
               <div class="publish-wx">
-                <span v-if="botInfo?.options.weChatMpAppId">已配置</span>
+                <span v-if="botInfo?.options?.weChatMpAppId">已配置</span>
                 <span v-else>未配置</span>
                 <div class="publish-config-operation">
                   <div
@@ -695,7 +695,7 @@ const handleUpdatePublishWx = () => {
                     </ElButton>
                   </div>
                   <div
-                    v-if="botInfo?.options.weChatMpAppId"
+                    v-if="botInfo?.options?.weChatMpAppId"
                     class="publish-wx-right-container"
                     @click="handleUpdatePublishWx"
                   >
