@@ -2,10 +2,11 @@
 import { ref } from 'vue';
 import { Sender } from 'vue-element-plus-x';
 
-import { Paperclip, Promotion } from '@element-plus/icons-vue';
-import { ElButton } from 'element-plus';
+import { Promotion } from '@element-plus/icons-vue';
+import { ElButton, ElIcon } from 'element-plus';
 
 import { sseClient } from '#/api/request';
+import SendingIcon from '#/components/icons/SendingIcon.vue';
 
 interface Props {
   sessionId: string | undefined;
@@ -17,6 +18,9 @@ const senderValue = ref('');
 const btnLoading = ref(false);
 
 function sendMessage() {
+  if (getDisabled()) {
+    return;
+  }
   const data = {
     sessionId: props.sessionId,
     prompt: senderValue.value,
@@ -60,8 +64,12 @@ function sendMessage() {
   });
 }
 function getDisabled() {
-  return !senderValue.value || !props.sessionId || btnLoading.value;
+  return !senderValue.value || !props.sessionId;
 }
+const stopSse = () => {
+  sseClient.abort();
+  btnLoading.value = false;
+};
 </script>
 
 <template>
@@ -72,6 +80,7 @@ function getDisabled() {
     clearable
     allow-speech
     placeholder="发送消息"
+    @keyup.enter="sendMessage"
   >
     <!-- 自定义 prefix 前缀 -->
     <!-- <template #prefix>
@@ -79,8 +88,12 @@ function getDisabled() {
 
     <template #action-list>
       <div class="flex items-center gap-2">
-        <ElButton :icon="Paperclip" link />
+        <!--<ElButton :icon="Paperclip" link />-->
+        <ElButton v-if="btnLoading" circle @click="stopSse">
+          <ElIcon size="30" color="#409eff"><SendingIcon /></ElIcon>
+        </ElButton>
         <ElButton
+          v-else
           type="primary"
           :icon="Promotion"
           :disabled="getDisabled()"

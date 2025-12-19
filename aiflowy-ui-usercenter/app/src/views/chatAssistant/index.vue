@@ -22,6 +22,7 @@ const recentUsedAssistant = ref<any[]>([]);
 const currentBot = ref<any>({});
 const handleSelectAssistant = (bot: any) => {
   currentBot.value = bot;
+  messageList.value = [];
 };
 function getAssistantList() {
   api.get('/userCenter/aiBotRecentlyUsed/getRecentlyBot').then((res) => {
@@ -90,7 +91,7 @@ function setMessageList(messages: any) {
       <ChatContainer :bot="currentBot" :on-message-list="setMessageList">
         <template #default="{ sessionId }">
           <div class="flex h-full flex-col justify-between">
-            <ChatBubbleList :messages="messageList" />
+            <ChatBubbleList :bot="currentBot" :messages="messageList" />
             <ChatSender
               :add-message="addMessage"
               :bot="currentBot"

@@ -45,6 +45,7 @@ function getSessionList() {
     .then((res) => {
       if (res.errorCode === 0) {
         sessionList.value = res.data;
+        currentSession.value = {};
       }
     });
 }

@@ -40,6 +40,7 @@ import { ElAvatar, ElButton } from 'element-plus';
 //   },
 // ];
 interface Props {
+  bot: any;
   messages: any[];
 }
 defineProps<Props>();

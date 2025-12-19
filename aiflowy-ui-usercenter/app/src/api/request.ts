@@ -186,20 +186,24 @@ export class SseClient {
           }
           options?.onMessage?.(event);
         }
-      } catch (innerError) {
-        options?.onError?.(innerError);
+      } catch (innerError: any) {
+        if (innerError.name !== 'AbortError') {
+          options?.onError?.(innerError);
+        }
       }
 
       // 只有在还是同一个请求的情况下才调用 onFinished
       if (this.currentRequestId === currentRequestId) {
         options?.onFinished?.();
       }
-    } catch (error) {
+    } catch (error: any) {
       if (this.currentRequestId !== currentRequestId) {
         return;
       }
-      console.error('SSE错误:', error);
-      options?.onError?.(error);
+      if (error.name !== 'AbortError') {
+        console.error('SSE错误:', error);
+        options?.onError?.(error);
+      }
     } finally {
       // 只有当还是当前请求时才清除 controller
       if (this.currentRequestId === currentRequestId) {
