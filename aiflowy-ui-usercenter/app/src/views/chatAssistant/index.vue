@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue';
 
 import { cn } from '@aiflowy/utils';
 
-import { ElAside, ElContainer, ElIcon, ElMain, ElSpace } from 'element-plus';
+import { ElAside, ElContainer, ElIcon, ElMain } from 'element-plus';
 
 import { api } from '#/api/request';
 import {
@@ -49,43 +49,36 @@ function setMessageList(messages: any) {
 </script>
 
 <template>
-  <ElContainer class="bg-background h-full">
-    <ElAside width="283px">
-      <ElSpace
-        class="p-5"
-        direction="vertical"
-        alignment="flex-start"
-        :size="20"
-      >
-        <span class="text-foreground pl-5 text-sm">最近使用</span>
-        <div class="flex h-full flex-col gap-5 overflow-auto">
-          <Card
-            v-for="assistant in recentUsedAssistant"
-            :key="assistant.id"
-            :class="
-              cn(
-                currentBot.id === assistant.id
-                  ? 'bg-[hsl(var(--primary)/15%)] dark:bg-[hsl(var(--accent))]'
-                  : 'hover:bg-[hsl(var(--accent))]',
-              )
-            "
-            @click="handleSelectAssistant(assistant)"
-          >
-            <!-- <CardAvatar /> -->
-            <ElIcon class="!text-primary" :size="36">
-              <AssistantIcon />
-            </ElIcon>
-            <CardContent>
-              <CardTitle :class="cn(assistant.checked && 'text-primary')">
-                {{ assistant.title }}
-              </CardTitle>
-              <CardDescription>
-                {{ assistant.description }}
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </div>
-      </ElSpace>
+  <ElContainer class="bg-background-deep h-full">
+    <ElAside width="283px" class="flex flex-col gap-5 p-5">
+      <span class="text-foreground pl-2.5 text-sm">最近使用</span>
+      <div class="flex h-full flex-col gap-5 overflow-auto">
+        <Card
+          v-for="assistant in recentUsedAssistant"
+          :key="assistant.id"
+          :class="
+            cn(
+              currentBot.id === assistant.id
+                ? 'bg-[hsl(var(--primary)/15%)] dark:bg-[hsl(var(--accent))]'
+                : 'hover:bg-[hsl(var(--accent))]',
+            )
+          "
+          @click="handleSelectAssistant(assistant)"
+        >
+          <!-- <CardAvatar /> -->
+          <ElIcon class="!text-primary" :size="36">
+            <AssistantIcon />
+          </ElIcon>
+          <CardContent>
+            <CardTitle :class="cn(assistant.checked && 'text-primary')">
+              {{ assistant.title }}
+            </CardTitle>
+            <CardDescription>
+              {{ assistant.description }}
+            </CardDescription>
+          </CardContent>
+        </Card>
+      </div>
     </ElAside>
     <ElMain class="p-6 pl-0">
       <ChatContainer :bot="currentBot" :on-message-list="setMessageList">

@@ -60,12 +60,12 @@ function checkedItems() {
       全选
     </ElCheckbox>
     <ElCheckboxGroup
-      class="flex w-full flex-wrap items-center gap-5"
+      class="grid w-full grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-5"
       v-model="checkedIds"
       @change="handleCheckedIdsChange"
     >
       <Card
-        class="border-border group relative max-w-[378px] flex-col gap-3 border p-3 transition hover:-translate-y-2 hover:shadow-xl"
+        class="border-border bg-background group relative max-w-[378px] flex-col gap-3 border p-3 transition hover:-translate-y-2 hover:shadow-md"
         v-for="asset in props.data"
         :key="asset.id"
       >

@@ -2,12 +2,16 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { Delete, View } from '@element-plus/icons-vue';
+import { Delete, MoreFilled, View } from '@element-plus/icons-vue';
 import {
   ElButton,
   ElContainer,
   ElDatePicker,
+  ElDropdown,
+  ElDropdownItem,
+  ElDropdownMenu,
   ElHeader,
+  ElIcon,
   ElMain,
   ElSelect,
   ElSpace,
@@ -111,7 +115,7 @@ function getDateRange() {
 </script>
 
 <template>
-  <ElContainer class="bg-background h-full">
+  <ElContainer class="bg-background-deep h-full">
     <ElHeader class="!h-auto !p-8 !pb-0">
       <ElSpace direction="vertical" :size="24" alignment="flex-start">
         <h1 class="text-2xl font-medium">执行记录</h1>
@@ -157,9 +161,9 @@ function getDateRange() {
       </ElSpace>
     </ElHeader>
     <ElMain class="!px-8">
-      <ElContainer>
+      <ElContainer class="bg-background rounded-lg p-5">
         <ElHeader
-          class="bg-background-deep grid grid-cols-5 place-items-center !p-0"
+          class="bg-accent grid grid-cols-5 place-items-center rounded-lg !p-0"
           height="54px"
         >
           <span
@@ -191,19 +195,25 @@ function getDateRange() {
                         {{ $t(`aiWorkflowExecRecord.status${record.status}`) }}
                       </ElTag>
                     </span>
-                    <ElSpace :size="10">
-                      <ElButton
-                        type="primary"
-                        :icon="View"
-                        link
-                        @click="toDetail(record)"
-                      >
-                        查看详情
-                      </ElButton>
-                      <ElButton type="danger" :icon="Delete" link>
-                        删除
-                      </ElButton>
-                    </ElSpace>
+
+                    <ElDropdown>
+                      <ElIcon>
+                        <MoreFilled />
+                      </ElIcon>
+
+                      <template #dropdown>
+                        <ElDropdownMenu>
+                          <ElDropdownItem @click="toDetail(record)">
+                            <ElButton :icon="View" link>查看详情</ElButton>
+                          </ElDropdownItem>
+                          <ElDropdownItem>
+                            <ElButton type="danger" :icon="Delete" link>
+                              删除
+                            </ElButton>
+                          </ElDropdownItem>
+                        </ElDropdownMenu>
+                      </template>
+                    </ElDropdown>
                   </div>
                 </template>
               </PageData>

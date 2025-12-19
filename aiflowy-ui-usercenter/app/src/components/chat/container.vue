@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
-import { createIconifyIcon } from '@aiflowy/icons';
 import { cn } from '@aiflowy/utils';
 
 import {
@@ -21,6 +20,7 @@ import {
   CardTitle,
 } from '#/components/card';
 import AssistantIcon from '#/components/icons/AssistantIcon.vue';
+import ChatIcon from '#/components/icons/ChatIcon.vue';
 
 interface Props {
   bot: any;
@@ -79,7 +79,7 @@ function getMessageList() {
 </script>
 
 <template>
-  <ElContainer class="border-border h-full rounded-lg border-2">
+  <ElContainer class="border-border h-full rounded-lg border">
     <ElAside width="287px" class="border-border border-r p-6">
       <Card class="max-w-max p-0">
         <!-- <CardAvatar /> -->
@@ -94,7 +94,7 @@ function getMessageList() {
       <ElButton
         class="mt-6 !h-10 w-full !text-sm"
         type="primary"
-        :icon="createIconifyIcon('mdi:chat-plus-outline')"
+        :icon="ChatIcon"
         plain
         @click="addSession"
       >
@@ -144,8 +144,8 @@ function getMessageList() {
   </ElContainer>
 </template>
 
-<!-- <style lang="css" scoped>
+<style lang="css" scoped>
 .el-button :deep(.el-icon) {
   font-size: 20px;
 }
-</style> -->
+</style>

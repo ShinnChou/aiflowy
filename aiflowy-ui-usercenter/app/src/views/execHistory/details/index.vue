@@ -79,7 +79,7 @@ const steps = computed(() => {
 </script>
 
 <template>
-  <ElContainer class="bg-background h-full">
+  <ElContainer class="bg-background-deep h-full">
     <ElHeader class="!p-8 !pb-0" height="auto">
       <ElSpace class="cursor-pointer" :size="10" @click="router.back()">
         <ElIcon size="24"><ArrowLeft /></ElIcon>
@@ -89,7 +89,7 @@ const steps = computed(() => {
       </ElSpace>
     </ElHeader>
     <ElMain class="h-full items-center !px-8">
-      <div class="border-border flex h-full rounded-xl border">
+      <div class="border-border flex h-full overflow-hidden rounded-xl border">
         <div
           class="bg-background flex flex-1 flex-col gap-6 overflow-hidden rounded-lg p-5"
         >

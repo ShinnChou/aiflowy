@@ -80,7 +80,7 @@ function logout() {
 </script>
 
 <template>
-  <div class="bg-background h-full w-full pt-[156px]">
+  <div class="bg-background-deep h-full w-full pt-[156px]">
     <ElForm
       ref="formRef"
       class="mx-auto"

@@ -3,10 +3,10 @@ import { ref } from 'vue';
 import { Sender } from 'vue-element-plus-x';
 
 import { Promotion } from '@element-plus/icons-vue';
-import { ElButton, ElIcon } from 'element-plus';
+import { ElButton } from 'element-plus';
 
 import { sseClient } from '#/api/request';
-import SendingIcon from '#/components/icons/SendingIcon.vue';
+// import PaperclipIcon from '#/components/icons/PaperclipIcon.vue';
 
 interface Props {
   sessionId: string | undefined;
@@ -88,7 +88,7 @@ const stopSse = () => {
 
     <template #action-list>
       <div class="flex items-center gap-2">
-        <!--<ElButton :icon="Paperclip" link />-->
+        <!-- <ElButton :icon="PaperclipIcon" link /> -->
         <ElButton v-if="btnLoading" circle @click="stopSse">
           <ElIcon size="30" color="#409eff"><SendingIcon /></ElIcon>
         </ElButton>

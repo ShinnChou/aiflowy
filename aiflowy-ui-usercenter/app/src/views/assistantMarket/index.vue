@@ -108,10 +108,10 @@ function removeBotFromRecentlyUsed(botId: any) {
 </script>
 
 <template>
-  <ElContainer class="h-full bg-[linear-gradient(153deg,white,#EFF8FF)]">
+  <ElContainer class="bg-background-deep h-full">
     <ElHeader class="!h-auto !p-8 !pb-0">
       <ElSpace direction="vertical" :size="24" alignment="flex-start">
-        <h1 class="text-2xl font-medium text-[#333333]">助理应用市场</h1>
+        <h1 class="text-2xl font-medium">助理应用市场</h1>
         <ElSpace :size="20">
           <ElInput
             placeholder="搜索"
@@ -122,7 +122,7 @@ function removeBotFromRecentlyUsed(botId: any) {
           <ElSpace :size="12">
             <button
               type="button"
-              class="h-[35px] w-[94px] rounded-3xl border border-[#E6E9EE] text-sm text-[#566882] hover:border-[#0066FF] hover:bg-[rgba(0,102,255,0.08)] hover:text-[#0066FF]"
+              class="border-border text-foreground hover:border-primary hover:text-primary h-[35px] w-[94px] rounded-3xl border text-sm hover:bg-[rgba(0,102,255,0.08)]"
               v-for="category in categories"
               :key="category.id"
               @click="handleTagClick(category.id)"
@@ -134,9 +134,12 @@ function removeBotFromRecentlyUsed(botId: any) {
       </ElSpace>
     </ElHeader>
     <ElMain class="!px-8">
-      <div class="flex flex-wrap items-center gap-5" v-loading="pageLoading">
+      <div
+        class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-5"
+        v-loading="pageLoading"
+      >
         <Card
-          class="h-[168px] w-full max-w-[378px] flex-col justify-between rounded-xl border border-[#E6E9EE] p-6 pb-5 pr-4 transition hover:-translate-y-2 hover:shadow-xl"
+          class="border-border bg-background h-[168px] w-full max-w-none flex-col justify-between rounded-xl border p-6 pb-5 pr-4 transition hover:-translate-y-2 hover:shadow-md"
           v-for="assistant in botList"
           :key="assistant.id"
         >
@@ -146,12 +149,12 @@ function removeBotFromRecentlyUsed(botId: any) {
                 :src="assistant.icon"
                 :default-avatar="defaultBotAvatar"
               />
-              <CardTitle class="text-[#042A62]">
+              <CardTitle>
                 {{ assistant.title }}
               </CardTitle>
             </CardContent>
             <CardDescription
-              class="line-clamp-2 text-sm text-[#566882]"
+              class="text-foreground/50 line-clamp-2 text-sm"
               :title="assistant.description"
             >
               {{ assistant.description }}

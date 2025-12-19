@@ -131,7 +131,7 @@ function handleOperation(type: string) {
 </script>
 
 <template>
-  <ElContainer class="bg-background h-full">
+  <ElContainer class="bg-background-deep h-full">
     <ElHeader class="flex flex-col gap-6 !p-8 !pb-0" height="auto">
       <ElSpace :size="24">
         <h1 class="text-2xl font-medium">素材库</h1>

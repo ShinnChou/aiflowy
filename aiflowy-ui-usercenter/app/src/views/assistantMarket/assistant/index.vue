@@ -100,17 +100,15 @@ function addSession() {
 </script>
 
 <template>
-  <ElContainer
-    class="h-full bg-[linear-gradient(153deg,#FFFFFF,#EFF8FF)] p-6 pr-0"
-  >
+  <ElContainer class="bg-background-deep h-full p-6 pr-0">
     <ElMain
-      class="!flex flex-col rounded-xl border border-[#E6E9EE] bg-white !p-6"
+      class="border-border bg-background !flex flex-col rounded-xl border !p-6"
     >
       <ElSpace :size="16" class="cursor-pointer" @click="router.back()">
-        <ElIcon color="#969799" :size="24"><ArrowLeft /></ElIcon>
+        <ElIcon :size="24"><ArrowLeft /></ElIcon>
         <ElSpace :size="12">
           <ElAvatar :size="36" :src="botInfo.icon || defaultBotAvatar" />
-          <h1 class="text-base font-semibold text-[#042A62]">
+          <h1 class="text-base font-semibold">
             {{ botInfo.title }}
           </h1>
         </ElSpace>
@@ -121,7 +119,7 @@ function addSession() {
           class="absolute left-1/2 top-1/2 max-w-[340px] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0"
         >
           <ElAvatar :size="64" :src="botInfo.icon || defaultBotAvatar" />
-          <CardTitle class="mt-4 text-[#042A62]">{{ botInfo.title }}</CardTitle>
+          <CardTitle class="mt-4">{{ botInfo.title }}</CardTitle>
           <CardDescription class="mt-2.5 text-center text-[#566882]">
             {{ botInfo.description }}
           </CardDescription>
@@ -138,7 +136,7 @@ function addSession() {
     <ElAside width="407px" class="px-3 pt-10">
       <Card class="mx-auto max-w-[340px] flex-col items-center gap-0">
         <ElAvatar :size="64" :src="botInfo.icon || defaultBotAvatar" />
-        <CardTitle class="mt-4 text-[#042A62]">{{ botInfo.title }}</CardTitle>
+        <CardTitle class="mt-4">{{ botInfo.title }}</CardTitle>
         <CardDescription class="mt-2.5 text-center text-[#566882]">
           {{ botInfo.description }}
         </CardDescription>

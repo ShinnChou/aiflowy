@@ -2,11 +2,11 @@
 import type { WorkbenchProjectItem } from '../typing';
 
 import {
+  AIFlowyIcon,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  AIFlowyIcon,
 } from '@aiflowy-core/shadcn-ui';
 
 interface Props {
@@ -40,7 +40,7 @@ defineEmits(['click']);
             'rounded-bl-xl': index === items.length - 3,
             'rounded-br-xl': index === items.length - 1,
           }"
-          class="border-border group w-full cursor-pointer border-r border-t p-4 transition-all hover:shadow-xl md:w-1/2 lg:w-1/3"
+          class="border-border group w-full cursor-pointer border-r border-t p-4 transition-all hover:shadow-md md:w-1/2 lg:w-1/3"
         >
           <div class="flex items-center">
             <AIFlowyIcon

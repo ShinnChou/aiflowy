@@ -53,7 +53,7 @@ function handleTagClick(tag: any) {
 </script>
 
 <template>
-  <ElContainer class="bg-background h-full">
+  <ElContainer class="bg-background-deep h-full">
     <ElHeader class="!h-auto !p-8 !pb-0">
       <ElSpace direction="vertical" :size="24" alignment="flex-start">
         <h1 class="text-2xl font-medium">智能体</h1>
@@ -94,7 +94,7 @@ function handleTagClick(tag: any) {
           :to="`/workflow/${workflow.id}`"
         >
           <Card
-            class="border-border h-[168px] max-w-none flex-col gap-3 rounded-xl border p-6 pb-0 pr-4 transition hover:-translate-y-2 hover:shadow-xl"
+            class="border-border h-[168px] max-w-none flex-col gap-3 rounded-xl border p-6 pb-0 pr-4 transition hover:-translate-y-2 hover:shadow-md"
           >
             <CardContent class="flex-row items-center gap-3">
               <CardAvatar

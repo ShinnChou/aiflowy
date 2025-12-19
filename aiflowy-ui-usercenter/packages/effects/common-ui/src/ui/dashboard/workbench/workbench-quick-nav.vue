@@ -2,11 +2,11 @@
 import type { WorkbenchQuickNavItem } from '../typing';
 
 import {
+  AIFlowyIcon,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  AIFlowyIcon,
 } from '@aiflowy-core/shadcn-ui';
 
 interface Props {
@@ -40,7 +40,7 @@ defineEmits(['click']);
             'rounded-bl-xl': index === items.length - 3,
             'rounded-br-xl': index === items.length - 1,
           }"
-          class="flex-col-center border-border group w-1/3 cursor-pointer border-r border-t py-8 hover:shadow-xl"
+          class="flex-col-center border-border group w-1/3 cursor-pointer border-r border-t py-8 hover:shadow-md"
           @click="$emit('click', item)"
         >
           <AIFlowyIcon
