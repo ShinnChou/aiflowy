@@ -26,9 +26,9 @@ CREATE TABLE `tb_workflow_exec_result`
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='工作流执行记录';
 
 -- ----------------------------
--- Table structure for tb_workflow_record_step
+-- Table structure for tb_workflow_exec_step
 -- ----------------------------
-CREATE TABLE `tb_workflow_record_step`
+CREATE TABLE `tb_workflow_exec_step`
 (
     `id`         bigint unsigned NOT NULL COMMENT '主键',
     `record_id`  bigint unsigned NOT NULL COMMENT '执行记录ID',
