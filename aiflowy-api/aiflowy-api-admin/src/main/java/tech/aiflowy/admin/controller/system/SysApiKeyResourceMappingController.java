@@ -16,8 +16,8 @@ import tech.aiflowy.system.service.SysApiKeyResourceMappingService;
 @RestController
 @RequestMapping("/api/v1/sysApiKeyResourcePermissionRelationship")
 @UsePermission(moduleName = "/api/v1/sysApiKey")
-public class SysApiKeyResourcePermissionRelationshipController extends BaseCurdController<SysApiKeyResourceMappingService, SysApiKeyResourceMapping> {
-    public SysApiKeyResourcePermissionRelationshipController(SysApiKeyResourceMappingService service) {
+public class SysApiKeyResourceMappingController extends BaseCurdController<SysApiKeyResourceMappingService, SysApiKeyResourceMapping> {
+    public SysApiKeyResourceMappingController(SysApiKeyResourceMappingService service) {
         super(service);
     }
 }
