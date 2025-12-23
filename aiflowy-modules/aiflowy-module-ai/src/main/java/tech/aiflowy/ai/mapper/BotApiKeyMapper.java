@@ -9,6 +9,6 @@ import tech.aiflowy.ai.entity.BotApiKey;
  * @author ArkLight
  * @since 2025-07-18
  */
-public interface BotApiKeyMapperMapper extends BaseMapper<BotApiKey> {
+public interface BotApiKeyMapper extends BaseMapper<BotApiKey> {
 
 }
