@@ -20,9 +20,9 @@ public class BotMessageBase extends DateEntity implements Serializable {
     private BigInteger id;
 
     /**
-     * Bot ID
+     * botId
      */
-    @Column(comment = "Bot ID")
+    @Column(comment = "botId")
     private BigInteger botId;
 
     /**
@@ -32,22 +32,42 @@ public class BotMessageBase extends DateEntity implements Serializable {
     private BigInteger accountId;
 
     /**
-     * 回话ID
+     * 会话ID
      */
-    @Column(comment = "回话ID")
-    private String sessionId;
+    @Column(comment = "会话ID")
+    private BigInteger conversationId;
 
+    /**
+     * 角色
+     */
+    @Column(comment = "角色")
     private String role;
 
+    /**
+     * 内容
+     */
+    @Column(comment = "内容")
     private String content;
 
+    /**
+     * 图片
+     */
+    @Column(comment = "图片")
     private String image;
 
     @Column(typeHandler = FastjsonTypeHandler.class)
     private Map<String, Object> options;
 
+    /**
+     * 创建时间
+     */
+    @Column(comment = "创建时间")
     private Date created;
 
+    /**
+     * 修改时间
+     */
+    @Column(comment = "修改时间")
     private Date modified;
 
     public BigInteger getId() {
@@ -74,12 +94,12 @@ public class BotMessageBase extends DateEntity implements Serializable {
         this.accountId = accountId;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public BigInteger getConversationId() {
+        return conversationId;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setConversationId(BigInteger conversationId) {
+        this.conversationId = conversationId;
     }
 
     public String getRole() {
@@ -114,20 +134,23 @@ public class BotMessageBase extends DateEntity implements Serializable {
         this.options = options;
     }
 
+    @Override
     public Date getCreated() {
         return created;
     }
 
+    @Override
     public void setCreated(Date created) {
         this.created = created;
     }
 
+    @Override
     public Date getModified() {
         return modified;
     }
 
+    @Override
     public void setModified(Date modified) {
         this.modified = modified;
     }
-
 }

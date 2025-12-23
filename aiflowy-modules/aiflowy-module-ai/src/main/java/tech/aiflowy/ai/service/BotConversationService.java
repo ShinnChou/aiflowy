@@ -13,7 +13,7 @@ import java.math.BigInteger;
  */
 public interface BotConversationService extends IService<BotConversation> {
 
-    void deleteConversation(String botId, String sessionId, BigInteger accountId);
+    void deleteConversation(String botId, String conversationId, BigInteger accountId);
 
-    void updateConversation(String botId, String sessionId, String title, BigInteger accountId);
+    void updateConversation(String botId, String conversationId, String title, BigInteger accountId);
 }

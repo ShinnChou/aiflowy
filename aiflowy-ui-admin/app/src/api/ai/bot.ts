@@ -54,7 +54,7 @@ export const removeBotFromId = (id: string) => {
 };
 
 export interface GetMessageListParams {
-  sessionId: string;
+  conversationId: string;
   botId: string;
   tempUserId: string;
 }

@@ -129,7 +129,7 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
 //        documentStore.setEmbeddingModel(embeddingModel);
         StoreOptions options = StoreOptions.ofCollectionName(knowledge.getVectorStoreCollection());
         EmbeddingOptions embeddingOptions = new EmbeddingOptions();
-        embeddingOptions.setModel(model.getLlmModel());
+        embeddingOptions.setModel(model.getModelName());
         options.setEmbeddingOptions(embeddingOptions);
         options.setCollectionName(knowledge.getVectorStoreCollection());
         // 查询文本分割表tb_document_chunk中对应的有哪些数据，找出来删除
@@ -270,7 +270,7 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
 
         StoreOptions options = StoreOptions.ofCollectionName(knowledge.getVectorStoreCollection());
         EmbeddingOptions embeddingOptions = new EmbeddingOptions();
-        embeddingOptions.setModel(model.getLlmModel());
+        embeddingOptions.setModel(model.getModelName());
         options.setEmbeddingOptions(embeddingOptions);
         options.setIndexName(options.getCollectionName());
         List<com.agentsflex.core.document.Document> documents = new ArrayList<>();

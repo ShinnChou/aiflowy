@@ -58,25 +58,25 @@ public class ModelBase implements Serializable {
      * 大模型请求地址
      */
     @Column(comment = "大模型请求地址")
-    private String llmEndpoint;
+    private String endpoint;
 
     /**
      * 大模型名称
      */
     @Column(comment = "大模型名称")
-    private String llmModel;
+    private String modelName;
 
     /**
      * 大模型 API KEY
      */
     @Column(comment = "大模型 API KEY")
-    private String llmApiKey;
+    private String apiKey;
 
     /**
      * 大模型其他属性配置
      */
     @Column(comment = "大模型其他属性配置")
-    private String llmExtraConfig;
+    private String extraConfig;
 
     /**
      * provider
@@ -206,36 +206,36 @@ public class ModelBase implements Serializable {
         this.description = description;
     }
 
-    public String getLlmEndpoint() {
-        return llmEndpoint;
+    public String getEndpoint() {
+        return endpoint;
     }
 
-    public void setLlmEndpoint(String llmEndpoint) {
-        this.llmEndpoint = llmEndpoint;
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
     }
 
-    public String getLlmModel() {
-        return llmModel;
+    public String getModelName() {
+        return modelName;
     }
 
-    public void setLlmModel(String llmModel) {
-        this.llmModel = llmModel;
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
     }
 
-    public String getLlmApiKey() {
-        return llmApiKey;
+    public String getApiKey() {
+        return apiKey;
     }
 
-    public void setLlmApiKey(String llmApiKey) {
-        this.llmApiKey = llmApiKey;
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 
-    public String getLlmExtraConfig() {
-        return llmExtraConfig;
+    public String getExtraConfig() {
+        return extraConfig;
     }
 
-    public void setLlmExtraConfig(String  llmExtraConfig) {
-        this.llmExtraConfig = llmExtraConfig;
+    public void setExtraConfig(String extraConfig) {
+        this.extraConfig = extraConfig;
     }
 
     public Map<String, Object> getOptions() {
@@ -292,7 +292,7 @@ public class ModelBase implements Serializable {
 
     @Override
     public String toString() {
-        return "AiLlmBase{" +
+        return "ModelBase{" +
                 "id=" + id +
                 ", deptId=" + deptId +
                 ", tenantId=" + tenantId +
@@ -300,10 +300,10 @@ public class ModelBase implements Serializable {
                 ", brand='" + brand + '\'' +
                 ", icon='" + icon + '\'' +
                 ", description='" + description + '\'' +
-                ", llmEndpoint='" + llmEndpoint + '\'' +
-                ", llmModel='" + llmModel + '\'' +
-                ", llmApiKey='" + llmApiKey + '\'' +
-                ", llmExtraConfig='" + llmExtraConfig + '\'' +
+                ", endpoint='" + endpoint + '\'' +
+                ", modelName='" + modelName + '\'' +
+                ", apiKey='" + apiKey + '\'' +
+                ", extraConfig='" + extraConfig + '\'' +
                 ", provider='" + provider + '\'' +
                 ", providerId=" + providerId +
                 ", groupName='" + groupName + '\'' +

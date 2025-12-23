@@ -197,12 +197,12 @@ public class ModelServiceImpl extends ServiceImpl<ModelMapper, Model> implements
         if (provider == null) {
             return aillm;
         }
-        aillm.setAiLlmProvider(provider);
-        if (StrUtil.isBlank(aillm.getLlmApiKey())) {
-            aillm.setLlmApiKey(provider.getApiKey());
+        aillm.setModelProvider(provider);
+        if (StrUtil.isBlank(aillm.getApiKey())) {
+            aillm.setApiKey(provider.getApiKey());
         }
-        if (StrUtil.isBlank(aillm.getLlmEndpoint())) {
-            aillm.setLlmEndpoint(provider.getEndPoint());
+        if (StrUtil.isBlank(aillm.getEndpoint())) {
+            aillm.setEndpoint(provider.getEndpoint());
         }
 
         Map<String, Object> options = aillm.getOptions();
@@ -228,7 +228,7 @@ public class ModelServiceImpl extends ServiceImpl<ModelMapper, Model> implements
 
         String llmEndpoint = (String) options.get("llmEndpoint");
         if (StrUtil.isBlank(llmEndpoint)) {
-            options.put("llmEndpoint", provider.getEndPoint());
+            options.put("llmEndpoint", provider.getEndpoint());
         }
 
         return aillm;

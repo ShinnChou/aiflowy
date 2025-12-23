@@ -13,14 +13,14 @@ import java.util.List;
 public class BotMessageMemory implements ChatMemory {
     private final BigInteger botId;
     private final BigInteger accountId;
-    private final String sessionId;
+    private final BigInteger conversationId;
     private final BotMessageService messageService;
     
-    public BotMessageMemory(BigInteger botId, BigInteger accountId, String sessionId,
+    public BotMessageMemory(BigInteger botId, BigInteger accountId, BigInteger conversationId,
                             BotMessageService messageService) {
         this.botId = botId;
         this.accountId = accountId;
-        this.sessionId = sessionId;
+        this.conversationId = conversationId;
         this.messageService = messageService;
     }
 
@@ -29,7 +29,7 @@ public class BotMessageMemory implements ChatMemory {
         List<BotMessage> sysAiMessages = messageService.list(QueryWrapper.create()
                 .eq(BotMessage::getBotId, botId, true)
                 .eq(BotMessage::getAccountId, accountId, true)
-                .eq(BotMessage::getSessionId, sessionId, true)
+                .eq(BotMessage::getId, conversationId, true)
                 .orderBy(BotMessage::getCreated, true)
                 .limit(count)
         );
@@ -54,7 +54,7 @@ public class BotMessageMemory implements ChatMemory {
         dbMessage.setCreated(new Date());
         dbMessage.setBotId(botId);
         dbMessage.setAccountId(accountId);
-        dbMessage.setSessionId(sessionId);
+        dbMessage.setId(conversationId);
         dbMessage.setContentAndRole(message);
         messageService.save(dbMessage);
     }

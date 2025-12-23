@@ -11,6 +11,7 @@ import com.agentsflex.core.model.chat.ChatOptions;
 import com.agentsflex.core.model.chat.tool.Tool;
 import com.agentsflex.core.prompt.MemoryPrompt;
 import com.alicp.jetcache.Cache;
+import com.mybatisflex.core.keygen.impl.SnowFlakeIDKeyGenerator;
 import com.mybatisflex.core.query.QueryWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +84,12 @@ public class BotController extends BaseCurdController<BotService, Bot> {
     @Resource
     private PluginItemService pluginItemService;
 
+    @GetMapping("/generateConversationId")
+    public Result<Long> generateConversationId() {
+        long nextId = new SnowFlakeIDKeyGenerator().nextId();
+        return Result.ok(nextId);
+    }
+
     @PostMapping("updateOptions")
     @SaCheckPermission("/api/v1/bot/save")
     public Result<Void> updateOptions(@JsonBody("id") BigInteger id,
@@ -138,7 +145,7 @@ public class BotController extends BaseCurdController<BotService, Bot> {
      *
      * @param prompt    用户输入的聊天内容，必须提供
      * @param botId     聊天机器人的唯一标识符，必须提供
-     * @param sessionId 会话ID，用于标识当前对话会话，必须提供
+     * @param conversationId 会话ID，用于标识当前对话会话，必须提供
      * @param messages  历史消息，用于提供上下文，可选
      * @return 返回SseEmitter对象，用于服务器向客户端推送聊天响应数据
      */
@@ -147,7 +154,7 @@ public class BotController extends BaseCurdController<BotService, Bot> {
     public SseEmitter chat(
             @JsonBody(value = "prompt", required = true) String prompt,
             @JsonBody(value = "botId", required = true) BigInteger botId,
-            @JsonBody(value = "sessionId", required = true) String sessionId,
+            @JsonBody(value = "conversationId", required = true) BigInteger conversationId,
             @JsonBody(value = "messages") List<Map<String, String>>  messages
 
     ) {
@@ -191,7 +198,7 @@ public class BotController extends BaseCurdController<BotService, Bot> {
         }
 
         if (StpUtil.isLogin()) {
-            BotMessageMemory memory = new BotMessageMemory(botId, SaTokenUtil.getLoginAccount().getId(), sessionId,
+            BotMessageMemory memory = new BotMessageMemory(botId, SaTokenUtil.getLoginAccount().getId(), conversationId,
                     botMessageService);
             memoryPrompt.setMemory(memory);
         }
@@ -199,7 +206,7 @@ public class BotController extends BaseCurdController<BotService, Bot> {
         userMessage.addTools(buildFunctionList(Maps.of("botId", botId).set("needEnglishName", false)));
         memoryPrompt.addMessage(userMessage);
         ChatOptions chatOptions = getChatOptions(llmOptions);
-        return botService.startChat(botId, chatModel, prompt, memoryPrompt, chatOptions, sessionId, messages);
+        return botService.startChat(botId, chatModel, prompt, memoryPrompt, chatOptions, conversationId, messages);
 
     }
 

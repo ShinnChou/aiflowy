@@ -7,6 +7,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +20,8 @@ public class DefaultBotMessageMemory extends DefaultChatMemory {
 
     private final List<Map<String, String>> messages;
 
-    public DefaultBotMessageMemory(String sessionId, SseEmitter sseEmitter, List<Map<String, String>> messages) {
-        super(sessionId);
+    public DefaultBotMessageMemory(BigInteger conversationId, SseEmitter sseEmitter, List<Map<String, String>> messages) {
+        super(conversationId);
         this.sseEmitter = sseEmitter;
         this.messages = messages;
     }

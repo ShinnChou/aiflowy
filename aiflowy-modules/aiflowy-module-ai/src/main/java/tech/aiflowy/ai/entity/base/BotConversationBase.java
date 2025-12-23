@@ -2,6 +2,7 @@ package tech.aiflowy.ai.entity.base;
 
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
+
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
@@ -15,7 +16,7 @@ public class BotConversationBase implements Serializable {
      * 会话id
      */
     @Id(comment = "会话id")
-    private String sessionId;
+    private BigInteger id;
 
     /**
      * 会话标题
@@ -27,13 +28,7 @@ public class BotConversationBase implements Serializable {
      * BotId
      */
     @Column(comment = "BotId")
-    private BigInteger BotId;
-
-    /**
-     * 创建时间
-     */
-    @Column(comment = "创建时间")
-    private Date created;
+    private BigInteger botId;
 
     /**
      * 用户id
@@ -41,12 +36,18 @@ public class BotConversationBase implements Serializable {
     @Column(comment = "用户id")
     private BigInteger accountId;
 
-    public String getSessionId() {
-        return sessionId;
+    /**
+     * 创建时间
+     */
+    @Column(comment = "创建时间")
+    private Date created;
+
+    public BigInteger getId() {
+        return id;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setId(BigInteger id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -58,19 +59,11 @@ public class BotConversationBase implements Serializable {
     }
 
     public BigInteger getBotId() {
-        return BotId;
+        return botId;
     }
 
     public void setBotId(BigInteger botId) {
-        BotId = botId;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
+        this.botId = botId;
     }
 
     public BigInteger getAccountId() {
@@ -81,4 +74,11 @@ public class BotConversationBase implements Serializable {
         this.accountId = accountId;
     }
 
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
 }

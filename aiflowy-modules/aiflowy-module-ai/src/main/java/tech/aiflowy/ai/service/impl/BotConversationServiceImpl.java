@@ -31,25 +31,25 @@ public class BotConversationServiceImpl extends ServiceImpl<BotConversationMappe
      * 删除指定会话
      */
     @Override
-    public void deleteConversation(String botId, String sessionId, BigInteger accountId) {
+    public void deleteConversation(String botId, String conversationId, BigInteger accountId) {
         QueryWrapper cqw = QueryWrapper.create();
         cqw.eq(BotConversation::getBotId, botId);
-        cqw.eq(BotConversation::getSessionId, sessionId);
+        cqw.eq(BotConversation::getId, conversationId);
         cqw.eq(BotConversation::getAccountId, accountId);
         botConversationMapper.deleteByQuery(cqw);
         // 删除消息记录中的数据
         QueryWrapper mqw = QueryWrapper.create();
         mqw.eq(BotMessage::getBotId, botId);
-        mqw.eq(BotMessage::getSessionId, sessionId);
+        mqw.eq(BotMessage::getConversationId, conversationId);
         mqw.eq(BotMessage::getAccountId, accountId);
         botMessageMapper.deleteByQuery(mqw);
     }
 
     @Override
-    public void updateConversation(String botId, String sessionId, String title, BigInteger accountId) {
+    public void updateConversation(String botId, String conversationId, String title, BigInteger accountId) {
         QueryWrapper cqw = QueryWrapper.create();
         cqw.eq(BotConversation::getBotId, botId);
-        cqw.eq(BotConversation::getSessionId, sessionId);
+        cqw.eq(BotConversation::getId, conversationId);
         cqw.eq(BotConversation::getAccountId, accountId);
         BotConversation update = new BotConversation();
         update.setTitle(title);

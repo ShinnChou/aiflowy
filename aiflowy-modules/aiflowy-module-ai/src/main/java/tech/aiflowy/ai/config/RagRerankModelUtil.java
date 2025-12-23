@@ -16,16 +16,16 @@ public class RagRerankModelUtil {
             return null;
         }
         DefaultRerankModelConfig defaultRerankModelConfig = new DefaultRerankModelConfig();
-        if (modelRerank.getLlmModel() != null && !modelRerank.getLlmModel().isEmpty()){
-            defaultRerankModelConfig.setModel(modelRerank.getLlmModel());
+        if (modelRerank.getModelName() != null && !modelRerank.getModelName().isEmpty()){
+            defaultRerankModelConfig.setModel(modelRerank.getModelName());
         }
-        if (modelRerank.getLlmApiKey() != null && !modelRerank.getLlmApiKey().isEmpty()){
-            defaultRerankModelConfig.setApiKey(modelRerank.getLlmApiKey());
+        if (modelRerank.getApiKey() != null && !modelRerank.getApiKey().isEmpty()){
+            defaultRerankModelConfig.setApiKey(modelRerank.getApiKey());
         }
-        if (modelRerank.getLlmEndpoint() != null && !modelRerank.getLlmEndpoint().isEmpty()){
-            defaultRerankModelConfig.setEndpoint(modelRerank.getLlmEndpoint());
+        if (modelRerank.getEndpoint() != null && !modelRerank.getEndpoint().isEmpty()){
+            defaultRerankModelConfig.setEndpoint(modelRerank.getEndpoint());
         }
-        String llmExtraConfig = modelRerank.getLlmExtraConfig();
+        String llmExtraConfig = modelRerank.getExtraConfig();
         if (llmExtraConfig != null && !llmExtraConfig.isEmpty()){
             Properties prop = PropertiesUtil.textToProperties(llmExtraConfig);
             String basePath = prop.getProperty("basePath");

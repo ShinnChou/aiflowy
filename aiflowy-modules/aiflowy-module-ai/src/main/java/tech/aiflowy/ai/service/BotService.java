@@ -25,5 +25,5 @@ public interface BotService extends IService<Bot> {
 
     Bot getByAlias(String alias);
 
-    SseEmitter startChat(BigInteger botId, ChatModel chatModel, String prompt, MemoryPrompt memoryPrompt, ChatOptions chatOptions, String sessionId, List<Map<String, String>> messages);
+    SseEmitter startChat(BigInteger botId, ChatModel chatModel, String prompt, MemoryPrompt memoryPrompt, ChatOptions chatOptions, BigInteger conversationId, List<Map<String, String>> messages);
 }

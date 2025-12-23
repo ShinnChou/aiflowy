@@ -40,21 +40,21 @@ public class Model extends ModelBase {
     @RelationManyToOne(selfField = "providerId", targetField = "id")
     private ModelProvider modelProvider;
 
-    public final static String Llm_Endpoint = "llmEndpoint";
-    public final static String Chat_path = "chatPath";
-    public final static String Embed_path = "embedPath";
-    public final static String Rerank_path = "rerankPath";
+    public final static String LLM_ENDPOINT = "llmEndpoint";
+    public final static String CHAT_PATH = "chatPath";
+    public final static String EMBED_PATH = "embedPath";
+    public final static String RERANK_PATH = "rerankPath";
 
-    public ModelProvider getAiLlmProvider() {
+    public ModelProvider getModelProvider() {
         return modelProvider;
     }
 
-    public void setAiLlmProvider(ModelProvider modelProvider) {
+    public void setModelProvider(ModelProvider modelProvider) {
         this.modelProvider = modelProvider;
     }
 
     public ChatModel toChatModel() {
-        String provider = getAiLlmProvider().getProviderName();
+        String provider = modelProvider.getProviderName();
         if (StringUtil.noText(provider)) {
             return null;
         }
@@ -70,38 +70,38 @@ public class Model extends ModelBase {
 
     private ChatModel ollamaLlm() {
         OllamaChatConfig ollamaChatConfig = new OllamaChatConfig();
-        ollamaChatConfig.setEndpoint(getPath(Llm_Endpoint));
-        ollamaChatConfig.setApiKey(getLlmApiKey());
-        ollamaChatConfig.setModel(getLlmModel());
+        ollamaChatConfig.setEndpoint(getPath(LLM_ENDPOINT));
+        ollamaChatConfig.setApiKey(getApiKey());
+        ollamaChatConfig.setModel(getModelName());
         return new OllamaChatModel(ollamaChatConfig);
     }
 
     private ChatModel deepSeekLLm() {
         DeepseekConfig deepseekConfig = new DeepseekConfig();
         deepseekConfig.setProvider(getProvider());
-        deepseekConfig.setEndpoint(getPath(Llm_Endpoint));
-        deepseekConfig.setApiKey(getLlmApiKey());
-        deepseekConfig.setModel(getLlmModel());
-        deepseekConfig.setRequestPath(getPath(Chat_path));
+        deepseekConfig.setEndpoint(getPath(LLM_ENDPOINT));
+        deepseekConfig.setApiKey(getApiKey());
+        deepseekConfig.setModel(getModelName());
+        deepseekConfig.setRequestPath(getPath(CHAT_PATH));
         return new DeepseekChatModel(deepseekConfig);
     }
 
     private ChatModel openaiLLm() {
         OpenAIChatConfig openAIChatConfig = new OpenAIChatConfig();
         openAIChatConfig.setProvider(getProvider());
-        openAIChatConfig.setEndpoint(getPath(Llm_Endpoint));
-        openAIChatConfig.setApiKey(getLlmApiKey());
-        openAIChatConfig.setModel(getLlmModel());
+        openAIChatConfig.setEndpoint(getPath(LLM_ENDPOINT));
+        openAIChatConfig.setApiKey(getApiKey());
+        openAIChatConfig.setModel(getModelName());
         openAIChatConfig.setLogEnabled(true);
-        openAIChatConfig.setRequestPath(getPath(Chat_path));
+        openAIChatConfig.setRequestPath(getPath(CHAT_PATH));
         return new OpenAIChatModel(openAIChatConfig);
     }
 
     public RerankModel toRerankModel() {
-        String rerankPath = getPath(Rerank_path);
-        String endpoint = getPath(Llm_Endpoint);
-        String apiKey = getLlmApiKey();
-        switch (getAiLlmProvider().getProviderName().toLowerCase()) {
+        String rerankPath = getPath(RERANK_PATH);
+        String endpoint = getPath(LLM_ENDPOINT);
+        String apiKey = getApiKey();
+        switch (modelProvider.getProviderName().toLowerCase()) {
             case "gitee":
                 GiteeRerankModelConfig giteeRerankModelConfig = new GiteeRerankModelConfig();
                 giteeRerankModelConfig.setApiKey(apiKey);
@@ -113,15 +113,15 @@ public class Model extends ModelBase {
                 defaultRerankModelConfig.setApiKey(apiKey);
                 defaultRerankModelConfig.setEndpoint(endpoint);
                 defaultRerankModelConfig.setRequestPath(rerankPath);
-                defaultRerankModelConfig.setModel(getLlmModel());
+                defaultRerankModelConfig.setModel(getModelName());
                 return new DefaultRerankModel(defaultRerankModelConfig);
         }
     }
 
     public EmbeddingModel toEmbeddingModel() {
-        String embedPath = getPath(Embed_path);;
-        String endpoint = getPath(Llm_Endpoint);
-        String providerName = getAiLlmProvider().getProviderName();
+        String embedPath = getPath(EMBED_PATH);;
+        String endpoint = getPath(LLM_ENDPOINT);
+        String providerName = modelProvider.getProviderName();
         if (StringUtil.noText(providerName)) {
             return null;
         }
@@ -129,8 +129,8 @@ public class Model extends ModelBase {
             case "ollama":
                 OllamaEmbeddingConfig ollamaEmbeddingConfig = new OllamaEmbeddingConfig();
                 ollamaEmbeddingConfig.setEndpoint(endpoint);
-                ollamaEmbeddingConfig.setApiKey(getLlmApiKey());
-                ollamaEmbeddingConfig.setModel(getLlmModel());
+                ollamaEmbeddingConfig.setApiKey(getApiKey());
+                ollamaEmbeddingConfig.setModel(getModelName());
                 if (StringUtils.hasLength(embedPath)) {
                     ollamaEmbeddingConfig.setRequestPath(embedPath);
                 }
@@ -138,8 +138,8 @@ public class Model extends ModelBase {
             default:
                 OpenAIEmbeddingConfig openAIEmbeddingConfig = new OpenAIEmbeddingConfig();
                 openAIEmbeddingConfig.setEndpoint(endpoint);
-                openAIEmbeddingConfig.setApiKey(getLlmApiKey());
-                openAIEmbeddingConfig.setModel(getLlmModel());
+                openAIEmbeddingConfig.setApiKey(getApiKey());
+                openAIEmbeddingConfig.setModel(getModelName());
                 if (StringUtils.hasLength(embedPath)) {
                     openAIEmbeddingConfig.setRequestPath(embedPath);
                 }
@@ -155,8 +155,8 @@ public class Model extends ModelBase {
     public String getPath (String key) {
         Map<String, Object> options = getOptions();
         String path = "";
-        if (Llm_Endpoint.equals(key)) {
-            path = getLlmEndpoint();
+        if (LLM_ENDPOINT.equals(key)) {
+            path = getEndpoint();
         }
 
         if (options != null) {
@@ -164,14 +164,14 @@ public class Model extends ModelBase {
             if (path == null && StringUtils.hasLength(pathFromOptions)) {
                 path = pathFromOptions;
             } else {
-                if (Llm_Endpoint.equals(key)) {
-                    path = this.getAiLlmProvider().getEndPoint();
-                } else if (Chat_path.equals(key)){
-                    path = this.getAiLlmProvider().getChatPath();
-                } else if (Embed_path.equals(key)){
-                    path = this.getAiLlmProvider().getEmbedPath();
-                } else if (Rerank_path.equals(key)){
-                    path = this.getAiLlmProvider().getRerankPath();
+                if (LLM_ENDPOINT.equals(key)) {
+                    path = this.modelProvider.getEndpoint();
+                } else if (CHAT_PATH.equals(key)){
+                    path = this.modelProvider.getChatPath();
+                } else if (EMBED_PATH.equals(key)){
+                    path = this.modelProvider.getEmbedPath();
+                } else if (RERANK_PATH.equals(key)){
+                    path = this.modelProvider.getRerankPath();
                 }
             }
         }

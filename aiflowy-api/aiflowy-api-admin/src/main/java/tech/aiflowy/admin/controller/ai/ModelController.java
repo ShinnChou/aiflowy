@@ -52,7 +52,7 @@ public class ModelController extends BaseCurdController<ModelService, Model> {
         queryWrapper.orderBy(buildOrderBy(sortKey, sortType, getDefaultOrderBy()));
         List<Model> list = Tree.tryToTree(modelMapper.selectListWithRelationsByQuery(queryWrapper), asTree);
         list.forEach(item -> {
-            item.setTitle(item.getAiLlmProvider().getProviderName()  + "/" + item.getTitle());
+            item.setTitle(item.getModelProvider().getProviderName()  + "/" + item.getTitle());
         });
         return Result.ok(list);
     }
@@ -137,7 +137,7 @@ public class ModelController extends BaseCurdController<ModelService, Model> {
         queryWrapper.orderBy(buildOrderBy(sortKey, sortType, getDefaultOrderBy()));
         List<Model> totalList = Tree.tryToTree(modelMapper.selectListWithRelationsByQuery(queryWrapper), asTree);
         totalList.forEach(aiLlm -> {
-            aiLlm.setTitle(aiLlm.getAiLlmProvider().getProviderName() + "/" + aiLlm.getTitle());
+            aiLlm.setTitle(aiLlm.getModelProvider().getProviderName() + "/" + aiLlm.getTitle());
         });
         return Result.ok(totalList);
     }

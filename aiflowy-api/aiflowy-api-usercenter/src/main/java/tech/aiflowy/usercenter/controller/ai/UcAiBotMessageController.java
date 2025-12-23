@@ -36,11 +36,11 @@ public class UcAiBotMessageController extends BaseCurdController<BotMessageServi
     }
 
     @GetMapping("/getMessages")
-    public Result<List<ChatMessageVO>> getMessages(BigInteger botId, String sessionId) {
+    public Result<List<ChatMessageVO>> getMessages(BigInteger botId, BigInteger conversationId) {
         List<ChatMessageVO> res = new ArrayList<>();
         QueryWrapper w = QueryWrapper.create();
         w.eq(BotMessage::getBotId, botId);
-        w.eq(BotMessage::getSessionId, sessionId);
+        w.eq(BotMessage::getConversationId, conversationId);
         w.eq(BotMessage::getAccountId, SaTokenUtil.getLoginAccount().getId());
         List<BotMessage> list = botMessageService.list(w);
         if (CollectionUtil.isNotEmpty(list)) {

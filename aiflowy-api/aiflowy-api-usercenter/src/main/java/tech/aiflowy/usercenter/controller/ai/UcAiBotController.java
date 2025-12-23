@@ -11,6 +11,7 @@ import com.agentsflex.core.model.chat.ChatOptions;
 import com.agentsflex.core.model.chat.tool.Tool;
 import com.agentsflex.core.prompt.MemoryPrompt;
 import com.alicp.jetcache.Cache;
+import com.mybatisflex.core.keygen.impl.SnowFlakeIDKeyGenerator;
 import com.mybatisflex.core.query.QueryWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +88,12 @@ public class UcAiBotController extends BaseCurdController<BotService, Bot> {
     @Resource
     private BotConversationService conversationMessageService;
 
+    @GetMapping("/generateConversationId")
+    public Result<Long> generateConversationId() {
+        long nextId = new SnowFlakeIDKeyGenerator().nextId();
+        return Result.ok(nextId);
+    }
+
     @PostMapping("updateOptions")
     @SaCheckPermission("/api/v1/bot/save")
     public Result<Void> updateOptions(@JsonBody("id") BigInteger id,
@@ -142,7 +149,7 @@ public class UcAiBotController extends BaseCurdController<BotService, Bot> {
      *
      * @param prompt    用户输入的聊天内容，必须提供
      * @param botId     聊天机器人的唯一标识符，必须提供
-     * @param sessionId 会话ID，用于标识当前对话会话，必须提供
+     * @param conversationId 会话ID，用于标识当前对话会话，必须提供
      * @param messages  历史消息，用于提供上下文，可选
      * @return 返回SseEmitter对象，用于服务器向客户端推送聊天响应数据
      */
@@ -151,8 +158,8 @@ public class UcAiBotController extends BaseCurdController<BotService, Bot> {
     public SseEmitter chat(
             @JsonBody(value = "prompt", required = true) String prompt,
             @JsonBody(value = "botId", required = true) BigInteger botId,
-            @JsonBody(value = "sessionId", required = true) String sessionId,
-            @JsonBody(value = "messages") List<Map<String, String>>  messages
+            @JsonBody(value = "conversationId", required = true) BigInteger conversationId,
+            @JsonBody(value = "messages") List<Map<String, String>> messages
 
     ) {
 
@@ -175,12 +182,12 @@ public class UcAiBotController extends BaseCurdController<BotService, Bot> {
 
         Model model = modelService.getLlmInstance(aiBot.getLlmId());
         if (model == null) {
-            return SSEUtil.sseEmitterForContent( "LLM不存在");
+            return SSEUtil.sseEmitterForContent("LLM不存在");
         }
 
         ChatModel chatModel = model.toChatModel();
         if (chatModel == null) {
-            return SSEUtil.sseEmitterForContent( "LLM获取为空");
+            return SSEUtil.sseEmitterForContent("LLM获取为空");
         }
         final MemoryPrompt memoryPrompt = new MemoryPrompt();
         Integer maxMessageCount = MapUtil.getInteger(llmOptions, "maxMessageCount");
@@ -193,7 +200,7 @@ public class UcAiBotController extends BaseCurdController<BotService, Bot> {
         }
 
         if (StpUtil.isLogin()) {
-            BotMessageMemory memory = new BotMessageMemory(botId, SaTokenUtil.getLoginAccount().getId(), sessionId,
+            BotMessageMemory memory = new BotMessageMemory(botId, SaTokenUtil.getLoginAccount().getId(), conversationId,
                     botMessageService);
             memoryPrompt.setMemory(memory);
         }
@@ -202,10 +209,10 @@ public class UcAiBotController extends BaseCurdController<BotService, Bot> {
         memoryPrompt.addMessage(userMessage);
         ChatOptions chatOptions = getChatOptions(llmOptions);
 
-        BotConversation conversation = conversationMessageService.getById(sessionId);
+        BotConversation conversation = conversationMessageService.getById(conversationId);
         if (conversation == null) {
             conversation = new BotConversation();
-            conversation.setSessionId(sessionId);
+            conversation.setId(conversationId);
             if (prompt.length() > 200) {
                 conversation.setTitle(prompt.substring(0, 200));
             } else {
@@ -217,7 +224,7 @@ public class UcAiBotController extends BaseCurdController<BotService, Bot> {
             conversationMessageService.save(conversation);
         }
 
-        return botService.startChat(botId, chatModel, prompt, memoryPrompt, chatOptions, sessionId, messages);
+        return botService.startChat(botId, chatModel, prompt, memoryPrompt, chatOptions, conversationId, messages);
 
     }
 

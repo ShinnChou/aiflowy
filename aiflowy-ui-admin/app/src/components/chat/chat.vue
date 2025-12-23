@@ -26,7 +26,7 @@ import SendingIcon from '../icons/SendingIcon.vue';
 
 const props = defineProps<{
   bot?: BotInfo;
-  sessionId?: string;
+  conversationId?: string;
   // 是否显示对话列表
   showChatConversations?: boolean;
 }>();
@@ -47,9 +47,12 @@ const bubbleItems = ref<BubbleListProps<ChatMessage>['list']>([]);
 const senderRef = ref<InstanceType<typeof Sender>>();
 const senderValue = ref('');
 const sending = ref(false);
-const sessionId = ref(
-  props.sessionId && props.sessionId.length > 0 ? props.sessionId : uuid(),
-);
+const getConversationId = async () => {
+  const res = await api.get('/api/v1/bot/generateConversationId');
+  return res.data;
+};
+const conversationId = ref<any>('');
+
 const presetQuestions = ref<presetQuestionsType[]>([]);
 defineExpose({
   clear() {
@@ -86,7 +89,7 @@ const getMessagesHistory = () => {
     .get('/api/v1/botMessage/list', {
       params: {
         botId: botId.value,
-        sessionId: sessionId.value,
+        conversationId: conversationId.value,
       },
     })
     .then((res) => {
@@ -105,15 +108,20 @@ const getMessagesHistory = () => {
       });
     });
 };
-onMounted(() => {
+onMounted(async () => {
+  // 初始化 conversationId
+  conversationId.value =
+    props.conversationId && props.conversationId.length > 0
+      ? props.conversationId
+      : await getConversationId();
   getMessagesHistory();
   getPresetQuestions();
 });
 watchEffect(async () => {
-  if (props.bot && props.sessionId) {
+  if (props.bot && props.conversationId) {
     const [, res] = await tryit(
       getMessageList({
-        sessionId: props.sessionId,
+        conversationId: props.conversationId,
         botId: props.bot.id,
         tempUserId: uuid() + props.bot.id,
       }),
@@ -164,7 +172,7 @@ const handleSubmit = async (refreshContent: string) => {
   const data = {
     botId: botId.value,
     prompt: currentPrompt,
-    sessionId: sessionId.value,
+    conversationId: conversationId.value,
     messages: messages.value,
   };
   const mockMessages = generateMockMessages(refreshContent);
@@ -217,12 +225,12 @@ const handleSubmit = async (refreshContent: string) => {
 const handleComplete = (_: TypewriterInstance, index: number) => {
   if (
     index === bubbleItems.value.length - 1 &&
-    props.sessionId &&
-    props.sessionId.length <= 0 &&
+    props.conversationId &&
+    props.conversationId.length <= 0 &&
     sending.value === false
   ) {
     setTimeout(() => {
-      router.replace({ params: { sessionId: sessionId.value } });
+      router.replace({ params: { conversationId: conversationId.value } });
     }, 100);
   }
 };
@@ -279,13 +287,13 @@ const handleRefresh = () => {
       :class="
         cn(
           'flex h-full w-full flex-col gap-3',
-          !sessionId && 'items-center justify-center gap-8',
+          !conversationId && 'items-center justify-center gap-8',
         )
       "
     >
       <!-- 对话列表 -->
       <div
-        v-if="sessionId || bubbleItems.length > 0"
+        v-if="conversationId || bubbleItems.length > 0"
         class="message-container w-full flex-1 overflow-hidden"
       >
         <BubbleList

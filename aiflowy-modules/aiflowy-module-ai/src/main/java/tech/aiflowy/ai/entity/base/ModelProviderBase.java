@@ -72,7 +72,7 @@ public class ModelProviderBase extends DateEntity implements Serializable {
      * endPoint
      */
     @Column(comment = "endPoint")
-    private String endPoint;
+    private String endpoint;
 
     /**
      * chatPath
@@ -161,9 +161,9 @@ public class ModelProviderBase extends DateEntity implements Serializable {
 
     public void setApiKey(String apiKey) {this.apiKey = apiKey;}
 
-    public String getEndPoint() {return endPoint;}
+    public String getEndpoint() {return endpoint;}
 
-    public void setEndPoint(String endPoint) {this.endPoint = endPoint;}
+    public void setEndpoint(String endpoint) {this.endpoint = endpoint;}
 
     public String getChatPath() {return chatPath;}
 
