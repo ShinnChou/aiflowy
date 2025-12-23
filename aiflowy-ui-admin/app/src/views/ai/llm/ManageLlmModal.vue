@@ -57,7 +57,7 @@ const rerankModelTabList = [
 const formDataRef = ref();
 const providerInfo = ref<any>();
 const getProviderInfo = (id: string) => {
-  api.get(`/api/v1/aiLlmProvider/detail?id=${id}`).then((res) => {
+  api.get(`/api/v1/modelProvider/detail?id=${id}`).then((res) => {
     if (res.errorCode === 0) {
       providerInfo.value = res.data;
     }
@@ -68,8 +68,8 @@ const getLlmList = (providerId: string, modelType: string) => {
   isLoading.value = true;
   const url =
     modelType === ''
-      ? `/api/v1/aiLlm/selectLlmByProviderAndModelType?providerId=${providerId}&modelType=${modelType}&supportFree=true`
-      : `/api/v1/aiLlm/selectLlmByProviderAndModelType?providerId=${providerId}&modelType=${modelType}&selectText=${searchFormDada.searchText}`;
+      ? `/api/v1/model/selectLlmByProviderAndModelType?providerId=${providerId}&modelType=${modelType}&supportFree=true`
+      : `/api/v1/model/selectLlmByProviderAndModelType?providerId=${providerId}&modelType=${modelType}&selectText=${searchFormDada.searchText}`;
   api.get(url).then((res) => {
     if (res.errorCode === 0) {
       const chatModelMap = res.data || {};
@@ -139,7 +139,7 @@ const handleTabClick = async () => {
 const activeName = ref('all');
 const handleGroupNameDelete = (groupName: string) => {
   api
-    .post(`/api/v1/aiLlm/removeByEntity`, {
+    .post(`/api/v1/model/removeByEntity`, {
       groupName,
       providerId: selectedProviderId.value,
     })
@@ -151,7 +151,7 @@ const handleGroupNameDelete = (groupName: string) => {
     });
 };
 const handleDeleteLlm = (id: any) => {
-  api.post(`/api/v1/aiLlm/removeLlmByIds`, { id }).then((res) => {
+  api.post(`/api/v1/model/removeLlmByIds`, { id }).then((res) => {
     if (res.errorCode === 0) {
       getLlmList(providerInfo.value.id, activeName.value);
       emit('reload');
@@ -160,7 +160,7 @@ const handleDeleteLlm = (id: any) => {
 };
 const handleAddLlm = (id: string) => {
   api
-    .post(`/api/v1/aiLlm/update`, {
+    .post(`/api/v1/model/update`, {
       id,
       added: true,
     })
@@ -176,7 +176,7 @@ const searchFormDada = reactive({
 });
 const handleAddAllLlm = () => {
   api
-    .post(`/api/v1/aiLlm/addAllLlm`, {
+    .post(`/api/v1/model/addAllLlm`, {
       providerId: selectedProviderId.value,
       added: true,
     })

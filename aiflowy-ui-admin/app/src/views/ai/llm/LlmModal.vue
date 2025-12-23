@@ -278,7 +278,7 @@ const handleConfirm = () => {
 };
 const handleVerify = () => {
   api
-    .post('/api/v1/aiLlm/verifyLlmConfig', {
+    .post('/api/v1/model/verifyLlmConfig', {
       ...llmForm,
     })
     .then((res) => {

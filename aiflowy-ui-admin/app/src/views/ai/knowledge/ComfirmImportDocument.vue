@@ -54,7 +54,7 @@ function saveDoc(
 ) {
   api
     .post(
-      '/api/v1/aiDocument/saveText',
+      '/api/v1/document/saveText',
       {},
       {
         params: {

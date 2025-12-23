@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2025-12-18
  */
 @RestController
-@RequestMapping("/api/v1/aiBotRecentlyUsed")
-@UsePermission(moduleName = "/api/v1/aiBot")
+@RequestMapping("/api/v1/botRecentlyUsed")
+@UsePermission(moduleName = "/api/v1/bot")
 public class BotRecentlyUsedController extends BaseCurdController<BotRecentlyUsedService, BotRecentlyUsed> {
     public BotRecentlyUsedController(BotRecentlyUsedService service) {
         super(service);

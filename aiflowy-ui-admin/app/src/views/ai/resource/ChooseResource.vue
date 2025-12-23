@@ -51,7 +51,7 @@ watch(
     >
       <PageData
         ref="pageDataRef"
-        page-url="/api/v1/aiResource/page"
+        page-url="/api/v1/resource/page"
         :page-size="8"
         :page-sizes="[8, 12, 16, 20]"
       >

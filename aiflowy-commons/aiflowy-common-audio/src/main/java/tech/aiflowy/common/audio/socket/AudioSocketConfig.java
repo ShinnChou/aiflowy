@@ -19,7 +19,7 @@ public class AudioSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 
         AudioSocketHandler handler = new AudioSocketHandler(manager);
-        registry.addHandler(handler, "/api/v1/aiBot/ws/audio")
+        registry.addHandler(handler, "/api/v1/bot/ws/audio")
                 .addInterceptors(new AudioSocketInterceptor())
                 .setAllowedOrigins("*");
     }

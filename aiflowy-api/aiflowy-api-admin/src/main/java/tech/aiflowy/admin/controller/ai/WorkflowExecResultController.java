@@ -25,8 +25,8 @@ import java.math.BigInteger;
  * 工作流执行记录
  */
 @RestController
-@RequestMapping("/api/v1/aiWorkflowExecRecord")
-@UsePermission(moduleName = "/api/v1/aiWorkflow")
+@RequestMapping("/api/v1/workflowExecResult")
+@UsePermission(moduleName = "/api/v1/workflow")
 public class WorkflowExecResultController extends BaseCurdController<WorkflowExecResultService, WorkflowExecResult> {
 
     @Resource
@@ -38,7 +38,7 @@ public class WorkflowExecResultController extends BaseCurdController<WorkflowExe
 
     @GetMapping("/del")
     @Transactional(rollbackFor = Exception.class)
-    @SaCheckPermission("/api/v1/aiWorkflow/remove")
+    @SaCheckPermission("/api/v1/workflow/remove")
     public Result<Void> del(BigInteger id) {
         LoginAccount account = SaTokenUtil.getLoginAccount();
         WorkflowExecResult record = service.getById(id);

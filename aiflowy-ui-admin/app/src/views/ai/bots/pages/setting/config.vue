@@ -81,7 +81,7 @@ const knowledgeData = ref<any[]>([]);
 const pluginToolData = ref<any[]>([]);
 const getAiBotPluginToolList = async () => {
   api
-    .post('/api/v1/aiPluginTool/tool/list', { botId: botId.value })
+    .post('/api/v1/pluginItem/tool/list', { botId: botId.value })
     .then((res) => {
       pluginToolData.value = res.data;
       pluginToolIdsData.value = res.data.map((item: any) => item.id);
@@ -89,7 +89,7 @@ const getAiBotPluginToolList = async () => {
 };
 const getAiBotKnowledgeList = async () => {
   api
-    .get('/api/v1/aiBotKnowledge/list', {
+    .get('/api/v1/botKnowledge/list', {
       params: {
         botId: botId.value,
       },
@@ -107,7 +107,7 @@ const getAiBotKnowledgeList = async () => {
 
 const getAiBotWorkflowList = async () => {
   api
-    .get('/api/v1/aiBotWorkflow/list', {
+    .get('/api/v1/botWorkflow/list', {
       params: {
         botId: botId.value,
       },
@@ -125,7 +125,7 @@ const getAiBotWorkflowList = async () => {
 const botInfo = ref<BotInfo>();
 const getBotDetail = async () => {
   api
-    .get('/api/v1/aiBot/detail', {
+    .get('/api/v1/bot/detail', {
       params: {
         id: botId.value,
       },
@@ -143,7 +143,7 @@ const getBotDetail = async () => {
     });
 };
 const getLlmListData = async () => {
-  const url = `/api/v1/aiLlm/list?modelType=chatModel&added=true`;
+  const url = `/api/v1/model/list?modelType=chatModel&added=true`;
   api.get(url, {}).then((res) => {
     if (res.errorCode === 0) {
       options.value = res.data;
@@ -239,7 +239,7 @@ const handleAddWorkflow = () => {
 };
 const confirmUpdateAiBotPlugin = (data: any) => {
   api
-    .post('/api/v1/aiBotPlugins/updateBotPluginToolIds', {
+    .post('/api/v1/botPlugins/updateBotPluginToolIds', {
       botId: botId.value,
       pluginToolIds: data,
     })
@@ -255,7 +255,7 @@ const confirmUpdateAiBotPlugin = (data: any) => {
 
 const confirmUpdateAiBotKnowledge = (data: any) => {
   api
-    .post('/api/v1/aiBotKnowledge/updateBotKnowledgeIds', {
+    .post('/api/v1/botKnowledge/updateBotKnowledgeIds', {
       botId: botId.value,
       knowledgeIds: data,
     })
@@ -271,7 +271,7 @@ const confirmUpdateAiBotKnowledge = (data: any) => {
 
 const confirmUpdateAiBotWorkflow = (data: any) => {
   api
-    .post('/api/v1/aiBotWorkflow/updateBotWorkflowIds', {
+    .post('/api/v1/botWorkflow/updateBotWorkflowIds', {
       botId: botId.value,
       workflowIds: data,
     })
@@ -286,7 +286,7 @@ const confirmUpdateAiBotWorkflow = (data: any) => {
 };
 const deletePluginTool = (item: any) => {
   api
-    .post('/api/v1/aiBotPlugins/doRemove', {
+    .post('/api/v1/botPlugins/doRemove', {
       botId: botId.value,
       pluginToolId: item.id,
     })
@@ -302,7 +302,7 @@ const deletePluginTool = (item: any) => {
 
 const deleteKnowledge = (item: any) => {
   api
-    .post('/api/v1/aiBotKnowledge/remove', {
+    .post('/api/v1/botKnowledge/remove', {
       id: item.recordId,
     })
     .then((res) => {
@@ -317,7 +317,7 @@ const deleteKnowledge = (item: any) => {
 
 const deleteWorkflow = (item: any) => {
   api
-    .post('/api/v1/aiBotWorkflow/remove', {
+    .post('/api/v1/botWorkflow/remove', {
       id: item.recordId,
     })
     .then((res) => {
@@ -340,7 +340,7 @@ const handleAddPresetQuestion = () => {
 
 const handleProblemPresuppositionSuccess = (data: any) => {
   api
-    .post('/api/v1/aiBot/updateOptions', {
+    .post('/api/v1/bot/updateOptions', {
       id: botId.value,
       options: {
         presetQuestions: data,
@@ -361,7 +361,7 @@ const handleDeletePresetQuestion = (item: any) => {
     (i: any) => i.key !== item,
   );
   api
-    .post('/api/v1/aiBot/updateOptions', {
+    .post('/api/v1/bot/updateOptions', {
       id: botId.value,
       options: {
         presetQuestions: tempData,
@@ -378,7 +378,7 @@ const handlePublishWx = () => {
 };
 const handleUpdatePublishWx = () => {
   api
-    .post('/api/v1/aiBot/updateOptions', {
+    .post('/api/v1/bot/updateOptions', {
       id: botId.value,
       options: {
         weChatMpAppId: '',

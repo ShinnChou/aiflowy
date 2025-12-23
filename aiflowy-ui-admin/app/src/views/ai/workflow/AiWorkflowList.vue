@@ -303,7 +303,7 @@ function removeCategory(row: any) {
       if (action === 'confirm') {
         instance.confirmButtonLoading = true;
         api
-          .post('/api/v1/aiWorkflowCategory/remove', { id: row.id })
+          .post('/api/v1/workflowCategory/remove', { id: row.id })
           .then((res) => {
             instance.confirmButtonLoading = false;
             if (res.errorCode === 0) {
@@ -326,8 +326,8 @@ function handleSubmit() {
     if (valid) {
       saveLoading.value = true;
       const url = formData.value.id
-        ? '/api/v1/aiWorkflowCategory/update'
-        : '/api/v1/aiWorkflowCategory/save';
+        ? '/api/v1/workflowCategory/update'
+        : '/api/v1/workflowCategory/save';
       api.post(url, formData.value).then((res) => {
         saveLoading.value = false;
         if (res.errorCode === 0) {
@@ -341,7 +341,7 @@ function handleSubmit() {
 }
 const getSideList = async () => {
   const [, res] = await tryit<RequestResult>(
-    api.get('/api/v1/aiWorkflowCategory/list', {
+    api.get('/api/v1/workflowCategory/list', {
       params: { sortKey: 'sortNo', sortType: 'asc' },
     }),
   );

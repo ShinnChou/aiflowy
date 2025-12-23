@@ -25,7 +25,7 @@ const handleSearch = () => {
   previewSearchKnowledgeRef.value.loadingContent(true);
   api
     .get(
-      `/api/v1/aiKnowledge/search?knowledgeId=${props.knowledgeId}&keyword=${keyword.value}`,
+      `/api/v1/documentCollection/search?knowledgeId=${props.knowledgeId}&keyword=${keyword.value}`,
     )
     .then((res) => {
       previewSearchKnowledgeRef.value.loadingContent(false);

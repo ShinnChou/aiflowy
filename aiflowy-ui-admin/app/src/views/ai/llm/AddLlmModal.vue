@@ -232,14 +232,14 @@ const save = async () => {
     const submitData = { ...formData };
     if (isAdd.value) {
       submitData.providerId = selectedProviderId.value;
-      const res = await api.post('/api/v1/aiLlm/save', submitData);
+      const res = await api.post('/api/v1/model/save', submitData);
       if (res.errorCode === 0) {
         ElMessage.success(res.message);
         emit('reload');
         closeDialog();
       }
     } else {
-      const res = await api.post('/api/v1/aiLlm/update', submitData);
+      const res = await api.post('/api/v1/model/update', submitData);
       if (res.errorCode === 0) {
         ElMessage.success(res.message);
         emit('reload');

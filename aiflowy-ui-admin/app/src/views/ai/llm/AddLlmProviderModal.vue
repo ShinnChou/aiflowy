@@ -72,7 +72,7 @@ const save = async () => {
   btnLoading.value = true;
   try {
     if (!isAdd.value) {
-      api.post('/api/v1/aiLlmProvider/update', formData).then((res) => {
+      api.post('/api/v1/modelProvider/update', formData).then((res) => {
         if (res.errorCode === 0) {
           ElMessage.success(res.message);
           emit('reload');
@@ -82,7 +82,7 @@ const save = async () => {
       return;
     }
     await formDataRef.value.validate();
-    api.post('/api/v1/aiLlmProvider/save', formData).then((res) => {
+    api.post('/api/v1/modelProvider/save', formData).then((res) => {
       if (res.errorCode === 0) {
         ElMessage.success(res.message);
         emit('reload');

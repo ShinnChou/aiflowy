@@ -23,7 +23,7 @@ const knowledgeId = ref<string>((route.query.id as string) || '');
 const knowledgeInfo = ref<any>({});
 const getKnowledge = () => {
   api
-    .get('/api/v1/aiKnowledge/detail', { params: { id: knowledgeId.value } })
+    .get('/api/v1/documentCollection/detail', { params: { id: knowledgeId.value } })
     .then((res) => {
       if (res.errorCode === 0) {
         knowledgeInfo.value = res.data;

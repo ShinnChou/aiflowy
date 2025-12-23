@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2025-12-16
  */
 @RestController
-@RequestMapping("/api/v1/aiLlmProvider")
-@UsePermission(moduleName = "/api/v1/aiLlm")
+@RequestMapping("/api/v1/modelProvider")
+@UsePermission(moduleName = "/api/v1/model")
 public class ModelProviderController extends BaseCurdController<ModelProviderService, ModelProvider> {
     public ModelProviderController(ModelProviderService service) {
         super(service);

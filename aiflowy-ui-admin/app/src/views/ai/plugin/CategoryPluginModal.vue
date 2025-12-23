@@ -19,7 +19,7 @@ import { $t } from '#/locales';
 const emit = defineEmits(['reload']);
 const categoryList = ref<any[]>([]);
 const getPluginCategoryList = async () => {
-  return api.get('/api/v1/aiPluginCategories/list').then((res) => {
+  return api.get('/api/v1/pluginCategory/list').then((res) => {
     if (res.errorCode === 0) {
       categoryList.value = res.data;
     }
@@ -42,7 +42,7 @@ const entity = ref<any>({
 const btnLoading = ref(false);
 function getPluginCategories(id: string) {
   return api
-    .get(`/api/v1/aiPluginCategoryRelation/getPluginCategories?pluginId=${id}`)
+    .get(`/api/v1/pluginCategoryMapping/getPluginCategories?pluginId=${id}`)
     .then((res) => {
       if (res.errorCode === 0) {
         entity.value.categoryIds = res.data;
@@ -67,7 +67,7 @@ function save() {
         categoryIds: entity.value.categoryIds,
       };
       api
-        .post('/api/v1/aiPluginCategoryRelation/updateRelation', tempParams)
+        .post('/api/v1/pluginCategoryMapping/updateRelation', tempParams)
         .then((res) => {
           if (res.errorCode === 0) {
             ElMessage.success($t('message.updateOkMessage'));

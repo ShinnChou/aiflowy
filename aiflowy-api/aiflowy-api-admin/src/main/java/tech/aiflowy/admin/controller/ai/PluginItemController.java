@@ -32,8 +32,8 @@ import java.util.List;
  * @since 2025-04-27
  */
 @RestController
-@RequestMapping("/api/v1/aiPluginTool")
-@UsePermission(moduleName = "/api/v1/aiPlugin")
+@RequestMapping("/api/v1/pluginItem")
+@UsePermission(moduleName = "/api/v1/plugin")
 public class PluginItemController extends BaseCurdController<PluginItemService, PluginItem> {
     public PluginItemController(PluginItemService service) {
         super(service);
@@ -46,7 +46,7 @@ public class PluginItemController extends BaseCurdController<PluginItemService, 
     private BotPluginService botPluginService;
 
     @PostMapping("/tool/save")
-    @SaCheckPermission("/api/v1/aiPlugin/save")
+    @SaCheckPermission("/api/v1/plugin/save")
     public Result<Boolean> savePlugin(@JsonBody PluginItem pluginItem){
 
         return Result.ok(pluginItemService.savePluginTool(pluginItem));
@@ -54,32 +54,32 @@ public class PluginItemController extends BaseCurdController<PluginItemService, 
 
     // 插件工具修改页面查询
     @PostMapping("/tool/search")
-    @SaCheckPermission("/api/v1/aiPlugin/query")
+    @SaCheckPermission("/api/v1/plugin/query")
     public Result<?> searchPlugin(@JsonBody(value = "aiPluginToolId", required = true) BigInteger aiPluginToolId){
         return pluginItemService.searchPlugin(aiPluginToolId);
     }
 
     @PostMapping("/toolsList")
-    @SaCheckPermission("/api/v1/aiPlugin/query")
+    @SaCheckPermission("/api/v1/plugin/query")
     public Result<List<PluginItem>> searchPluginToolByPluginId(@JsonBody(value = "pluginId", required = true) BigInteger pluginId,
                                                                @JsonBody(value = "botId", required = false) BigInteger botId){
         return Result.ok(pluginItemService.searchPluginToolByPluginId(pluginId, botId));
     }
 
     @PostMapping("/tool/update")
-    @SaCheckPermission("/api/v1/aiPlugin/save")
+    @SaCheckPermission("/api/v1/plugin/save")
     public Result<Boolean> updatePlugin(@JsonBody PluginItem pluginItem){
         return Result.ok(pluginItemService.updatePlugin(pluginItem));
     }
 
     @PostMapping("/tool/list")
-    @SaCheckPermission("/api/v1/aiPlugin/query")
+    @SaCheckPermission("/api/v1/plugin/query")
     public Result<List<PluginItem>> getPluginToolList(@JsonBody(value = "botId", required = true) BigInteger botId){
         return Result.ok(pluginItemService.getPluginToolList(botId));
     }
 
     @GetMapping("/getTinyFlowData")
-    @SaCheckPermission("/api/v1/aiPlugin/query")
+    @SaCheckPermission("/api/v1/plugin/query")
     public Result<?> getTinyFlowData(BigInteger id) {
         JSONObject nodeData = new JSONObject();
         PluginItem record = pluginItemService.getById(id);

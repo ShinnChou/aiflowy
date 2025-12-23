@@ -16,7 +16,7 @@ import { $t } from '#/locales';
 
 const options = ref<any[]>([]);
 const getLlmList = (providerId: string) => {
-  api.get(`/api/v1/aiLlm/list?providerId=${providerId}`, {}).then((res) => {
+  api.get(`/api/v1/model/list?providerId=${providerId}`, {}).then((res) => {
     if (res.errorCode === 0) {
       options.value = res.data;
     }
@@ -49,7 +49,7 @@ const save = async () => {
   btnLoading.value = true;
   await formDataRef.value.validate();
   api
-    .get(`/api/v1/aiLlm/verifyLlmConfig?id=${formData.llmId}`, {})
+    .get(`/api/v1/model/verifyLlmConfig?id=${formData.llmId}`, {})
     .then((res) => {
       if (res.errorCode === 0) {
         ElMessage.success($t('llm.testSuccess'));

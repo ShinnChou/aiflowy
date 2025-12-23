@@ -52,7 +52,7 @@ const rerankModelListData = ref([]);
 
 const getLlmDetailList = (providerId) => {
   api
-    .get(`/api/v1/aiLlm/getList?providerId=${providerId}&added=true`, {})
+    .get(`/api/v1/model/getList?providerId=${providerId}&added=true`, {})
     .then((res) => {
       if (res.errorCode === 0) {
         modelListData.value = res.data;
@@ -137,7 +137,7 @@ const handleDeleteProvider = (row) => {
     type: 'warning',
   }).then(() => {
     api
-      .post('/api/v1/aiLlmProvider/remove', {
+      .post('/api/v1/modelProvider/remove', {
         id: row.id,
       })
       .then((res) => {
@@ -196,7 +196,7 @@ const handleDeleteLlm = (id) => {
     cancelButtonText: $t('message.cancel'),
     type: 'warning',
   }).then(() => {
-    api.post('/api/v1/aiLlm/remove', { id }).then((res) => {
+    api.post('/api/v1/model/remove', { id }).then((res) => {
       if (res.errorCode === 0) {
         ElMessage.success($t('message.deleteOkMessage'));
         getLlmDetailList(defaultSelectProviderId.value);
@@ -206,7 +206,7 @@ const handleDeleteLlm = (id) => {
 };
 
 const handleEditLlm = (id) => {
-  api.get(`/api/v1/aiLlm/detail?id=${id}`).then((res) => {
+  api.get(`/api/v1/model/detail?id=${id}`).then((res) => {
     if (res.errorCode === 0) {
       addLlmRef.value.openEditDialog(res.data);
     }
@@ -220,7 +220,7 @@ const handleGroupNameDelete = (groupName) => {
     type: 'warning',
   }).then(() => {
     api
-      .post('/api/v1/aiLlm/removeByEntity', {
+      .post('/api/v1/model/removeByEntity', {
         providerId: defaultSelectProviderId.value,
         groupName,
       })
@@ -238,7 +238,7 @@ const handleFormBlur = async () => {
   if (!defaultSelectProviderId.value) return;
 
   try {
-    const res = await api.post('/api/v1/aiLlmProvider/update', {
+    const res = await api.post('/api/v1/modelProvider/update', {
       id: defaultSelectProviderId.value,
       apiKey: llmProviderForm.value.apiKey,
       endPoint: llmProviderForm.value.endPoint,

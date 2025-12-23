@@ -40,10 +40,10 @@ const authTypeList = ref<headersType[]>([
   },
 ]);
 onMounted(() => {
-  api.get('/api/v1/aiLlm/list?supportEmbed=true').then((res) => {
+  api.get('/api/v1/model/list?supportEmbed=true').then((res) => {
     embeddingLlmList.value = res.data;
   });
-  api.get('/api/v1/aiLlm/list?supportRerankerLlmList=true').then((res) => {
+  api.get('/api/v1/model/list?supportRerankerLlmList=true').then((res) => {
     rerankerLlmList.value = res.data;
   });
 });
@@ -110,7 +110,7 @@ function save() {
       const plainHeaders = [...tempAddHeaders.value];
       if (isAdd.value) {
         api
-          .post('/api/v1/aiPlugin/plugin/save', {
+          .post('/api/v1/plugin/plugin/save', {
             ...plainEntity,
             headers: plainHeaders,
           })
@@ -123,7 +123,7 @@ function save() {
           });
       } else {
         api
-          .post('/api/v1/aiPlugin/plugin/update', {
+          .post('/api/v1/plugin/plugin/update', {
             ...plainEntity,
             headers: plainHeaders,
           })

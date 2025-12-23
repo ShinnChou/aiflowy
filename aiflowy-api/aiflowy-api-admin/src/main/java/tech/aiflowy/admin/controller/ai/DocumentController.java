@@ -41,8 +41,8 @@ import java.util.*;
  * @since 2024-08-23
  */
 @RestController
-@RequestMapping("/api/v1/aiDocument")
-@UsePermission(moduleName = "/api/v1/aiKnowledge")
+@RequestMapping("/api/v1/document")
+@UsePermission(moduleName = "/api/v1/documentCollection")
 public class DocumentController extends BaseCurdController<DocumentService, Document> {
 
     private final DocumentCollectionService knowledgeService;
@@ -64,7 +64,7 @@ public class DocumentController extends BaseCurdController<DocumentService, Docu
     }
     @PostMapping("removeDoc")
     @Transactional
-    @SaCheckPermission("/api/v1/aiKnowledge/remove")
+    @SaCheckPermission("/api/v1/documentCollection/remove")
     public Result<?> remove(@JsonBody(value = "id", required = true) String id) {
         List<Serializable> ids = Collections.singletonList(id);
         Result<?> result = onRemoveBefore(ids);
@@ -90,7 +90,7 @@ public class DocumentController extends BaseCurdController<DocumentService, Docu
      */
     @GetMapping("list")
     @Override
-    @SaCheckPermission("/api/v1/aiKnowledge/query")
+    @SaCheckPermission("/api/v1/documentCollection/query")
     public Result<List<Document>> list(Document entity, Boolean asTree, String sortKey, String sortType) {
         String kbSlug = RequestUtil.getParamAsString("id");
         if (StringUtil.noText(kbSlug)) {
@@ -114,7 +114,7 @@ public class DocumentController extends BaseCurdController<DocumentService, Docu
     }
 
     @GetMapping("documentList")
-    @SaCheckPermission("/api/v1/aiKnowledge/query")
+    @SaCheckPermission("/api/v1/documentCollection/query")
     public Result<Page<Document>> documentList(@RequestParam(name="title", required = false) String fileName, @RequestParam(name="pageSize") int pageSize, @RequestParam(name = "pageNumber") int pageNumber) {
         String kbSlug = RequestUtil.getParamAsString("id");
         if (StringUtil.noText(kbSlug)) {
@@ -133,7 +133,7 @@ public class DocumentController extends BaseCurdController<DocumentService, Docu
 
     @PostMapping("update")
     @Override
-    @SaCheckPermission("/api/v1/aiKnowledge/save")
+    @SaCheckPermission("/api/v1/documentCollection/save")
     public Result<Boolean> update(@JsonBody Document entity) {
         super.update(entity);
         return Result.ok(updatePosition(entity));
@@ -150,7 +150,7 @@ public class DocumentController extends BaseCurdController<DocumentService, Docu
      * @param rowsPerChunk excel 分割段数
      */
     @PostMapping(value = {"textSplit", "/saveText"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    @SaCheckPermission("/api/v1/aiKnowledge/save")
+    @SaCheckPermission("/api/v1/documentCollection/save")
     public Result<?> textSplit(
                               @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
                               @RequestParam(value = "pageSize", required = false) Integer pageSize,

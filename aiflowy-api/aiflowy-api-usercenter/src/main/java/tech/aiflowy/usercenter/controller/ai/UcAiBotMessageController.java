@@ -26,7 +26,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/userCenter/aiBotMessage")
-@UsePermission(moduleName = "/api/v1/aiBot")
+@UsePermission(moduleName = "/api/v1/bot")
 public class UcAiBotMessageController extends BaseCurdController<BotMessageService, BotMessage> {
     private final BotMessageService botMessageService;
 

@@ -78,7 +78,7 @@ function remove(row: any) {
       if (action === 'confirm') {
         instance.confirmButtonLoading = true;
         api
-          .post('/api/v1/aiResource/remove', { id: row.id })
+          .post('/api/v1/resource/remove', { id: row.id })
           .then((res) => {
             instance.confirmButtonLoading = false;
             if (res.errorCode === 0) {
@@ -134,7 +134,7 @@ function download(row: any) {
       </ElForm>
       <div class="handle-div">
         <ElButton
-          v-access:code="'/api/v1/aiResource/save'"
+          v-access:code="'/api/v1/resource/save'"
           @click="showDialog({})"
           type="primary"
         >
@@ -149,7 +149,7 @@ function download(row: any) {
     <div class="bg-background border-border flex-1 rounded-lg border p-5">
       <PageData
         ref="pageDataRef"
-        page-url="/api/v1/aiResource/page"
+        page-url="/api/v1/resource/page"
         :page-size="10"
       >
         <template #default="{ pageList }">
@@ -253,7 +253,7 @@ function download(row: any) {
                             {{ $t('button.download') }}
                           </ElButton>
                         </ElDropdownItem>
-                        <div v-access:code="'/api/v1/aiResource/remove'">
+                        <div v-access:code="'/api/v1/resource/remove'">
                           <ElDropdownItem @click="remove(row)">
                             <ElButton type="danger" :icon="Delete" link>
                               {{ $t('button.delete') }}

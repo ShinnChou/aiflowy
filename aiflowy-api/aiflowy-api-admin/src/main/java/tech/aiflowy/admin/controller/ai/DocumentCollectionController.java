@@ -32,7 +32,7 @@ import java.util.Map;
  * @since 2024-08-23
  */
 @RestController
-@RequestMapping("/api/v1/aiKnowledge")
+@RequestMapping("/api/v1/documentCollection")
 public class DocumentCollectionController extends BaseCurdController<DocumentCollectionService, DocumentCollection> {
 
     private final DocumentChunkService chunkService;
@@ -79,7 +79,7 @@ public class DocumentCollectionController extends BaseCurdController<DocumentCol
     }
 
     @GetMapping("search")
-    @SaCheckPermission("/api/v1/aiKnowledge/query")
+    @SaCheckPermission("/api/v1/documentCollection/query")
     public Result<List<Document>> search(@RequestParam BigInteger knowledgeId, @RequestParam String keyword) {
         return Result.ok(service.search(knowledgeId, keyword));
     }

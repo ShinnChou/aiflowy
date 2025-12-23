@@ -21,8 +21,8 @@ import java.util.List;
  * @since 2024-08-23
  */
 @RestController
-@RequestMapping("/api/v1/aiLlmBrand")
-@UsePermission(moduleName = "/api/v1/aiLlm")
+@RequestMapping("/api/v1/modelBrand")
+@UsePermission(moduleName = "/api/v1/model")
 public class ModelBrandController extends BaseController {
 
     @Resource
@@ -30,7 +30,7 @@ public class ModelBrandController extends BaseController {
 
 
     @RequestMapping("list")
-    @SaCheckPermission("/api/v1/aiLlm/query")
+    @SaCheckPermission("/api/v1/model/query")
     public Result<List<ModelBrand>> list(){
 
         Object o = cache.get(AiBotChatUtil.LLM_BRAND_KEY);

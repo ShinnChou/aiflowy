@@ -10,7 +10,7 @@ import { api } from '#/api/request.js';
 
 /** 获取bot详情 */
 export const getBotDetails = (id: string) => {
-  return api.get<RequestResult<BotInfo>>('/api/v1/aiBot/getDetail', {
+  return api.get<RequestResult<BotInfo>>('/api/v1/bot/getDetail', {
     params: { id },
   });
 };
@@ -37,7 +37,7 @@ export interface SaveBotParams {
 }
 /** 创建Bot */
 export const saveBot = (params: SaveBotParams) => {
-  return api.post<RequestResult>('/api/v1/aiBot/save', { ...params });
+  return api.post<RequestResult>('/api/v1/bot/save', { ...params });
 };
 
 export interface UpdateBotParams extends SaveBotParams {
@@ -45,12 +45,12 @@ export interface UpdateBotParams extends SaveBotParams {
 }
 /** 修改Bot */
 export const updateBotApi = (params: UpdateBotParams) => {
-  return api.post<RequestResult>('/api/v1/aiBot/update', { ...params });
+  return api.post<RequestResult>('/api/v1/bot/update', { ...params });
 };
 
 /** 删除Bot */
 export const removeBotFromId = (id: string) => {
-  return api.post<RequestResult>('/api/v1/aiBot/update', { id });
+  return api.post<RequestResult>('/api/v1/bot/update', { id });
 };
 
 export interface GetMessageListParams {
@@ -61,7 +61,7 @@ export interface GetMessageListParams {
 /** 获取单个对话的信息列表 */
 export const getMessageList = (params: GetMessageListParams) => {
   return api.get<RequestResult<ChatMessage[]>>(
-    '/api/v1/aiBotMessage/messageList',
+    '/api/v1/botMessage/messageList',
     {
       params,
     },
@@ -83,13 +83,13 @@ export interface UpdateBotOptionsParams {
 }
 
 export const updateLlmOptions = (params: UpdateLlmOptionsParams) => {
-  return api.post<RequestResult>('/api/v1/aiBot/updateLlmOptions', {
+  return api.post<RequestResult>('/api/v1/bot/updateLlmOptions', {
     ...params,
   });
 };
 
 export const updateBotOptions = (params: UpdateBotOptionsParams) => {
-  return api.post<RequestResult>('/api/v1/aiBot/updateOptions', {
+  return api.post<RequestResult>('/api/v1/bot/updateOptions', {
     ...params,
   });
 };
@@ -99,7 +99,7 @@ export interface GetAiLlmListParams {
   [key: string]: any;
 }
 export const getAiLlmList = (params: GetAiLlmListParams) => {
-  return api.get<RequestResult<AiLlm[]>>('/api/v1/aiLlm/list', {
+  return api.get<RequestResult<AiLlm[]>>('/api/v1/model/list', {
     params,
   });
 };
@@ -110,13 +110,13 @@ export interface UpdateLlmIdParams {
   llmId: string;
 }
 export const updateLlmId = (params: UpdateLlmIdParams) => {
-  return api.post<RequestResult>('/api/v1/aiBot/updateLlmId', {
+  return api.post<RequestResult>('/api/v1/bot/updateLlmId', {
     ...params,
   });
 };
 
 export const doPostBotPluginTools = (botId: string) => {
-  return api.post<RequestResult<any[]>>('/api/v1/aiPluginTool/tool/list', {
+  return api.post<RequestResult<any[]>>('/api/v1/pluginItem/tool/list', {
     id: botId,
   });
 };

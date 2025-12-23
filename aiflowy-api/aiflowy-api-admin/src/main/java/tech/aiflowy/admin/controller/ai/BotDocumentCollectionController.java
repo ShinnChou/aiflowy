@@ -22,8 +22,8 @@ import java.util.List;
  * @since 2024-08-28
  */
 @RestController
-@RequestMapping("/api/v1/aiBotKnowledge")
-@UsePermission(moduleName = "/api/v1/aiBot")
+@RequestMapping("/api/v1/botKnowledge")
+@UsePermission(moduleName = "/api/v1/bot")
 public class BotDocumentCollectionController extends BaseCurdController<BotDocumentCollectionService, BotDocumentCollection> {
     public BotDocumentCollectionController(BotDocumentCollectionService service) {
         super(service);

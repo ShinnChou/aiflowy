@@ -65,7 +65,7 @@ const headerButtons = [
     icon: markRaw(Plus),
     type: 'primary',
     data: { action: 'create' },
-    permission: '/api/v1/aiKnowledge/save',
+    permission: '/api/v1/documentCollection/save',
   },
 ];
 const actions: ActionButton[] = [
@@ -91,7 +91,7 @@ const actions: ActionButton[] = [
     icon: Delete,
     text: $t('button.delete'),
     className: 'item-danger',
-    permission: '/api/v1/aiBot/remove',
+    permission: '/api/v1/bot/remove',
     onClick(row: BotInfo) {
       removeBot(row);
     },
@@ -208,7 +208,7 @@ function removeCategory(row: any) {
       if (action === 'confirm') {
         instance.confirmButtonLoading = true;
         api
-          .post('/api/v1/aiBotCategory/remove', { id: row.id })
+          .post('/api/v1/botCategory/remove', { id: row.id })
           .then((res) => {
             instance.confirmButtonLoading = false;
             if (res.errorCode === 0) {
@@ -231,8 +231,8 @@ function handleSubmit() {
     if (valid) {
       saveLoading.value = true;
       const url = formData.value.id
-        ? '/api/v1/aiBotCategory/update'
-        : '/api/v1/aiBotCategory/save';
+        ? '/api/v1/botCategory/update'
+        : '/api/v1/botCategory/save';
       api.post(url, formData.value).then((res) => {
         saveLoading.value = false;
         if (res.errorCode === 0) {
@@ -246,7 +246,7 @@ function handleSubmit() {
 }
 const getSideList = async () => {
   const [, res] = await tryit<RequestResult>(
-    api.get('/api/v1/aiBotCategory/list', {
+    api.get('/api/v1/botCategory/list', {
       params: { sortKey: 'sortNo', sortType: 'asc' },
     }),
   );
@@ -282,7 +282,7 @@ const getSideList = async () => {
       <div class="h-[calc(100vh-192px)] flex-1 overflow-auto">
         <PageData
           ref="pageDataRef"
-          page-url="/api/v1/aiBot/page"
+          page-url="/api/v1/bot/page"
           :page-sizes="[12, 18, 24]"
           :page-size="12"
         >

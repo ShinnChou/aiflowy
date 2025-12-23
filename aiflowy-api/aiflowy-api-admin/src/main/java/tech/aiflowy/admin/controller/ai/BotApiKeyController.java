@@ -23,15 +23,15 @@ import java.util.List;
  * @since 2025-07-18
  */
 @RestController
-@RequestMapping("/api/v1/aiBotApiKey")
-@UsePermission(moduleName = "/api/v1/aiBot")
+@RequestMapping("/api/v1/botApiKey")
+@UsePermission(moduleName = "/api/v1/bot")
 public class BotApiKeyController extends BaseCurdController<BotApiKeyService, BotApiKey> {
     public BotApiKeyController(BotApiKeyService service) {
         super(service);
     }
 
     @PostMapping("addKey")
-    @SaCheckPermission("/api/v1/aiBot/save")
+    @SaCheckPermission("/api/v1/bot/save")
     public Result<?> addKey(@JsonBody(value = "botId",required = true)BigInteger botId){
 
         if (botId == null) {

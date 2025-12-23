@@ -46,7 +46,7 @@ import java.util.*;
  * @since 2024-08-23
  */
 @RestController
-@RequestMapping("/api/v1/aiBot")
+@RequestMapping("/api/v1/bot")
 public class BotController extends BaseCurdController<BotService, Bot> {
 
     private final ModelService modelService;
@@ -84,7 +84,7 @@ public class BotController extends BaseCurdController<BotService, Bot> {
     private PluginItemService pluginItemService;
 
     @PostMapping("updateOptions")
-    @SaCheckPermission("/api/v1/aiBot/save")
+    @SaCheckPermission("/api/v1/bot/save")
     public Result<Void> updateOptions(@JsonBody("id") BigInteger id,
                                       @JsonBody("options") Map<String, Object> options) {
         Bot aiBot = service.getById(id);
@@ -101,7 +101,7 @@ public class BotController extends BaseCurdController<BotService, Bot> {
     }
 
     @PostMapping("updateLlmOptions")
-    @SaCheckPermission("/api/v1/aiBot/save")
+    @SaCheckPermission("/api/v1/bot/save")
     public Result<Void> updateLlmOptions(@JsonBody("id")
                                          BigInteger id, @JsonBody("llmOptions")
                                          Map<String, Object> llmOptions) {
@@ -204,7 +204,7 @@ public class BotController extends BaseCurdController<BotService, Bot> {
     }
 
     @PostMapping("updateLlmId")
-    @SaCheckPermission("/api/v1/aiBot/save")
+    @SaCheckPermission("/api/v1/bot/save")
     public Result<Void> updateBotLlmId(@RequestBody
                                        Bot aiBot) {
         service.updateBotLlmId(aiBot);

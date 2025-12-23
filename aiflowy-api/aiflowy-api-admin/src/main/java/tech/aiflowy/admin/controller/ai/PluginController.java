@@ -24,7 +24,7 @@ import java.util.List;
  * @since 2025-04-25
  */
 @RestController
-@RequestMapping("/api/v1/aiPlugin")
+@RequestMapping("/api/v1/plugin")
 public class PluginController extends BaseCurdController<PluginService, Plugin> {
     public PluginController(PluginService service) {
         super(service);
@@ -39,34 +39,34 @@ public class PluginController extends BaseCurdController<PluginService, Plugin> 
     }
 
     @PostMapping("/plugin/save")
-    @SaCheckPermission("/api/v1/aiPlugin/save")
+    @SaCheckPermission("/api/v1/plugin/save")
     public Result<Boolean> savePlugin(@JsonBody Plugin plugin){
 
         return Result.ok(pluginService.savePlugin(plugin));
     }
 
     @PostMapping("/plugin/remove")
-    @SaCheckPermission("/api/v1/aiPlugin/remove")
+    @SaCheckPermission("/api/v1/plugin/remove")
     public Result<Boolean> removePlugin(@JsonBody(value = "id", required = true) String id){
 
         return Result.ok(pluginService.removePlugin(id));
     }
 
     @PostMapping("/plugin/update")
-    @SaCheckPermission("/api/v1/aiPlugin/save")
+    @SaCheckPermission("/api/v1/plugin/save")
     public Result<Boolean> updatePlugin(@JsonBody Plugin plugin){
 
         return Result.ok(pluginService.updatePlugin(plugin));
     }
 
     @PostMapping("/getList")
-    @SaCheckPermission("/api/v1/aiPlugin/query")
+    @SaCheckPermission("/api/v1/plugin/query")
     public Result<List<Plugin>> getList(){
         return Result.ok(pluginService.getList());
     }
 
     @GetMapping("/pageByCategory")
-    @SaCheckPermission("/api/v1/aiPlugin/query")
+    @SaCheckPermission("/api/v1/plugin/query")
     public Result<Page<Plugin>> pageByCategory(HttpServletRequest request, String sortKey, String sortType, Long pageNumber, Long pageSize, int category) {
         if (pageNumber == null || pageNumber < 1) {
             pageNumber = 1L;

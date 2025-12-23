@@ -41,7 +41,7 @@ import java.util.*;
  * @since 2024-08-23
  */
 @RestController
-@RequestMapping("/api/v1/aiWorkflow")
+@RequestMapping("/api/v1/workflow")
 public class WorkflowController extends BaseCurdController<WorkflowService, Workflow> {
     private final ModelService modelService;
 
@@ -65,7 +65,7 @@ public class WorkflowController extends BaseCurdController<WorkflowService, Work
      * 节点单独运行
      */
     @PostMapping("/singleRun")
-    @SaCheckPermission("/api/v1/aiWorkflow/save")
+    @SaCheckPermission("/api/v1/workflow/save")
     public Result<?> singleRun(
             @JsonBody(value = "workflowId", required = true) BigInteger workflowId,
             @JsonBody(value = "nodeId", required = true) String nodeId,
@@ -83,7 +83,7 @@ public class WorkflowController extends BaseCurdController<WorkflowService, Work
      * 运行工作流 - v2
      */
     @PostMapping("/runAsync")
-    @SaCheckPermission("/api/v1/aiWorkflow/save")
+    @SaCheckPermission("/api/v1/workflow/save")
     public Result<String> runAsync(@JsonBody(value = "id", required = true) BigInteger id,
                                    @JsonBody("variables") Map<String, Object> variables) {
         if (variables == null) {
@@ -114,7 +114,7 @@ public class WorkflowController extends BaseCurdController<WorkflowService, Work
      * 恢复工作流运行 - v2
      */
     @PostMapping("/resume")
-    @SaCheckPermission("/api/v1/aiWorkflow/save")
+    @SaCheckPermission("/api/v1/workflow/save")
     public Result<Void> resume(@JsonBody(value = "executeId", required = true) String executeId,
                                @JsonBody("confirmParams") Map<String, Object> confirmParams) {
         chainExecutor.resumeAsync(executeId, confirmParams);
@@ -122,7 +122,7 @@ public class WorkflowController extends BaseCurdController<WorkflowService, Work
     }
 
     @PostMapping("/importWorkFlow")
-    @SaCheckPermission("/api/v1/aiWorkflow/save")
+    @SaCheckPermission("/api/v1/workflow/save")
     public Result<Void> importWorkFlow(Workflow workflow, MultipartFile jsonFile) throws Exception {
         InputStream is = jsonFile.getInputStream();
         String content = IoUtil.read(is, StandardCharsets.UTF_8);
@@ -132,14 +132,14 @@ public class WorkflowController extends BaseCurdController<WorkflowService, Work
     }
 
     @GetMapping("/exportWorkFlow")
-    @SaCheckPermission("/api/v1/aiWorkflow/save")
+    @SaCheckPermission("/api/v1/workflow/save")
     public Result<String> exportWorkFlow(BigInteger id) {
         Workflow workflow = service.getById(id);
         return Result.ok("", workflow.getContent());
     }
 
     @GetMapping("getRunningParameters")
-    @SaCheckPermission("/api/v1/aiWorkflow/query")
+    @SaCheckPermission("/api/v1/workflow/query")
     public Result<?> getRunningParameters(@RequestParam BigInteger id) {
         Workflow workflow = service.getById(id);
 
@@ -167,7 +167,7 @@ public class WorkflowController extends BaseCurdController<WorkflowService, Work
     }
 
     @GetMapping("/copy")
-    @SaCheckPermission("/api/v1/aiWorkflow/save")
+    @SaCheckPermission("/api/v1/workflow/save")
     public Result<Void> copy(BigInteger id) {
         LoginAccount account = SaTokenUtil.getLoginAccount();
         Workflow workflow = service.getById(id);

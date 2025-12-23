@@ -23,8 +23,8 @@ import java.util.List;
  * @since 2024-08-28
  */
 @RestController
-@RequestMapping("/api/v1/aiBotWorkflow")
-@UsePermission(moduleName = "/api/v1/aiBot")
+@RequestMapping("/api/v1/botWorkflow")
+@UsePermission(moduleName = "/api/v1/bot")
 public class BotWorkflowController extends BaseCurdController<BotWorkflowService, BotWorkflow> {
     public BotWorkflowController(BotWorkflowService service) {
         super(service);

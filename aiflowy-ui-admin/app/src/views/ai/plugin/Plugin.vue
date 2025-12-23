@@ -101,7 +101,7 @@ const footerButton = {
   },
 };
 const getPluginCategoryList = async () => {
-  return api.get('/api/v1/aiPluginCategories/list').then((res) => {
+  return api.get('/api/v1/pluginCategory/list').then((res) => {
     if (res.errorCode === 0) {
       categoryList.value = [
         { id: '0', name: $t('common.allCategories') },
@@ -172,7 +172,7 @@ const handleSearch = (params) => {
 };
 const handleEditCategory = (params) => {
   api
-    .post('/api/v1/aiPluginCategories/update', {
+    .post('/api/v1/pluginCategory/update', {
       id: params.id,
       name: params.name,
     })
@@ -185,7 +185,7 @@ const handleEditCategory = (params) => {
 };
 const handleAddCategory = (params) => {
   api
-    .post('/api/v1/aiPluginCategories/save', { name: params.name })
+    .post('/api/v1/pluginCategory/save', { name: params.name })
     .then((res) => {
       if (res.errorCode === 0) {
         getPluginCategoryList();
@@ -195,7 +195,7 @@ const handleAddCategory = (params) => {
 };
 const handleDeleteCategory = (params) => {
   api
-    .get(`/api/v1/aiPluginCategories/doRemoveCategory?id=${params.id}`)
+    .get(`/api/v1/pluginCategory/doRemoveCategory?id=${params.id}`)
     .then((res) => {
       if (res.errorCode === 0) {
         getPluginCategoryList();

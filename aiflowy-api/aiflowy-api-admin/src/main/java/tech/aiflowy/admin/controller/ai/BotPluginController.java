@@ -25,8 +25,8 @@ import java.util.List;
  * @since 2025-04-07
  */
 @RestController
-@RequestMapping("/api/v1/aiBotPlugins")
-@UsePermission(moduleName = "/api/v1/aiBot")
+@RequestMapping("/api/v1/botPlugins")
+@UsePermission(moduleName = "/api/v1/bot")
 public class BotPluginController extends BaseCurdController<BotPluginService, BotPlugin> {
 
     public BotPluginController(BotPluginService service) {

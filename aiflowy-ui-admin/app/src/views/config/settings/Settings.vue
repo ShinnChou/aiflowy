@@ -21,7 +21,7 @@ const llmOptions = ref([]);
 
 // 获取品牌接口数据
 function getBrands() {
-  api.get('/api/v1/aiLlmBrand/list').then((res) => {
+  api.get('/api/v1/modelBrand/list').then((res) => {
     if (res.errorCode === 0) {
       brands.value = res.data;
       llmOptions.value = formatLlmList(res.data);

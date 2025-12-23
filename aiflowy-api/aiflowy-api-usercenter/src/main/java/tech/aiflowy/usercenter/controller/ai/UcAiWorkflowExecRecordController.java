@@ -28,7 +28,7 @@ import java.math.BigInteger;
  */
 @RestController
 @RequestMapping("/userCenter/aiWorkflowExecRecord")
-@UsePermission(moduleName = "/api/v1/aiWorkflow")
+@UsePermission(moduleName = "/api/v1/workflow")
 public class UcAiWorkflowExecRecordController extends BaseCurdController<WorkflowExecResultService, WorkflowExecResult> {
 
     @Resource
@@ -43,7 +43,7 @@ public class UcAiWorkflowExecRecordController extends BaseCurdController<Workflo
      */
     @GetMapping("/del")
     @Transactional(rollbackFor = Exception.class)
-    @SaCheckPermission("/api/v1/aiWorkflow/remove")
+    @SaCheckPermission("/api/v1/workflow/remove")
     public Result<Void> del(BigInteger id) {
         LoginAccount account = SaTokenUtil.getLoginAccount();
         WorkflowExecResult record = service.getById(id);

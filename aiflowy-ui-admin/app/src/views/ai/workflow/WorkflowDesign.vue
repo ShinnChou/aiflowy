@@ -128,12 +128,12 @@ async function getWorkflowInfo(workflowId: any) {
   });
 }
 async function getLlmList() {
-  api.get('/api/v1/aiLlm/list').then((res) => {
+  api.get('/api/v1/model/list').then((res) => {
     llmList.value = res.data;
   });
 }
 async function getKnowledgeList() {
-  api.get('/api/v1/aiKnowledge/list').then((res) => {
+  api.get('/api/v1/documentCollection/list').then((res) => {
     knowledgeList.value = res.data;
   });
 }
@@ -185,7 +185,7 @@ function handleWorkflowNodeUpdate(chooseId: any) {
 function handlePluginNodeUpdate(chooseId: any) {
   pageLoading.value = true;
   api
-    .get('/api/v1/aiPluginTool/getTinyFlowData', {
+    .get('/api/v1/pluginItem/getTinyFlowData', {
       params: {
         id: chooseId,
       },

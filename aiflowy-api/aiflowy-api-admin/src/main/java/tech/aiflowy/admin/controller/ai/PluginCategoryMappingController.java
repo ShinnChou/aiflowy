@@ -19,7 +19,7 @@ import java.util.List;
  * @since 2025-05-21
  */
 @RestController
-@RequestMapping("/api/v1/aiPluginCategoryRelation")
+@RequestMapping("/api/v1/pluginCategoryMapping")
 public class PluginCategoryMappingController extends BaseCurdController<PluginCategoryMappingService, PluginCategoryMapping> {
     public PluginCategoryMappingController(PluginCategoryMappingService service) {
         super(service);

@@ -23,7 +23,7 @@ const emit = defineEmits(['reload']);
 const embeddingLlmList = ref<any>([]);
 const rerankerLlmList = ref<any>([]);
 const getEmbeddingLlmListData = async () => {
-  const url = `/api/v1/aiLlm/list?modelType=embeddingModel`;
+  const url = `/api/v1/model/list?modelType=embeddingModel`;
   api.get(url, {}).then((res) => {
     if (res.errorCode === 0) {
       embeddingLlmList.value = res.data;
@@ -32,7 +32,7 @@ const getEmbeddingLlmListData = async () => {
 };
 onMounted(() => {
   getEmbeddingLlmListData();
-  api.get('/api/v1/aiLlm/list?modelType=embeddingModel').then((res) => {
+  api.get('/api/v1/model/list?modelType=embeddingModel').then((res) => {
     rerankerLlmList.value = res.data;
   });
 });

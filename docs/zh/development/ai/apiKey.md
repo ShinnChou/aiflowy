@@ -4,7 +4,7 @@ apiKey 的作用是 用于身份认证，通过 apiKey 第三方可以携带对�
 
 ## 第三方接入 Bot 聊天地址：
 请求方式： POST
-请求地址： http://127.0.0.1:8080/api/v1/aiBot/externalChat
+请求地址： http://127.0.0.1:8080/api/v1/bot/externalChat
 
 
 

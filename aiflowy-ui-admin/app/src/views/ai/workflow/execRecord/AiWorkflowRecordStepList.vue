@@ -94,7 +94,7 @@ function getTagType(row: any) {
     <div class="handle-div"></div>
     <PageData
       ref="pageDataRef"
-      page-url="/api/v1/aiWorkflowRecordStep/page"
+      page-url="/api/v1/workflowExecStep/page"
       :page-size="10"
       :extra-query-params="{
         recordId: $route.query.recordId,

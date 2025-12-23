@@ -20,8 +20,8 @@ import javax.annotation.Resource;
  * @since 2025-05-21
  */
 @RestController
-@RequestMapping("/api/v1/aiPluginCategories")
-@UsePermission(moduleName = "/api/v1/aiPlugin")
+@RequestMapping("/api/v1/pluginCategory")
+@UsePermission(moduleName = "/api/v1/plugin")
 public class PluginCategoryController extends BaseCurdController<PluginCategoryService, PluginCategory> {
     public PluginCategoryController(PluginCategoryService service) {
         super(service);
@@ -31,7 +31,7 @@ public class PluginCategoryController extends BaseCurdController<PluginCategoryS
     private PluginCategoryService pluginCategoryService;
 
     @GetMapping("/doRemoveCategory")
-    @SaCheckPermission("/api/v1/aiPlugin/remove")
+    @SaCheckPermission("/api/v1/plugin/remove")
     public Result<Boolean> doRemoveCategory(@RequestParam("id") Integer id){
 
         return Result.ok(pluginCategoryService.doRemoveCategory(id));

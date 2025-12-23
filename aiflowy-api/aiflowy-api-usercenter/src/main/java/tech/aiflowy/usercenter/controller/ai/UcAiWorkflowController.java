@@ -28,7 +28,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/userCenter/aiWorkflow")
-@UsePermission(moduleName = "/api/v1/aiWorkflow")
+@UsePermission(moduleName = "/api/v1/workflow")
 public class UcAiWorkflowController extends BaseCurdController<WorkflowService, Workflow> {
 
     @Resource
@@ -46,7 +46,7 @@ public class UcAiWorkflowController extends BaseCurdController<WorkflowService, 
      * 节点单独运行
      */
     @PostMapping("/singleRun")
-    @SaCheckPermission("/api/v1/aiWorkflow/save")
+    @SaCheckPermission("/api/v1/workflow/save")
     public Result<?> singleRun(
             @JsonBody(value = "workflowId", required = true) BigInteger workflowId,
             @JsonBody(value = "nodeId", required = true) String nodeId,
@@ -64,7 +64,7 @@ public class UcAiWorkflowController extends BaseCurdController<WorkflowService, 
      * 运行工作流 - v2
      */
     @PostMapping("/runAsync")
-    @SaCheckPermission("/api/v1/aiWorkflow/save")
+    @SaCheckPermission("/api/v1/workflow/save")
     public Result<String> runAsync(@JsonBody(value = "id", required = true) BigInteger id,
                                    @JsonBody("variables") Map<String, Object> variables) {
         if (variables == null) {
@@ -95,7 +95,7 @@ public class UcAiWorkflowController extends BaseCurdController<WorkflowService, 
      * 恢复工作流运行 - v2
      */
     @PostMapping("/resume")
-    @SaCheckPermission("/api/v1/aiWorkflow/save")
+    @SaCheckPermission("/api/v1/workflow/save")
     public Result<Void> resume(@JsonBody(value = "executeId", required = true) String executeId,
                                @JsonBody("confirmParams") Map<String, Object> confirmParams) {
         chainExecutor.resumeAsync(executeId, confirmParams);
@@ -106,7 +106,7 @@ public class UcAiWorkflowController extends BaseCurdController<WorkflowService, 
      * 获取工作流参数 - v2
      */
     @GetMapping("getRunningParameters")
-    @SaCheckPermission("/api/v1/aiWorkflow/query")
+    @SaCheckPermission("/api/v1/workflow/query")
     public Result<?> getRunningParameters(@RequestParam BigInteger id) {
         Workflow workflow = service.getById(id);
 

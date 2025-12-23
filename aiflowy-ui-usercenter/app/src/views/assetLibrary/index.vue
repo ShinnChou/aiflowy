@@ -207,7 +207,7 @@ function handleOperation(type: string) {
     <ElMain class="!px-8 !py-6">
       <PageData
         ref="pageDataRef"
-        page-url="/api/v1/aiResource/page"
+        page-url="/api/v1/resource/page"
         :page-size="10"
       >
         <template #default="{ pageList }">

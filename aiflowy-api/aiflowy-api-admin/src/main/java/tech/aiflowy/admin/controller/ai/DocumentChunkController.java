@@ -34,8 +34,8 @@ import java.util.Map;
  * @since 2024-08-23
  */
 @RestController
-@RequestMapping("/api/v1/aiDocumentChunk")
-@UsePermission(moduleName = "/api/v1/aiKnowledge")
+@RequestMapping("/api/v1/documentChunk")
+@UsePermission(moduleName = "/api/v1/documentCollection")
 public class DocumentChunkController extends BaseCurdController<DocumentChunkService, DocumentChunk> {
 
     @Resource
@@ -52,7 +52,7 @@ public class DocumentChunkController extends BaseCurdController<DocumentChunkSer
     }
 
     @PostMapping("update")
-    @SaCheckPermission("/api/v1/aiKnowledge/save")
+    @SaCheckPermission("/api/v1/documentCollection/save")
     public Result<?> update(@JsonBody DocumentChunk documentChunk) {
         boolean success = service.updateById(documentChunk);
         if (success){
@@ -86,7 +86,7 @@ public class DocumentChunkController extends BaseCurdController<DocumentChunkSer
     }
 
     @PostMapping("removeChunk")
-    @SaCheckPermission("/api/v1/aiKnowledge/remove")
+    @SaCheckPermission("/api/v1/documentCollection/remove")
     public Result<?> remove(@JsonBody(value = "id", required = true) BigInteger chunkId) {
         DocumentChunk docChunk =  documentChunkService.getById(chunkId);
         if (docChunk == null) {

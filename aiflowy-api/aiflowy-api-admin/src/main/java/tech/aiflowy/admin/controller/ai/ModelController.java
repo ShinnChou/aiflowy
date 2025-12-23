@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * @since 2024-08-23
  */
 @RestController
-@RequestMapping("/api/v1/aiLlm")
+@RequestMapping("/api/v1/model")
 public class ModelController extends BaseCurdController<ModelService, Model> {
 
     public ModelController(ModelService service) {
@@ -46,7 +46,7 @@ public class ModelController extends BaseCurdController<ModelService, Model> {
     ModelMapper modelMapper;
 
     @GetMapping("list")
-    @SaCheckPermission("/api/v1/aiLlm/query")
+    @SaCheckPermission("/api/v1/model/query")
     public Result<List<Model>> list(Model entity, Boolean asTree, String sortKey, String sortType) {
         QueryWrapper queryWrapper = QueryWrapper.create(entity, buildOperators(entity));
         queryWrapper.orderBy(buildOrderBy(sortKey, sortType, getDefaultOrderBy()));
@@ -58,13 +58,13 @@ public class ModelController extends BaseCurdController<ModelService, Model> {
     }
 
     @GetMapping("getList")
-    @SaCheckPermission("/api/v1/aiLlm/query")
+    @SaCheckPermission("/api/v1/model/query")
     public Result<Map<String, Map<String, List<Model>>>> getList(Model entity) {
         return Result.ok(modelService.getList(entity));
     }
 
     @PostMapping("/addAiLlm")
-    @SaCheckPermission("/api/v1/aiLlm/save")
+    @SaCheckPermission("/api/v1/model/save")
     public Result<Boolean> addAiLlm(Model entity) {
         LoginAccount account = SaTokenUtil.getLoginAccount();
         commonFiled(entity, account.getId(), account.getTenantId(), account.getDeptId());
@@ -73,7 +73,7 @@ public class ModelController extends BaseCurdController<ModelService, Model> {
 
 
     @GetMapping("verifyLlmConfig")
-    @SaCheckPermission("/api/v1/aiLlm/save")
+    @SaCheckPermission("/api/v1/model/save")
     public Result<Void> verifyLlmConfig(@RequestParam BigInteger id) {
         Model llm = service.getLlmInstance(id);
         service.verifyLlmConfig(llm);
@@ -82,14 +82,14 @@ public class ModelController extends BaseCurdController<ModelService, Model> {
     }
 
     @PostMapping("/removeByEntity")
-    @SaCheckPermission("/api/v1/aiLlm/remove")
+    @SaCheckPermission("/api/v1/model/remove")
     public Result<?> removeByEntity(@RequestBody Model entity) {
         modelService.removeByEntity(entity);
         return Result.ok();
     }
 
     @GetMapping("/selectLlmByProviderCategory")
-    @SaCheckPermission("/api/v1/aiLlm/query")
+    @SaCheckPermission("/api/v1/model/query")
     public Result<Map<String, List<Model>>> selectLlmByProviderCategory(Model entity, String sortKey, String sortType) {
         QueryWrapper queryWrapper = QueryWrapper.create(entity, buildOperators(entity));
         queryWrapper.orderBy(buildOrderBy(sortKey, sortType, getDefaultOrderBy()));
@@ -100,7 +100,7 @@ public class ModelController extends BaseCurdController<ModelService, Model> {
     }
 
     @GetMapping("/selectLlmByProviderAndModelType")
-    @SaCheckPermission("/api/v1/aiLlm/query")
+    @SaCheckPermission("/api/v1/model/query")
     public Result<Map<String, List<Model>>> selectLlmByProviderAndModelType(
             @RequestParam String modelType,
             @RequestParam BigInteger providerId,
@@ -131,7 +131,7 @@ public class ModelController extends BaseCurdController<ModelService, Model> {
     }
 
     @GetMapping("/selectLlmList")
-    @SaCheckPermission("/api/v1/aiLlm/query")
+    @SaCheckPermission("/api/v1/model/query")
     public Result<List<Model>> selectLlmList(Model entity, Boolean asTree, String sortKey, String sortType) {
         QueryWrapper queryWrapper = QueryWrapper.create(entity, buildOperators(entity));
         queryWrapper.orderBy(buildOrderBy(sortKey, sortType, getDefaultOrderBy()));

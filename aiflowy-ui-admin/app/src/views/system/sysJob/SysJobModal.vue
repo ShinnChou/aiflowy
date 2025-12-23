@@ -130,7 +130,7 @@ function workflowChange(v: any) {
 }
 function getWorkflowParams(v: any) {
   paramsLoading.value = true;
-  api.get(`/api/v1/aiWorkflow/getRunningParameters?id=${v}`).then((res) => {
+  api.get(`/api/v1/workflow/getRunningParameters?id=${v}`).then((res) => {
     paramsLoading.value = false;
     workflowParams.value = res.data.parameters;
   });

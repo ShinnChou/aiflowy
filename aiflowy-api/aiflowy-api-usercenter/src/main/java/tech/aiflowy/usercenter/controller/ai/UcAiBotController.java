@@ -48,7 +48,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/userCenter/aiBot")
-@UsePermission(moduleName = "/api/v1/aiBot")
+@UsePermission(moduleName = "/api/v1/bot")
 public class UcAiBotController extends BaseCurdController<BotService, Bot> {
 
     private final ModelService modelService;
@@ -88,7 +88,7 @@ public class UcAiBotController extends BaseCurdController<BotService, Bot> {
     private BotConversationService conversationMessageService;
 
     @PostMapping("updateOptions")
-    @SaCheckPermission("/api/v1/aiBot/save")
+    @SaCheckPermission("/api/v1/bot/save")
     public Result<Void> updateOptions(@JsonBody("id") BigInteger id,
                                       @JsonBody("options") Map<String, Object> options) {
         Bot aiBot = service.getById(id);
@@ -105,7 +105,7 @@ public class UcAiBotController extends BaseCurdController<BotService, Bot> {
     }
 
     @PostMapping("updateLlmOptions")
-    @SaCheckPermission("/api/v1/aiBot/save")
+    @SaCheckPermission("/api/v1/bot/save")
     public Result<Void> updateLlmOptions(@JsonBody("id")
                                          BigInteger id, @JsonBody("llmOptions")
                                          Map<String, Object> llmOptions) {
@@ -222,7 +222,7 @@ public class UcAiBotController extends BaseCurdController<BotService, Bot> {
     }
 
     @PostMapping("updateLlmId")
-    @SaCheckPermission("/api/v1/aiBot/save")
+    @SaCheckPermission("/api/v1/bot/save")
     public Result<Void> updateBotLlmId(@RequestBody
                                        Bot aiBot) {
         service.updateBotLlmId(aiBot);

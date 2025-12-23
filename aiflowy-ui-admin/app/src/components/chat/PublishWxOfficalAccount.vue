@@ -75,7 +75,7 @@ const handleConfirm = () => {
   basicFormRef.value?.validate((valid: boolean) => {
     if (valid) {
       api
-        .post('/api/v1/aiBot/updateOptions', {
+        .post('/api/v1/bot/updateOptions', {
           id: botId.value,
           options: {
             weChatMpAppId: basicForm.value.weChatMpAppId,

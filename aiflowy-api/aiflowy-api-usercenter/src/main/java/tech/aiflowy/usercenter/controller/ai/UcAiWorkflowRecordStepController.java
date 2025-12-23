@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/userCenter/aiWorkflowRecordStep")
-@UsePermission(moduleName = "/api/v1/aiWorkflow")
+@UsePermission(moduleName = "/api/v1/workflow")
 public class UcAiWorkflowRecordStepController extends BaseCurdController<WorkflowExecStepService, WorkflowExecStep> {
 
     @Resource

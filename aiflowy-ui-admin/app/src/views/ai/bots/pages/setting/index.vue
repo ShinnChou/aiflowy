@@ -15,7 +15,7 @@ import Prompt from './prompt.vue';
 
 const route = useRoute();
 const hasSavePermission = computed(() =>
-  hasPermission(['/api/v1/aiBot/save', '/api/v1/aiBot/updateLlmId']),
+  hasPermission(['/api/v1/bot/save', '/api/v1/bot/updateLlmId']),
 );
 const bot = ref<BotInfo>();
 

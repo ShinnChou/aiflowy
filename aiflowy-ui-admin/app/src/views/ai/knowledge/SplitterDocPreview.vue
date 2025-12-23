@@ -97,7 +97,7 @@ function splitterDocPreview(
 ) {
   api
     .post(
-      '/api/v1/aiDocument/textSplit',
+      '/api/v1/document/textSplit',
       {},
       {
         params: {

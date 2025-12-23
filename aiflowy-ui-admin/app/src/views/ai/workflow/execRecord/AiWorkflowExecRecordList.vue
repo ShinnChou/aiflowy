@@ -65,7 +65,7 @@ function remove(row: any) {
       if (action === 'confirm') {
         instance.confirmButtonLoading = true;
         api
-          .get('/api/v1/aiWorkflowExecRecord/del', { params: { id: row.id } })
+          .get('/api/v1/workflowExecResult/del', { params: { id: row.id } })
           .then((res) => {
             instance.confirmButtonLoading = false;
             if (res.errorCode === 0) {
@@ -141,7 +141,7 @@ function getTagType(row: any) {
     <div class="handle-div"></div>
     <PageData
       ref="pageDataRef"
-      page-url="/api/v1/aiWorkflowExecRecord/page"
+      page-url="/api/v1/workflowExecResult/page"
       :page-size="10"
       :extra-query-params="{
         workflowId: $route.query.workflowId,
@@ -226,14 +226,14 @@ function getTagType(row: any) {
                 </ElButton>
                 <template #dropdown>
                   <ElDropdownMenu>
-                    <div v-access:code="'/api/v1/aiWorkflow/save'">
+                    <div v-access:code="'/api/v1/workflow/save'">
                       <ElDropdownItem @click="toStepPage(row)">
                         <ElButton :icon="Operation" link>
                           {{ $t('aiWorkflowRecordStep.moduleName') }}
                         </ElButton>
                       </ElDropdownItem>
                     </div>
-                    <div v-access:code="'/api/v1/aiWorkflow/save'">
+                    <div v-access:code="'/api/v1/workflow/save'">
                       <ElDropdownItem @click="remove(row)">
                         <ElButton type="danger" :icon="DeleteFilled" link>
                           {{ $t('button.delete') }}

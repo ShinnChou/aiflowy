@@ -59,7 +59,7 @@ defineExpose({
 });
 const getPresetQuestions = () => {
   api
-    .get('/api/v1/aiBot/detail', {
+    .get('/api/v1/bot/detail', {
       params: {
         id: botId.value,
       },
@@ -83,7 +83,7 @@ const getMessagesHistory = () => {
     return;
   }
   api
-    .get('/api/v1/aiBotMessage/list', {
+    .get('/api/v1/botMessage/list', {
       params: {
         botId: botId.value,
         sessionId: sessionId.value,
@@ -171,7 +171,7 @@ const handleSubmit = async (refreshContent: string) => {
   bubbleItems.value.push(...mockMessages);
   senderRef.value?.clear();
 
-  sseClient.post('/api/v1/aiBot/chat', data, {
+  sseClient.post('/api/v1/bot/chat', data, {
     onMessage(message) {
       const event = message.event;
       //  finish

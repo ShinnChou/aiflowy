@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2025-12-18
  */
 @RestController
-@RequestMapping("/api/v1/aiBotCategory")
-@UsePermission(moduleName = "/api/v1/aiBot")
+@RequestMapping("/api/v1/botCategory")
+@UsePermission(moduleName = "/api/v1/bot")
 public class BotCategoryController extends BaseCurdController<BotCategoryService, BotCategory> {
     public BotCategoryController(BotCategoryService service) {
         super(service);

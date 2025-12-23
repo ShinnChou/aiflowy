@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2024-08-23
  */
 @RestController
-@RequestMapping("/api/v1/aiDocumentHistory")
+@RequestMapping("/api/v1/documentHistory")
 public class DocumentHistoryController extends BaseCurdController<DocumentHistoryService, DocumentHistory> {
     public DocumentHistoryController(DocumentHistoryService service) {
         super(service);
