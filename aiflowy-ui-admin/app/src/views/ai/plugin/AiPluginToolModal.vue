@@ -166,13 +166,13 @@ defineExpose({
       label-width="80px"
       status-icon
     >
-      <ElFormItem :label="$t('aiPluginTool.name')" prop="name">
+      <ElFormItem :label="$t('pluginItem.name')" prop="name">
         <ElInput v-model.trim="entity.name" />
       </ElFormItem>
-      <ElFormItem :label="$t('aiPluginTool.englishName')" prop="englishName">
+      <ElFormItem :label="$t('pluginItem.englishName')" prop="englishName">
         <ElInput v-model.trim="entity.englishName" />
       </ElFormItem>
-      <ElFormItem :label="$t('aiPluginTool.description')" prop="description">
+      <ElFormItem :label="$t('pluginItem.description')" prop="description">
         <ElInput v-model.trim="entity.description" type="textarea" :rows="4" />
       </ElFormItem>
     </ElForm>

@@ -265,6 +265,7 @@ const deleteNode = (key: string) => {
 };
 
 // 验证字段
+// 验证字段
 const validateFields = (): boolean => {
   const newErrors: Record<
     string,
@@ -272,47 +273,64 @@ const validateFields = (): boolean => {
   > = {};
   let isValid = true;
 
+  // 递归校验节点（包括子节点）
   const checkNode = (node: TreeTableNode): boolean => {
     const { name, description, method, type } = node;
     const nodeErrors: Partial<Record<keyof TreeTableNode, string>> = {};
+    let nodeIsValid = true;
 
+    // 校验参数名称
     if (!name?.trim()) {
       nodeErrors.name = '参数名称不能为空';
+      nodeIsValid = false;
       isValid = false;
     }
 
+    // 校验参数描述
     if (!description?.trim()) {
       nodeErrors.description = '参数描述不能为空';
+      nodeIsValid = false;
       isValid = false;
     }
 
+    // 校验传入方法（仅根节点+输入参数）
     if (isRootNode(node) && !method && !props.isEditOutput) {
       nodeErrors.method = '传入方法不能为空';
+      nodeIsValid = false;
       isValid = false;
     }
 
+    // 校验参数类型
     if (!type) {
       nodeErrors.type = '参数类型不能为空';
+      nodeIsValid = false;
       isValid = false;
     }
 
+    // 记录当前节点的错误
     if (Object.keys(nodeErrors).length > 0) {
       newErrors[node.key] = nodeErrors;
     }
 
+    // 递归校验子节点
     if (node.children) {
       node.children.forEach((child) => {
-        if (!checkNode(child)) isValid = false;
+        if (!checkNode(child)) {
+          nodeIsValid = false;
+          isValid = false;
+        }
       });
     }
 
-    return isValid;
+    return nodeIsValid;
   };
 
+  // 校验所有根节点
   data.value.forEach((node) => {
-    if (!checkNode(node)) isValid = false;
+    checkNode(node);
   });
 
+  // 更新错误信息
   errors.value = newErrors;
   return isValid;
 };
@@ -322,12 +340,31 @@ const isRootNode = (record: TreeTableNode): boolean => {
   return !record.key.includes('-');
 };
 
-// 提交参数
 const handleSubmitParams = () => {
-  if (!validateFields()) {
-    ElMessage.error('请完善表单信息');
-    return;
+  // 全量校验所有字段
+  const isFormValid = validateFields();
+
+  if (!isFormValid) {
+    ElMessage.error('请完善所有必填项后提交');
+
+    // 找到第一个错误的输入框/选择器
+    const firstErrorInput = document.querySelector('.error-border');
+    if (firstErrorInput) {
+      // 滚动到错误元素位置
+      firstErrorInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // 给输入框添加焦点
+      if ((firstErrorInput as HTMLInputElement).focus) {
+        (firstErrorInput as HTMLInputElement).focus();
+      } else {
+        // 处理选择器的焦点
+        const selectInput = firstErrorInput.querySelector('.el-input__inner');
+        if (selectInput) (selectInput as HTMLInputElement).focus();
+      }
+    }
+    throw new Error('参数校验失败，请完善必填项');
   }
+
+  // 校验通过，提交数据
   emit('submit', data.value);
 };
 
@@ -335,6 +372,17 @@ const handleSubmitParams = () => {
 defineExpose({
   handleSubmitParams,
 });
+// 输入框失焦时清除对应字段的错误提示
+const handleInputBlur = (row: TreeTableNode, field: keyof TreeTableNode) => {
+  if (
+    errors.value &&
+    row &&
+    field &&
+    (errors.value[row.key] as Record<string, unknown>)
+  ) {
+    delete (errors.value[row.key] as Record<string, unknown>)[field];
+  }
+};
 </script>
 
 <template>
@@ -350,6 +398,12 @@ defineExpose({
     >
       <!-- 参数名称列 -->
       <ElTableColumn prop="name" label="参数名称" class-name="first-column">
+        <template #header>
+          <div class="header-with-asterisk">
+            参数名称
+            <span class="required-asterisk">*</span>
+          </div>
+        </template>
         <template #default="{ row }">
           <div class="name-cell">
             <div
@@ -358,21 +412,19 @@ defineExpose({
             >
               {{ row.name || '' }}
             </div>
-            <div v-else class="editable-name">
+            <div v-else>
               <div class="name-input-wrapper">
                 <div :style="{ width: `${getIndentWidth(row)}px` }"></div>
                 <ElInput
                   v-model="row.name"
                   :disabled="row.name === 'arrayItem'"
                   @input="handleDataChange"
+                  @blur="handleInputBlur(row, 'name')"
+                  :class="{ 'error-border': errors[row.key]?.name }"
                 />
-              </div>
-              <div
-                v-if="errors[row.key]?.name"
-                class="error-message"
-                :style="{ marginLeft: `${getIndentWidth(row)}px` }"
-              >
-                {{ errors[row.key]?.name }}
+                <div v-if="errors[row.key]?.name" class="error-message">
+                  {{ errors[row.key]?.name }}
+                </div>
               </div>
             </div>
           </div>
@@ -381,11 +433,22 @@ defineExpose({
 
       <!-- 参数描述列 -->
       <ElTableColumn prop="description" label="参数描述">
+        <template #header>
+          <div class="header-with-asterisk">
+            参数描述
+            <span class="required-asterisk">*</span>
+          </div>
+        </template>
         <template #default="{ row }">
           <div class="description-cell">
             <span v-if="!props.editable">{{ row.description || '' }}</span>
             <div v-else>
-              <ElInput v-model="row.description" @input="handleDataChange" />
+              <ElInput
+                v-model="row.description"
+                @input="handleDataChange"
+                @blur="handleInputBlur(row, 'description')"
+                :class="{ 'error-border': errors[row.key]?.description }"
+              />
               <div v-if="errors[row.key]?.description" class="error-message">
                 {{ errors[row.key]?.description }}
               </div>
@@ -540,12 +603,8 @@ defineExpose({
 
 .name-input-wrapper {
   display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.name-input-wrapper .el-input {
-  box-sizing: border-box;
+  flex-direction: column;
+  justify-content: flex-start;
   width: 100%;
 }
 
@@ -580,7 +639,7 @@ defineExpose({
   position: relative;
   width: 100%;
 }
-:deep(.el-table td.el-table__cell.first-column div) {
+:deep(.el-table td.el-table__cell.first-column > div) {
   display: flex;
   align-items: center;
   gap: 2px;
@@ -588,5 +647,40 @@ defineExpose({
 .el-table__header-wrapper,
 .el-table__body-wrapper {
   min-width: 100%;
+}
+
+.header-with-asterisk {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.required-asterisk {
+  color: #ff4d4f;
+  font-size: 12px;
+  font-weight: bold;
+  position: absolute;
+  right: -8px;
+  line-height: 1;
+}
+
+/* 输入框/选择器错误样式 */
+:deep(.el-input__inner.error-border),
+:deep(.el-select .el-input__inner.error-border) {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;
+}
+
+/* 下拉选择器的触发框错误样式 */
+:deep(.el-select__wrapper.error-border) {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;
+}
+.name-input-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  width: 100%;
 }
 </style>

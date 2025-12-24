@@ -33,18 +33,17 @@ const pagination = ref({
   total: 0,
 });
 const goToNextStep = () => {
+  if (activeStep.value === 0) {
+    if (fileUploadRef.value.getFilesData().length === 0) {
+      ElMessage.error($t('message.uploadFileFirst'));
+      return;
+    }
+    files.value = fileUploadRef.value.getFilesData();
+  }
+  if (activeStep.value === 1 && segmenterDocRef.value) {
+    splitterParams.value = segmenterDocRef.value.getSplitterFormValues();
+  }
   activeStep.value += 1;
-  console.log('activeStep:', activeStep.value);
-
-  // 第一步文件上传成功后，获取子组件的数据
-  if (activeStep.value === 1 && fileUploadRef.value) {
-    console.log('父组件获取到子组件的 fileData：', files.value);
-    files.value = fileUploadRef.value.getFilesData(); // 调用子组件暴露的方法
-    // console.log('父组件获取到子组件的 fileData：', filesData);
-  }
-  if (activeStep.value === 2 && segmenterDocRef.value) {
-    splitterParams.value = segmenterDocRef.value.getSplitterFormValues(); // 调用子组件暴露的方法
-  }
 };
 const goToPreviousStep = () => {
   activeStep.value -= 1;

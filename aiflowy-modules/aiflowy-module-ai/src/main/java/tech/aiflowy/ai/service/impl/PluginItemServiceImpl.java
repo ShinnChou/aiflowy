@@ -3,6 +3,7 @@ package tech.aiflowy.ai.service.impl;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import tech.aiflowy.ai.entity.BotPlugin;
 import tech.aiflowy.ai.entity.Plugin;
 import tech.aiflowy.ai.entity.PluginTool;
 import tech.aiflowy.ai.entity.PluginItem;
@@ -52,15 +53,13 @@ public class PluginItemServiceImpl extends ServiceImpl<PluginItemMapper, PluginI
     public Result<?> searchPlugin(BigInteger aiPluginToolId) {
         //查询当前插件工具
         QueryWrapper queryAiPluginToolWrapper = QueryWrapper.create()
-                .select("*")
-                .from("tb_plugin_item")
-                .where("id = ? ", aiPluginToolId);
+                .select()
+                .eq(PluginItem::getId, aiPluginToolId);
         PluginItem pluginItem = pluginItemMapper.selectOneByQuery(queryAiPluginToolWrapper);
         // 查询当前的插件信息
         QueryWrapper queryAiPluginWrapper = QueryWrapper.create()
-                .select("*")
-                .from("tb_plugin")
-                .where("id = ?", pluginItem.getPluginId());
+                .select()
+                .eq(Plugin::getId, pluginItem.getPluginId());
         Plugin plugin = pluginMapper.selectOneByQuery(queryAiPluginWrapper);
         Map<String, Object> result = new HashMap<>();
         result.put("data", pluginItem);
@@ -80,15 +79,13 @@ public class PluginItemServiceImpl extends ServiceImpl<PluginItemMapper, PluginI
     @Override
     public List<PluginItem> searchPluginToolByPluginId(BigInteger pluginId, BigInteger botId) {
         QueryWrapper queryAiPluginToolWrapper = QueryWrapper.create()
-                .select("*")
-                .from("tb_plugin_item")
-                .where("plugin_id = ? ", pluginId);
+                .select()
+                .eq(PluginItem::getPluginId, pluginId);
         List<PluginItem> pluginItems = pluginItemMapper.selectListByQueryAs(queryAiPluginToolWrapper, PluginItem.class);
         // 查询当前bot有哪些插件工具方法
         QueryWrapper queryBotPluginTools = QueryWrapper.create()
-                .select("plugin_tool_id")
-                .from("tb_bot_plugin")
-                .where("bot_id = ? ", botId);
+                .select()
+                .eq(BotPlugin::getBotId, botId);
         List<BigInteger> aiBotPluginToolIds = botPluginMapper.selectListWithRelationsByQueryAs(queryBotPluginTools, BigInteger.class);
         aiBotPluginToolIds.forEach(botPluginTooId -> {
             pluginItems.forEach(item -> {
@@ -111,8 +108,7 @@ public class PluginItemServiceImpl extends ServiceImpl<PluginItemMapper, PluginI
             return Collections.emptyList();
         }
         // 查询当前bots对应的有哪些pluginTool
-        List<PluginItem> pluginItems = pluginItemMapper.selectListByIds(pluginToolIds);
-        return pluginItems;
+        return pluginItemMapper.selectListByIds(pluginToolIds);
     }
 
     @Override
@@ -128,7 +124,7 @@ public class PluginItemServiceImpl extends ServiceImpl<PluginItemMapper, PluginI
     public List<PluginItem> getByPluginId(String id) {
 
         QueryWrapper queryWrapper = QueryWrapper.create();
-        queryWrapper.eq("plugin_id", id);
+        queryWrapper.eq(PluginItem::getPluginId, id);
 
         return list(queryWrapper);
     }

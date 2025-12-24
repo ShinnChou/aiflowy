@@ -5,7 +5,7 @@ import { $t } from '#/locales';
 const routes: RouteRecordRaw[] = [
   {
     meta: {
-      title: $t('aiKnowledge.documentManagement'),
+      title: $t('documentCollection.documentManagement'),
       hideInMenu: true,
       hideInTab: true,
       hideInBreadcrumb: true,

@@ -3,6 +3,7 @@ package tech.aiflowy.ai.service.impl;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import tech.aiflowy.ai.entity.PluginCategory;
+import tech.aiflowy.ai.entity.PluginCategoryMapping;
 import tech.aiflowy.ai.mapper.PluginCategoryMapper;
 import tech.aiflowy.ai.mapper.PluginCategoryMappingMapper;
 import tech.aiflowy.ai.service.PluginCategoryService;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import tech.aiflowy.common.web.exceptions.BusinessException;
 
 import javax.annotation.Resource;
+import java.math.BigInteger;
 
 /**
  *  服务层实现。
@@ -27,9 +29,9 @@ public class PluginCategoryServiceImpl extends ServiceImpl<PluginCategoryMapper,
     private PluginCategoryMapper pluginCategoryMapper;
 
     @Override
-    public boolean doRemoveCategory(Integer id) {
-        QueryWrapper queryWrapper = QueryWrapper.create().select("plugin_id")
-                .where("category_id = ? ", id);
+    public boolean doRemoveCategory(BigInteger id) {
+        QueryWrapper queryWrapper = QueryWrapper.create().select()
+                .eq(PluginCategoryMapping::getCategoryId, id);
         long relationCount = relationMapper.selectCountByQuery(queryWrapper);
         if (relationCount > 0){
             int deletePluginRelation = relationMapper.deleteByQuery(queryWrapper);

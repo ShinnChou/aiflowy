@@ -3,6 +3,8 @@ package tech.aiflowy.ai.service;
 import com.mybatisflex.core.service.IService;
 import tech.aiflowy.ai.entity.PluginCategory;
 
+import java.math.BigInteger;
+
 /**
  *  服务层。
  *
@@ -11,5 +13,5 @@ import tech.aiflowy.ai.entity.PluginCategory;
  */
 public interface PluginCategoryService extends IService<PluginCategory> {
 
-    boolean doRemoveCategory(Integer id);
+    boolean doRemoveCategory(BigInteger id);
 }

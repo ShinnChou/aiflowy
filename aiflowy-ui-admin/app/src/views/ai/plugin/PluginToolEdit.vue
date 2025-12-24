@@ -74,7 +74,8 @@ const pluginBasicCollapseOutputParams = ref({
   isOpen: false,
   isEdit: false,
 });
-
+const pluginInputParamsRef = ref();
+const pluginOutputParamsRef = ref();
 const handleClickHeader = (index: number) => {
   switch (index) {
     case 1: {
@@ -195,6 +196,23 @@ const handleEdit = (index: number) => {
   }
 };
 const handleSave = (index: number) => {
+  if (index === 2) {
+    try {
+      // 调用校验方法，若抛异常则进入 catch
+      pluginInputParamsRef.value.handleSubmitParams();
+    } catch (error) {
+      console.error('校验失败:', error);
+      return;
+    }
+  }
+  if (index === 3) {
+    try {
+      pluginOutputParamsRef.value.handleSubmitParams();
+    } catch (error) {
+      console.error('校验失败:', error);
+      return;
+    }
+  }
   pluginInputParamsEditable.value = false;
   updatePluginTool(index);
 };
@@ -369,9 +387,7 @@ const handleOpenRunModal = () => {
               class="plugin-tool-info-view-container"
             >
               <div class="plugin-tool-view-item">
-                <div class="view-item-title">
-                  {{ $t('pluginItem.name') }}:
-                </div>
+                <div class="view-item-title">{{ $t('pluginItem.name') }}:</div>
                 <div>{{ pluginToolInfo.name }}</div>
               </div>
               <div class="plugin-tool-view-item">
@@ -453,7 +469,7 @@ const handleOpenRunModal = () => {
           </div>
         </div>
 
-        <!--编辑基本信息-->
+        <!--输入参数-->
         <div
           class="accordion-content"
           :class="{
@@ -462,6 +478,7 @@ const handleOpenRunModal = () => {
         >
           <div class="accordion-content-inner">
             <PluginInputAndOutParams
+              ref="pluginInputParamsRef"
               v-model="pluginInputData"
               :editable="pluginInputParamsEditable"
               :is-edit-output="false"
@@ -518,7 +535,7 @@ const handleOpenRunModal = () => {
           </div>
         </div>
 
-        <!--编辑基本信息-->
+        <!--输出参数-->
         <div
           class="accordion-content"
           :class="{
@@ -528,6 +545,7 @@ const handleOpenRunModal = () => {
           <div class="accordion-content-inner">
             <PluginInputAndOutParams
               v-model="pluginOutputData"
+              ref="pluginOutputParamsRef"
               :editable="pluginOutputParamsEditable"
               :is-edit-output="true"
             />

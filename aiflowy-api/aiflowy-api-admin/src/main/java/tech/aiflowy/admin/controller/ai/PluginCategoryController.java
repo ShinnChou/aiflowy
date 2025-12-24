@@ -12,6 +12,7 @@ import tech.aiflowy.common.domain.Result;
 import tech.aiflowy.common.web.controller.BaseCurdController;
 
 import javax.annotation.Resource;
+import java.math.BigInteger;
 
 /**
  *  控制层。
@@ -32,7 +33,7 @@ public class PluginCategoryController extends BaseCurdController<PluginCategoryS
 
     @GetMapping("/doRemoveCategory")
     @SaCheckPermission("/api/v1/plugin/remove")
-    public Result<Boolean> doRemoveCategory(@RequestParam("id") Integer id){
+    public Result<Boolean> doRemoveCategory(@RequestParam("id") BigInteger id){
 
         return Result.ok(pluginCategoryService.doRemoveCategory(id));
     }

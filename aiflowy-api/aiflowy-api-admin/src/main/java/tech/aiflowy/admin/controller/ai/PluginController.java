@@ -52,13 +52,6 @@ public class PluginController extends BaseCurdController<PluginService, Plugin> 
         return Result.ok(pluginService.removePlugin(id));
     }
 
-    @PostMapping("/plugin/update")
-    @SaCheckPermission("/api/v1/plugin/save")
-    public Result<Boolean> updatePlugin(@JsonBody Plugin plugin){
-
-        return Result.ok(pluginService.updatePlugin(plugin));
-    }
-
     @PostMapping("/getList")
     @SaCheckPermission("/api/v1/plugin/query")
     public Result<List<Plugin>> getList(){

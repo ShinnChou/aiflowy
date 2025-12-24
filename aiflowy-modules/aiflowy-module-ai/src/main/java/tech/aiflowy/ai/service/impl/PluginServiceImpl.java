@@ -6,9 +6,7 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import tech.aiflowy.ai.entity.Plugin;
-import tech.aiflowy.ai.entity.PluginCategoryMapping;
-import tech.aiflowy.ai.entity.PluginItem;
+import tech.aiflowy.ai.entity.*;
 import tech.aiflowy.ai.mapper.PluginCategoryMappingMapper;
 import tech.aiflowy.ai.mapper.PluginMapper;
 import tech.aiflowy.ai.service.BotPluginService;
@@ -69,11 +67,10 @@ public class PluginServiceImpl extends ServiceImpl<PluginMapper, Plugin> impleme
         if (pluginItems != null && !pluginItems.isEmpty()) {
 
             pluginToolIds = pluginItems.stream().map(PluginItem::getId).collect(Collectors.toList());
-
             QueryWrapper queryWrapper = QueryWrapper.create();
-            queryWrapper.in("plugin_tool_id", pluginToolIds);
-
+            queryWrapper.in(BotPlugin::getPluginItemId, pluginToolIds);
             boolean exists = botPluginService.exists(queryWrapper);
+
             if (exists){
                 throw new BusinessException("插件中有工具还关联着bot，请先取消关联！");
             }
@@ -100,31 +97,16 @@ public class PluginServiceImpl extends ServiceImpl<PluginMapper, Plugin> impleme
     }
 
     @Override
-    public boolean updatePlugin(Plugin plugin) {
-        QueryWrapper queryWrapper = QueryWrapper.create().select("id")
-                .from("tb_plugin")
-                .where("id = ?", plugin.getId());
-        int update = pluginMapper.updateByQuery(plugin, queryWrapper);
-        if (update <= 0) {
-            throw new BusinessException("修改失败");
-        }
-        return true;
-    }
-
-    @Override
     public List<Plugin> getList() {
-        QueryWrapper queryWrapper = QueryWrapper.create().select("id, name, description, icon")
-                .from("tb_plugin");
-        List<Plugin> plugins = pluginMapper.selectListByQueryAs(queryWrapper, Plugin.class);
-        return plugins;
+        QueryWrapper queryWrapper = QueryWrapper.create().select();
+        return pluginMapper.selectListByQueryAs(queryWrapper, Plugin.class);
     }
 
     @Override
     public Result<Page<Plugin>> pageByCategory(Long pageNumber, Long pageSize, int category) {
         // 通过分类查询插件
-        QueryWrapper queryWrapper = QueryWrapper.create().select("plugin_id")
-                .from("tb_plugin_category_mapping")
-                .where("category_id = ? ", category);
+        QueryWrapper queryWrapper = QueryWrapper.create().select(PluginCategoryMapping::getPluginId)
+                .eq(PluginCategoryMapping::getCategoryId, category);
         // 分页查询该分类中的插件
         Page<BigInteger> pagePluginIds = pluginCategoryMappingMapper.paginateAs(new Page<>(pageNumber, pageSize), queryWrapper, BigInteger.class);
         Page<PluginCategoryMapping> paginateCategories = pluginCategoryMappingMapper.paginate(pageNumber, pageSize, queryWrapper);
@@ -134,9 +116,8 @@ public class PluginServiceImpl extends ServiceImpl<PluginMapper, Plugin> impleme
         }
         List<BigInteger> pluginIds = pagePluginIds.getRecords();
         // 查询对应的插件信息
-        QueryWrapper queryPluginWrapper = QueryWrapper.create().select("*")
-                .from("tb_plugin")
-                .in("id", pluginIds);
+        QueryWrapper queryPluginWrapper = QueryWrapper.create().select()
+                .in(Plugin::getId, pluginIds);
         plugins = pluginMapper.selectListByQuery(queryPluginWrapper);
         Page<Plugin> aiPluginPage = new Page<>(plugins, pageNumber, pageSize, paginateCategories.getTotalRow());
         return Result.ok(aiPluginPage);

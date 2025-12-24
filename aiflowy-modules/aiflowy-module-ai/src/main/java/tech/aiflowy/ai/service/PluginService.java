@@ -18,8 +18,6 @@ public interface PluginService extends IService<Plugin> {
 
     boolean removePlugin(String id);
 
-    boolean updatePlugin(Plugin plugin);
-
     List<Plugin> getList();
 
     Result pageByCategory(Long pageNumber, Long pageSize, int category);
