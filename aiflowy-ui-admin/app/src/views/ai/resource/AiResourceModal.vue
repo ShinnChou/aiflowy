@@ -78,7 +78,7 @@ function save() {
       btnLoading.value = true;
       api
         .post(
-          isAdd.value ? 'api/v1/aiResource/save' : 'api/v1/aiResource/update',
+          isAdd.value ? 'api/v1/resource/save' : 'api/v1/resource/update',
           entity.value,
         )
         .then((res) => {
@@ -141,6 +141,12 @@ function uploadSuccess(res: any) {
       </ElFormItem>
       <ElFormItem prop="resourceName" :label="$t('aiResource.resourceName')">
         <ElInput v-model.trim="entity.resourceName" />
+      </ElFormItem>
+      <ElFormItem prop="categoryId" :label="$t('aiResource.categoryId')">
+        <DictSelect
+          v-model="entity.categoryId"
+          dict-code="aiResourceCategory"
+        />
       </ElFormItem>
     </ElForm>
     <template #footer>

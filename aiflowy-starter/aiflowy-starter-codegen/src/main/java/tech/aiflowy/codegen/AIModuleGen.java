@@ -44,7 +44,7 @@ public class AIModuleGen {
                 , "tb_document", "tb_document_chunk", "tb_document_collection", "tb_document_history"
                 , "tb_model", "tb_model_provider"
                 , "tb_plugin", "tb_plugin_category", "tb_plugin_category_mapping", "tb_plugin_item"
-                , "tb_resource"
+                , "tb_resource", "tb_resource_category"
                 , "tb_workflow", "tb_workflow_category", "tb_workflow_exec_result", "tb_workflow_exec_step"
         );
 

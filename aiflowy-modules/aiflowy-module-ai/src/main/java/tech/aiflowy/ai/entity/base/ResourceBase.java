@@ -111,6 +111,12 @@ public class ResourceBase extends DateEntity implements Serializable {
     @Column(comment = "文件大小")
     private BigInteger fileSize;
 
+    /**
+     * 分类ID
+     */
+    @Column(comment = "分类ID")
+    private BigInteger categoryId;
+
     public BigInteger getId() {
         return id;
     }
@@ -237,6 +243,14 @@ public class ResourceBase extends DateEntity implements Serializable {
 
     public void setFileSize(BigInteger fileSize) {
         this.fileSize = fileSize;
+    }
+
+    public BigInteger getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(BigInteger categoryId) {
+        this.categoryId = categoryId;
     }
 
 }

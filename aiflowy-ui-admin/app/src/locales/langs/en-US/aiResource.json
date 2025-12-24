@@ -15,5 +15,6 @@
     "options": "Options",
     "isDeleted": "IsDeleted",
     "fileSize": "FileSize",
+    "categoryId": "Category",
     "choose": "Choose"
 }
