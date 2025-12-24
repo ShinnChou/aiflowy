@@ -16,6 +16,7 @@ public class CaptchaMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(interceptor)
                 .order(1)
-                .addPathPatterns("/api/v1/auth/login");
+                .addPathPatterns("/api/v1/auth/login")
+                .addPathPatterns("/userCenter/auth/login");
     }
 }

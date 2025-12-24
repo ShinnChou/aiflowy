@@ -75,8 +75,8 @@ watch(
       <UserDropdown
         :avatar
         :menus
-        :text="userStore.userInfo?.realName"
-        description="ann.aiflowy@gmail.com"
+        :text="userStore.userInfo?.nickname"
+        :description="userStore.userInfo?.loginName"
         tag-text="Pro"
         @logout="handleLogout"
       />

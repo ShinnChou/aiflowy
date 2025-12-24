@@ -6,6 +6,7 @@ import tech.aiflowy.auth.entity.LoginDTO;
 import tech.aiflowy.auth.entity.LoginVO;
 import tech.aiflowy.auth.service.AuthService;
 import tech.aiflowy.common.domain.Result;
+import tech.aiflowy.common.web.jsonbody.JsonBody;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -25,7 +26,7 @@ public class UcAuthController {
      * @param loginDTO 登录参数
      */
     @PostMapping("login")
-    public Result<LoginVO> login(@RequestBody LoginDTO loginDTO) {
+    public Result<LoginVO> login(@JsonBody LoginDTO loginDTO) {
         LoginVO res = authService.login(loginDTO);
         return Result.ok(res);
     }
