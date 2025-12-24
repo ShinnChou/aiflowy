@@ -1,5 +1,7 @@
-<script setup>
-import { markRaw, onMounted, ref } from 'vue';
+<script setup lang="ts">
+import type { ActionButton } from '#/components/page/CardList.vue';
+
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { $t } from '@aiflowy/locales';
@@ -16,6 +18,7 @@ import {
 } from 'element-plus';
 
 import { api } from '#/api/request';
+import defaultPluginIcon from '#/assets/ai/plugin/defaultPluginIcon.png';
 import HeaderSearch from '#/components/headerSearch/HeaderSearch.vue';
 import CategorizeIcon from '#/components/icons/CategorizeIcon.vue';
 import PluginToolIcon from '#/components/icons/PluginToolIcon.vue';
@@ -27,7 +30,7 @@ import CategoryPluginModal from '#/views/ai/plugin/CategoryPluginModal.vue';
 
 const router = useRouter();
 // 操作按钮配置
-const actions = ref([
+const actions: ActionButton[] = [
   {
     icon: Edit,
     text: $t('button.edit'),
@@ -70,7 +73,7 @@ const actions = ref([
       handleDelete(item);
     },
   },
-]);
+];
 const categoryList = ref([]);
 const controlBtns = [
   {
@@ -137,7 +140,7 @@ const headerButtons = [
   {
     key: 'add',
     text: $t('plugin.button.addPlugin'),
-    icon: markRaw(Plus),
+    icon: Plus,
     type: 'primary',
     data: { action: 'add' },
   },
@@ -242,6 +245,7 @@ const handleClickCategory = (item) => {
               description-key="description"
               :data="pageList"
               :actions="actions"
+              :default-icon="defaultPluginIcon"
             />
           </template>
         </PageData>

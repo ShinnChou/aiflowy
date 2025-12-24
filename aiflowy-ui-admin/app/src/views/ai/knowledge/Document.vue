@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { markRaw, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { $t } from '@aiflowy/locales';
@@ -46,7 +46,7 @@ const headerButtons = [
   {
     key: 'importFile',
     text: $t('button.importFile'),
-    icon: markRaw(Plus),
+    icon: Plus,
     type: 'primary',
     data: { action: 'importFile' },
   },

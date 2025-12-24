@@ -1,5 +1,7 @@
-<script setup>
-import { markRaw, onMounted, ref } from 'vue';
+<script setup lang="ts">
+import type { ActionButton } from '#/components/page/CardList.vue';
+
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { $t } from '@aiflowy/locales';
@@ -8,16 +10,17 @@ import { Delete, Edit, Notebook, Plus, Search } from '@element-plus/icons-vue';
 import { ElDialog, ElMessage, ElMessageBox } from 'element-plus';
 
 import { api } from '#/api/request';
+import defaultIcon from '#/assets/ai/knowledge/book.svg';
 import HeaderSearch from '#/components/headerSearch/HeaderSearch.vue';
 import CardPage from '#/components/page/CardList.vue';
 import PageData from '#/components/page/PageData.vue';
 import AiKnowledgeModal from '#/views/ai/knowledge/AiKnowledgeModal.vue';
 import KnowledgeSearch from '#/views/ai/knowledge/KnowledgeSearch.vue';
-import defaultIcon from '#/assets/ai/knowledge/book.svg';
+
 const router = useRouter();
 
 // 操作按钮配置
-const actions = ref([
+const actions: ActionButton[] = [
   {
     icon: Edit,
     text: $t('button.edit'),
@@ -61,7 +64,7 @@ const actions = ref([
       handleDelete(row);
     },
   },
-]);
+];
 
 onMounted(() => {});
 const handleDelete = (item) => {
@@ -91,7 +94,7 @@ const headerButtons = [
   {
     key: 'add',
     text: $t('documentCollection.actions.addKnowledge'),
-    icon: markRaw(Plus),
+    icon: Plus,
     type: 'primary',
     data: { action: 'add' },
     permission: '/api/v1/documentCollection/save',
