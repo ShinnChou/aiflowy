@@ -63,11 +63,18 @@ const handleDelete = (row: any) => {
     page-url="/api/v1/document/documentList"
     ref="pageDataRef"
     :page-size="10"
-    :extra-query-params="{ id: props.knowledgeId }"
+    :extra-query-params="{
+      id: props.knowledgeId,
+      sort: 'desc',
+      sortKey: 'created',
+    }"
   >
     <template #default="{ pageList }">
       <ElTable :data="pageList" style="width: 100%" size="large">
-        <ElTableColumn prop="fileName" :label="$t('documentCollection.fileName')">
+        <ElTableColumn
+          prop="fileName"
+          :label="$t('documentCollection.fileName')"
+        >
           <template #default="{ row }">
             <span class="file-name-container">
               <ElImage :src="documentIcon" class="mr-1" />
@@ -87,7 +94,10 @@ const handleDelete = (row: any) => {
           :label="$t('documentCollection.knowledgeCount')"
           width="180"
         />
-        <ElTableColumn :label="$t('documentCollection.createdModifyTime')" width="200">
+        <ElTableColumn
+          :label="$t('documentCollection.createdModifyTime')"
+          width="200"
+        >
           <template #default="{ row }">
             <div class="time-container">
               <span>{{ row.created }}</span>

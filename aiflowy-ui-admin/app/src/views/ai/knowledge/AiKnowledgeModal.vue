@@ -62,9 +62,9 @@ const entity = ref<any>({
   vectorStoreType: '',
   vectorStoreCollection: '',
   vectorStoreConfig: '',
-  vectorEmbedLlmId: '',
+  vectorEmbedModelId: '',
   options: '',
-  rerankLlmId: '',
+  rerankModelId: '',
   searchEngineEnable: '',
   englishName: '',
 });
@@ -89,7 +89,7 @@ const rules = ref({
   vectorStoreConfig: [
     { required: true, message: $t('message.required'), trigger: 'blur' },
   ],
-  vectorEmbedLlmId: [
+  vectorEmbedModelId: [
     { required: true, message: $t('message.required'), trigger: 'blur' },
   ],
 });
@@ -107,7 +107,9 @@ function save() {
       btnLoading.value = true;
       api
         .post(
-          isAdd.value ? 'api/v1/documentCollection/save' : 'api/v1/documentCollection/update',
+          isAdd.value
+            ? 'api/v1/documentCollection/save'
+            : 'api/v1/documentCollection/update',
           entity.value,
         )
         .then((res) => {
@@ -164,10 +166,16 @@ function closeDialog() {
       <ElFormItem prop="alias" :label="$t('documentCollection.alias')">
         <ElInput v-model.trim="entity.alias" />
       </ElFormItem>
-      <ElFormItem prop="englishName" :label="$t('documentCollection.englishName')">
+      <ElFormItem
+        prop="englishName"
+        :label="$t('documentCollection.englishName')"
+      >
         <ElInput v-model.trim="entity.englishName" />
       </ElFormItem>
-      <ElFormItem prop="description" :label="$t('documentCollection.description')">
+      <ElFormItem
+        prop="description"
+        :label="$t('documentCollection.description')"
+      >
         <ElInput
           v-model.trim="entity.description"
           :rows="4"
@@ -203,7 +211,9 @@ function closeDialog() {
       >
         <ElInput
           v-model.trim="entity.vectorStoreCollection"
-          :placeholder="$t('documentCollection.placeholder.vectorStoreCollection')"
+          :placeholder="
+            $t('documentCollection.placeholder.vectorStoreCollection')
+          "
         />
       </ElFormItem>
       <ElFormItem
@@ -217,11 +227,11 @@ function closeDialog() {
         />
       </ElFormItem>
       <ElFormItem
-        prop="vectorEmbedLlmId"
+        prop="vectorEmbedModelId"
         :label="$t('documentCollection.vectorEmbedLlmId')"
       >
         <ElSelect
-          v-model="entity.vectorEmbedLlmId"
+          v-model="entity.vectorEmbedModelId"
           :placeholder="$t('documentCollection.placeholder.embedLlm')"
         >
           <ElOption
@@ -232,7 +242,10 @@ function closeDialog() {
           />
         </ElSelect>
       </ElFormItem>
-      <ElFormItem prop="rerankLlmId" :label="$t('documentCollection.rerankLlmId')">
+      <ElFormItem
+        prop="rerankLlmId"
+        :label="$t('documentCollection.rerankLlmId')"
+      >
         <ElSelect
           v-model="entity.rerankLlmId"
           :placeholder="$t('documentCollection.placeholder.rerankLlm')"

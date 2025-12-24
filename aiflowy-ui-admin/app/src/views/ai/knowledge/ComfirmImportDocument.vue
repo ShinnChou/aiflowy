@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { $t } from '@aiflowy/locales';
@@ -40,11 +40,6 @@ defineExpose({
     });
   },
 });
-onMounted(() => {
-  console.log('fliesList');
-  console.log(props.filesList);
-  console.log(props.splitterParams);
-});
 
 function saveDoc(
   filePath: string,
@@ -69,12 +64,11 @@ function saveDoc(
     .then((res) => {
       if (res.errorCode === 0) {
         localFilesList.value[index].progressUpload = 'success';
-      }
-      if (index === localFilesList.value.length - 1) {
         emit('loadingFinish');
       }
-      console.log('保存结果');
-      console.log(res);
+      /*  if (index === localFilesList.value.length - 1) {
+        emit('loadingFinish');
+      }*/
     });
 }
 </script>

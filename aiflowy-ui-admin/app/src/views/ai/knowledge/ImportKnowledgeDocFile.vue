@@ -33,16 +33,18 @@ const pagination = ref({
   total: 0,
 });
 const goToNextStep = () => {
+  activeStep.value += 1;
+  console.log('activeStep:', activeStep.value);
+
   // 第一步文件上传成功后，获取子组件的数据
   if (activeStep.value === 1 && fileUploadRef.value) {
+    console.log('父组件获取到子组件的 fileData：', files.value);
     files.value = fileUploadRef.value.getFilesData(); // 调用子组件暴露的方法
     // console.log('父组件获取到子组件的 fileData：', filesData);
   }
   if (activeStep.value === 2 && segmenterDocRef.value) {
     splitterParams.value = segmenterDocRef.value.getSplitterFormValues(); // 调用子组件暴露的方法
   }
-
-  activeStep.value += 1;
 };
 const goToPreviousStep = () => {
   activeStep.value -= 1;
@@ -162,7 +164,7 @@ const finishImport = () => {
     </div>
     <div style="height: 40px"></div>
     <div class="imp-doc-footer">
-      <div v-if="activeStep === 3" class="imp-doc-page-container">
+      <div v-if="activeStep === 2" class="imp-doc-page-container">
         <ElPagination
           :page-sizes="[10, 20]"
           layout="total, sizes, prev, pager, next, jumper"
@@ -171,16 +173,16 @@ const finishImport = () => {
           @current-change="handleCurrentChange"
         />
       </div>
-      <ElButton @click="goToPreviousStep" type="primary" v-if="activeStep > 1">
+      <ElButton @click="goToPreviousStep" type="primary" v-if="activeStep >= 1">
         {{ $t('button.previousStep') }}
       </ElButton>
-      <ElButton @click="goToNextStep" type="primary" v-if="activeStep < 4">
+      <ElButton @click="goToNextStep" type="primary" v-if="activeStep < 3">
         {{ $t('button.nextStep') }}
       </ElButton>
       <ElButton
         @click="confirmImport"
         type="primary"
-        v-if="activeStep === 4"
+        v-if="activeStep === 3"
         :loading="loadingSave"
         :disabled="loadingSave"
       >

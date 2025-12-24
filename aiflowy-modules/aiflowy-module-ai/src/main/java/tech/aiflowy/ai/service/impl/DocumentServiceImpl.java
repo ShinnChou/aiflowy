@@ -14,6 +14,7 @@ import com.agentsflex.core.store.StoreResult;
 import com.agentsflex.search.engine.service.DocumentSearcher;
 import com.mybatisflex.core.keygen.impl.FlexIDKeyGenerator;
 import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import org.slf4j.Logger;
@@ -26,6 +27,8 @@ import tech.aiflowy.ai.entity.Document;
 import tech.aiflowy.ai.entity.DocumentChunk;
 import tech.aiflowy.ai.entity.DocumentCollection;
 import tech.aiflowy.ai.entity.Model;
+import static tech.aiflowy.ai.entity.table.DocumentChunkTableDef.DOCUMENT_CHUNK;
+import static tech.aiflowy.ai.entity.table.DocumentTableDef.DOCUMENT;
 import tech.aiflowy.ai.mapper.DocumentChunkMapper;
 import tech.aiflowy.ai.mapper.DocumentMapper;
 import tech.aiflowy.ai.service.DocumentChunkService;
@@ -79,20 +82,22 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
 
     @Override
     public Page<Document> getDocumentList(String knowledgeId, int pageSize, int pageNum, String fileName) {
-        // 构建 QueryWrapper
-        QueryWrapper queryWrapper = QueryWrapper.create()
-                .select("dt.*", "COUNT(ck.document_id) AS chunk_count") // 选择字段
-                .from("tb_document")
-                .as("dt")// 主表
-                .leftJoin("tb_document_chunk")
-                .as("ck").on("dt.id = ck.document_id") // 左连接
-                .where("dt.collection_id = ?", knowledgeId); // 条件 1
-        // 动态添加 fileName 条件
+        QueryWrapper queryWrapper=QueryWrapper.create()
+                .select(
+                        DOCUMENT.ALL_COLUMNS,
+                        QueryMethods.count(DOCUMENT_CHUNK.DOCUMENT_ID).as("chunk_count")
+
+                )
+                .from(Document.class)
+                .leftJoin(DocumentChunk.class).on(DOCUMENT.ID.eq(DOCUMENT_CHUNK.DOCUMENT_ID))
+                .where(DOCUMENT.COLLECTION_ID.eq(knowledgeId))
+                .orderBy(DOCUMENT.ID, false)
+                ;
         if (fileName != null && !fileName.trim().isEmpty()) {
-            queryWrapper.and("dt.title LIKE CONCAT('%', ?, '%')", fileName); // 条件 2
+            queryWrapper.and(DOCUMENT.TITLE.like(fileName));
         }
         // 分组
-        queryWrapper.groupBy("dt.id");
+        queryWrapper.groupBy(DOCUMENT.ID);
         Page<Document> documentVoPage = documentMapper.paginateAs(pageNum, pageSize, queryWrapper, Document.class);
         return documentVoPage;
     }
@@ -105,10 +110,9 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
      */
     @Override
     public boolean removeDoc(String id) {
-//        // 查询该文档对应哪些分割的字段，先删除
-        QueryWrapper where = QueryWrapper.create().where("document_id = ? ", id);
-        QueryWrapper aiDocumentWapper = QueryWrapper.create().where("id = ? ", id);
-        Document oneByQuery = documentMapper.selectOneByQuery(aiDocumentWapper);
+        // 查询该文档对应哪些分割的字段，先删除
+        QueryWrapper queryWrapperDocument = QueryWrapper.create().eq(Document::getId, id);
+        Document oneByQuery = documentMapper.selectOneByQuery(queryWrapperDocument);
         DocumentCollection knowledge = knowledgeService.getById(oneByQuery.getCollectionId());
         if (knowledge == null) {
             return false;
@@ -125,8 +129,6 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
             return false;
         }
         // 设置向量模型
-//        EmbeddingModel embeddingModel = aiLlm.toEmbeddingModel();
-//        documentStore.setEmbeddingModel(embeddingModel);
         StoreOptions options = StoreOptions.ofCollectionName(knowledge.getVectorStoreCollection());
         EmbeddingOptions embeddingOptions = new EmbeddingOptions();
         embeddingOptions.setModel(model.getModelName());
@@ -134,7 +136,7 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
         options.setCollectionName(knowledge.getVectorStoreCollection());
         // 查询文本分割表tb_document_chunk中对应的有哪些数据，找出来删除
         QueryWrapper queryWrapper = QueryWrapper.create()
-                .select("id").from("tb_document_chunk").where("document_id = ?", id);
+                .select(DOCUMENT_CHUNK.ID).eq(DocumentChunk::getDocumentId, id);
         List<BigInteger> chunkIds = documentChunkMapper.selectListByQueryAs(queryWrapper, BigInteger.class);
         documentStore.delete(chunkIds, options);
         // 删除搜索引擎中的数据
@@ -142,13 +144,12 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
             DocumentSearcher searcher = searcherFactory.getSearcher();
             chunkIds.forEach(searcher::deleteDocument);
         }
-        int ck = documentChunkMapper.deleteByQuery(where);
+        int ck = documentChunkMapper.deleteByQuery(QueryWrapper.create().eq(DocumentChunk::getDocumentId, id));
         if (ck < 0) {
             return false;
         }
         // 再删除指定路径下的文件
-        QueryWrapper wrapper = QueryWrapper.create().where("id = ?", id);
-        Document document = documentMapper.selectOneByQuery(wrapper);
+        Document document = documentMapper.selectOneByQuery(queryWrapperDocument);
         storageService.delete(document.getDocumentPath());
         return true;
     }
@@ -260,7 +261,7 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
             throw new BusinessException("向量数据库类型未设置");
         }
         // 设置向量模型
-        Model model = modelService.getById(knowledge.getVectorEmbedModelId());
+        Model model = modelService.getLlmInstance(knowledge.getVectorEmbedModelId());
         if (model == null) {
             throw new BusinessException("该知识库未配置大模型");
         }

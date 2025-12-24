@@ -1,4 +1,4 @@
-package tech.aiflowy.ai.service;
+package tech.aiflowy.ai.utils;
 
 import com.agentsflex.core.message.AiMessage;
 import com.agentsflex.core.message.ToolMessage;

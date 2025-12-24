@@ -2,12 +2,14 @@ package tech.aiflowy.admin.controller.ai;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.mybatisflex.core.BaseMapper;
+import com.mybatisflex.core.query.QueryColumn;
 import com.mybatisflex.core.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import tech.aiflowy.ai.entity.Model;
+import tech.aiflowy.ai.entity.table.ModelTableDef;
 import tech.aiflowy.ai.mapper.ModelMapper;
 import tech.aiflowy.ai.service.ModelService;
 import tech.aiflowy.common.domain.Result;
@@ -23,6 +25,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -110,7 +113,7 @@ public class ModelController extends BaseCurdController<ModelService, Model> {
         queryWrapper.eq(Model::getProviderId, providerId);
         queryWrapper.eq(Model::getModelType, modelType);
         if (StringUtils.hasLength(selectText)) {
-            queryWrapper.and("title like " + "'%" + selectText + "%' " + "or llm_model like " + "'%" + selectText + "%' ");
+            queryWrapper.and(ModelTableDef.MODEL.TITLE.like(selectText).or(ModelTableDef.MODEL.MODEL_NAME.like(selectText)));
         }
         List<Model> totalList = service.getMapper().selectListWithRelationsByQuery(queryWrapper);
         Map<String, List<Model>> groupList = totalList.stream().collect(Collectors.groupingBy(Model::getGroupName));
