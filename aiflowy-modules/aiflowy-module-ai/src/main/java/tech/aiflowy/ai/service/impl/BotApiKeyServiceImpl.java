@@ -92,7 +92,7 @@ public class BotApiKeyServiceImpl extends ServiceImpl<BotApiKeyMapper, BotApiKey
             BotApiKey botApiKey = new BotApiKey();
             botApiKey.setApiKey(apiKey);
             botApiKey.setSalt(saltBase64);
-            botApiKey.setBotId(botId.longValue());
+            botApiKey.setBotId(botId);
             
             save(botApiKey);
 
