@@ -11,4 +11,5 @@ import com.mybatisflex.core.service.IService;
  */
 public interface SysOptionService extends IService<SysOption> {
 
+    SysOption getByOptionKey(String key);
 }

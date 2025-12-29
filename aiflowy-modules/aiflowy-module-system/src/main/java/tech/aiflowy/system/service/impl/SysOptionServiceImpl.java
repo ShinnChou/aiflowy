@@ -1,5 +1,6 @@
 package tech.aiflowy.system.service.impl;
 
+import com.mybatisflex.core.query.QueryWrapper;
 import tech.aiflowy.system.entity.SysOption;
 import tech.aiflowy.system.mapper.SysOptionMapper;
 import tech.aiflowy.system.service.SysOptionService;
@@ -15,4 +16,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class SysOptionServiceImpl extends ServiceImpl<SysOptionMapper, SysOption> implements SysOptionService {
 
+    @Override
+    public SysOption getByOptionKey(String key) {
+        QueryWrapper w = QueryWrapper.create();
+        w.eq(SysOption::getKey, key);
+        return getOne(w);
+    }
 }

@@ -4,13 +4,16 @@ import cloud.tianai.captcha.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.response.ApiResponse;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.alibaba.fastjson2.JSON;
+import org.springframework.web.bind.annotation.*;
+import tech.aiflowy.common.domain.Result;
 import tech.aiflowy.common.tcaptcha.tainai.CaptchaData;
+import tech.aiflowy.system.entity.SysOption;
+import tech.aiflowy.system.service.SysOptionService;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 公共接口
@@ -21,6 +24,8 @@ public class PublicController {
 
     @Resource
     private ImageCaptchaApplication application;
+    @Resource
+    private SysOptionService sysOptionService;
 
     /**
      * 获取验证码
@@ -40,5 +45,18 @@ public class PublicController {
             return ApiResponse.ofError("验证码错误");
         }
         return ApiResponse.ofSuccess(data.getId());
+    }
+
+    /**
+     * 获取UI配置
+     */
+    @GetMapping("/getUiConfig")
+    public Result<Map<String, Object>> getUiConfig() {
+        Map<String, Object> res = new HashMap<>();
+        SysOption option = sysOptionService.getByOptionKey("ui_config");
+        if (option != null) {
+            res = JSON.parseObject(option.getValue());
+        }
+        return Result.ok(res);
     }
 }
