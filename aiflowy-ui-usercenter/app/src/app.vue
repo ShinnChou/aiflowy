@@ -5,6 +5,8 @@ import { ElConfigProvider } from 'element-plus';
 
 import { elementLocale } from '#/locales';
 
+import IssueFeedbackModal from './IssueFeedbackModal.vue';
+
 defineOptions({ name: 'App' });
 
 useElementPlusDesignTokens();
@@ -13,5 +15,6 @@ useElementPlusDesignTokens();
 <template>
   <ElConfigProvider :locale="elementLocale">
     <RouterView />
+    <IssueFeedbackModal />
   </ElConfigProvider>
 </template>
