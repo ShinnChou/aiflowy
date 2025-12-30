@@ -26,21 +26,15 @@ public class SysUserFeedbackBase extends DateEntity implements Serializable {
     private BigInteger accountId;
 
     /**
-     * 反馈问题标题
+     * 问题摘要
      */
-    @Column(comment = "反馈问题标题")
-    private String feedbackTitle;
-
-    /**
-     * 问题详情
-     */
-    @Column(comment = "问题详情")
+    @Column(comment = "问题摘要")
     private String feedbackContent;
 
     /**
-     * 反馈类型（1-功能故障 2-优化建议 3-账号问题 4-其他）
+     * 问题类型（1-功能故障 2-优化建议 3-账号问题 4-其他）
      */
-    @Column(comment = "反馈类型（1-功能故障 2-优化建议 3-账号问题 4-其他）")
+    @Column(comment = "问题类型（1-功能故障 2-优化建议 3-账号问题 4-其他）")
     private Integer feedbackType;
 
     /**
@@ -56,9 +50,9 @@ public class SysUserFeedbackBase extends DateEntity implements Serializable {
     private String attachmentUrl;
 
     /**
-     * 反馈处理状态（0-未处理 1-处理中 2-已解决 3-已关闭/无效）
+     * 反馈处理状态（0-未查看 1-已查看 2-已处理）
      */
-    @Column(comment = "反馈处理状态（0-未处理 1-处理中 2-已解决 3-已关闭/无效）")
+    @Column(comment = "反馈处理状态（0-未查看 1-已查看 2-已处理）")
     private Integer status;
 
     /**
@@ -66,12 +60,6 @@ public class SysUserFeedbackBase extends DateEntity implements Serializable {
      */
     @Column(comment = "处理人id")
     private BigInteger handlerId;
-
-    /**
-     * 处理备注/回复内容（反馈给用户的处理结果）
-     */
-    @Column(comment = "处理备注/回复内容（反馈给用户的处理结果）")
-    private String handleRemark;
 
     /**
      * 处理时间
@@ -131,14 +119,6 @@ public class SysUserFeedbackBase extends DateEntity implements Serializable {
         this.accountId = accountId;
     }
 
-    public String getFeedbackTitle() {
-        return feedbackTitle;
-    }
-
-    public void setFeedbackTitle(String feedbackTitle) {
-        this.feedbackTitle = feedbackTitle;
-    }
-
     public String getFeedbackContent() {
         return feedbackContent;
     }
@@ -185,14 +165,6 @@ public class SysUserFeedbackBase extends DateEntity implements Serializable {
 
     public void setHandlerId(BigInteger handlerId) {
         this.handlerId = handlerId;
-    }
-
-    public String getHandleRemark() {
-        return handleRemark;
-    }
-
-    public void setHandleRemark(String handleRemark) {
-        this.handleRemark = handleRemark;
     }
 
     public Date getHandleTime() {
