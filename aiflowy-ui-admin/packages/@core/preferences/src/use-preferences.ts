@@ -25,7 +25,7 @@ function usePreferences() {
    * @returns 如果主题为暗黑模式，返回 true，否则返回 false。
    */
   const isDark = computed(() => {
-    return isDarkTheme(preferences.theme.mode);
+    return isDarkTheme(preferences.theme.mode ?? 'default');
   });
 
   const locale = computed(() => {
