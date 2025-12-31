@@ -28,6 +28,7 @@ interface Props {
   data?: Record<string, any>; // 上传额外数据
   cropConfig?: Partial<CropConfig>; // 裁剪配置
   limit?: number; // 文件大小限制(MB)
+  accept?: string; // 文件类型
 }
 
 interface CropConfig {
@@ -57,6 +58,7 @@ const props = withDefaults(defineProps<Props>(), {
   data: () => ({}),
   cropConfig: () => ({}),
   limit: 5,
+  accept: 'image/*',
 });
 
 const emit = defineEmits<{
@@ -111,7 +113,7 @@ const triggerUpload = () => {
   // 创建隐藏的input元素来触发文件选择
   const input = document.createElement('input');
   input.type = 'file';
-  input.accept = 'image/*';
+  input.accept = props.accept;
   input.style.display = 'none';
 
   input.addEventListener('change', (e) => {
@@ -286,7 +288,7 @@ watch(showCropDialog, (newVal) => {
         :show-file-list="false"
         :before-upload="beforeUpload"
         :http-request="handleUpload"
-        accept="image/*"
+        :accept="accept"
       >
         <ElIcon class="avatar-uploader-icon"><Plus /></ElIcon>
       </ElUpload>
