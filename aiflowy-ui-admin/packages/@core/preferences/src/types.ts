@@ -281,9 +281,24 @@ interface WidgetPreferences {
   timezone: boolean;
 }
 
+interface AuthPreferences {
+  /** 表单子标题 */
+  loginSubtitle: string;
+  /** slogan描述 */
+  pageDescription: string;
+  /** slogan标题 */
+  pageTitle: string;
+  /** slogan图片路径 */
+  sloganImage: string;
+  /** 表单标题 */
+  welcomeBack: string;
+}
+
 interface Preferences {
   /** 全局配置 */
   app: AppPreferences;
+  /** 登录页配置 */
+  auth: AuthPreferences;
   /** 顶栏配置 */
   breadcrumb: BreadcrumbPreferences;
   /** 版权配置 */
@@ -318,6 +333,7 @@ interface InitialOptions {
 }
 export type {
   AppPreferences,
+  AuthPreferences,
   BreadcrumbPreferences,
   FooterPreferences,
   HeaderPreferences,
