@@ -6,8 +6,9 @@ import { computed, onMounted } from 'vue';
 import { AuthenticationLogin, z } from '@aiflowy/common-ui';
 import { useAppConfig } from '@aiflowy/hooks';
 import { $t } from '@aiflowy/locales';
+import { preferences } from '@aiflowy/preferences';
 
-import { ElDivider, ElMessage } from 'element-plus';
+import { ElDivider } from 'element-plus';
 
 import { api } from '#/api/request';
 import dingTalkImg from '#/assets/login/dingding-60.png';
@@ -22,6 +23,8 @@ const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
 type PlatformType = 'ding_talk' | 'wx_web';
 
+const title = computed(() => preferences.auth.welcomeBack);
+const subTitle = computed(() => preferences.auth.loginSubtitle);
 const formSchema = computed((): AIFlowyFormSchema[] => {
   return [
     {
@@ -111,6 +114,8 @@ async function platformLogin(platform: PlatformType) {
     <AuthenticationLogin
       :form-schema="formSchema"
       :loading="authStore.loginLoading"
+      :title="title"
+      :sub-title="subTitle"
       @submit="onSubmit"
     />
     <div id="captcha-box" class="captcha-div"></div>

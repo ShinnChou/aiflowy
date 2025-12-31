@@ -137,6 +137,13 @@ const defaultPreferences: Preferences = {
     themeToggle: true,
     timezone: true,
   },
+  auth: {
+    sloganImage: '/slogan.webp',
+    pageTitle: '',
+    pageDescription: '',
+    welcomeBack: '',
+    loginSubtitle: '',
+  },
 };
 
 export { defaultPreferences };

@@ -4,11 +4,12 @@ import { computed } from 'vue';
 import { AuthPageLayout } from '@aiflowy/layouts';
 import { preferences } from '@aiflowy/preferences';
 
-import { $t } from '#/locales';
-
 const appName = computed(() => preferences.app.name);
 const logo = computed(() => preferences.logo.source);
 const logoDark = computed(() => preferences.logo.sourceDark);
+const pageDescription = computed(() => preferences.auth.pageDescription);
+const pageTitle = computed(() => preferences.auth.pageTitle);
+const sloganImage = computed(() => preferences.auth.sloganImage);
 </script>
 
 <template>
@@ -16,9 +17,9 @@ const logoDark = computed(() => preferences.logo.sourceDark);
     :app-name="appName"
     :logo="logo"
     :logo-dark="logoDark"
-    :page-description="$t('authentication.pageDesc')"
-    :page-title="$t('authentication.pageTitle')"
-    slogan-image="/slogan.png"
+    :page-description="pageDescription || $t('authentication.pageDesc')"
+    :page-title="pageTitle || $t('authentication.pageTitle')"
+    :slogan-image="sloganImage"
   >
     <!-- 自定义工具栏 -->
     <!-- <template #toolbar></template> -->
