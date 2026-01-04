@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,6 @@ import tech.aiflowy.common.satoken.util.SaTokenUtil;
 import tech.aiflowy.common.web.controller.BaseCurdController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigInteger;
 
 /**

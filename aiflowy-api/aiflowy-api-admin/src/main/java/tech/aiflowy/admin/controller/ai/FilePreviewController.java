@@ -1,6 +1,7 @@
 package tech.aiflowy.admin.controller.ai;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 import tech.aiflowy.common.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

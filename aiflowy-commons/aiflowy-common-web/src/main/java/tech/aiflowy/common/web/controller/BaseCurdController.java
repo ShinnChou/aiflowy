@@ -7,6 +7,7 @@ import com.mybatisflex.core.service.IService;
 import com.mybatisflex.core.table.TableInfo;
 import com.mybatisflex.core.table.TableInfoFactory;
 import com.mybatisflex.core.util.StringUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,6 @@ import tech.aiflowy.common.web.exceptions.BusinessException;
 import tech.aiflowy.common.web.exceptions.ProgramException;
 import tech.aiflowy.common.web.jsonbody.JsonBody;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;

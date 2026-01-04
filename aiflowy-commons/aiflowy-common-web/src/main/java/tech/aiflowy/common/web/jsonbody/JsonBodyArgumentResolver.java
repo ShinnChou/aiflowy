@@ -1,5 +1,6 @@
 package tech.aiflowy.common.web.jsonbody;
 
+import jakarta.servlet.http.HttpServletRequest;
 import tech.aiflowy.common.util.RequestUtil;
 import com.mybatisflex.core.util.ConvertUtil;
 import com.mybatisflex.core.util.StringUtil;
@@ -12,7 +13,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;

@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-@ConditionalOnProperty(prefix = "spring.redis", name = "host")
+@ConditionalOnProperty(prefix = "spring.data.redis", name = "host")
 public class SaTokenDaoRedisJackson implements SaTokenDao {
 
     public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";

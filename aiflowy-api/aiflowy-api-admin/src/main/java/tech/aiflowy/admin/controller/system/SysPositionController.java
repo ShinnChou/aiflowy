@@ -3,6 +3,7 @@ package tech.aiflowy.admin.controller.system;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.util.StringUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +17,6 @@ import tech.aiflowy.common.web.jsonbody.JsonBody;
 import tech.aiflowy.system.entity.SysPosition;
 import tech.aiflowy.system.service.SysPositionService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Map;
 

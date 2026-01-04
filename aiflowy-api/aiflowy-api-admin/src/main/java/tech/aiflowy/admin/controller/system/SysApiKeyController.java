@@ -5,6 +5,7 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.table.TableInfo;
 import com.mybatisflex.core.table.TableInfoFactory;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +22,6 @@ import tech.aiflowy.system.service.SysApiKeyResourceMappingService;
 import tech.aiflowy.system.service.SysApiKeyService;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.ZoneId;

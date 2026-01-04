@@ -16,7 +16,6 @@
         <module>aiflowy-common-web</module>
         <module>aiflowy-common-tcaptcha</module>
         <module>aiflowy-common-base</module>
-        <module>aiflowy-common-sms</module>
         <module>aiflowy-common-file-storage</module>
         <module>aiflowy-common-ai</module>
         <module>aiflowy-common-options</module>

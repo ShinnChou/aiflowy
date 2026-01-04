@@ -2,6 +2,8 @@ package tech.aiflowy.log.reporter;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -12,8 +14,6 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 import tech.aiflowy.common.util.RequestUtil;
 import tech.aiflowy.log.annotation.LogReporterDisabled;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.nio.charset.StandardCharsets;

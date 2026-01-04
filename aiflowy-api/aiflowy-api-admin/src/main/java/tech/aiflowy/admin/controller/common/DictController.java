@@ -1,5 +1,6 @@
 package tech.aiflowy.admin.controller.common;
 
+import jakarta.servlet.http.HttpServletRequest;
 import tech.aiflowy.common.domain.Result;
 import tech.aiflowy.core.dict.Dict;
 import tech.aiflowy.core.dict.DictItem;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
