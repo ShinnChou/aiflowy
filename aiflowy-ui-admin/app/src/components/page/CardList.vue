@@ -13,6 +13,7 @@ import {
   ElDropdownItem,
   ElDropdownMenu,
   ElIcon,
+  ElText,
 } from 'element-plus';
 
 export interface ActionButton {
@@ -69,16 +70,13 @@ const hiddenActions = computed(() => {
             :src="item[iconField] || defaultIcon"
             :size="36"
           />
-          <span
-            class="overflow-hidden text-ellipsis text-nowrap text-base font-medium"
-            :title="item[titleField]"
-          >
+          <ElText truncated size="large" class="font-medium">
             {{ item[titleField] }}
-          </span>
+          </ElText>
         </div>
-        <div class="item-desc line-clamp-2" :title="item[descField]">
-          {{ item[descField] }}
-        </div>
+        <ElText line-clamp="2" class="item-desc w-full">
+          {{ item[titleField] }}
+        </ElText>
       </div>
       <template #footer>
         <div :class="visibleActions.length > 2 ? 'footer-div' : ''">

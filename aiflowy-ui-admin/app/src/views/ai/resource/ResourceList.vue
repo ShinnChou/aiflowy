@@ -29,7 +29,6 @@ import {
   ElTable,
   ElTableColumn,
   ElText,
-  ElTooltip,
 } from 'element-plus';
 import { tryit } from 'radash';
 
@@ -314,16 +313,9 @@ const getSideList = async () => {
                 <template #default="{ row }">
                   <div class="flex items-center gap-2.5">
                     <ElAvatar :src="getSrc(row)" shape="square" :size="32" />
-                    <div class="w-[200px]">
-                      <ElTooltip
-                        :content="`${row.resourceName}`"
-                        placement="top"
-                      >
-                        <ElText truncated>
-                          {{ row.resourceName }}
-                        </ElText>
-                      </ElTooltip>
-                    </div>
+                    <ElText truncated>
+                      {{ row.resourceName }}
+                    </ElText>
                   </div>
                 </template>
               </ElTableColumn>
