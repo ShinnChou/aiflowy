@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import tech.aiflowy.common.filestorage.FileStorageService;
-import tech.aiflowy.common.filestorage.utils.OkHttpFileSizeUtil;
-import tech.aiflowy.common.filestorage.utils.OkHttpFileStreamReader;
 import tech.aiflowy.common.filestorage.utils.PathGeneratorUtil;
+import tech.aiflowy.common.util.OkHttpUtil;
 
 import java.io.*;
 
@@ -33,28 +32,12 @@ public class XFIleStorageServiceImpl implements FileStorageService {
 
     @Override
     public void delete(String path) {
-
-    }
-
-    @Override
-    public String save(MultipartFile file, String prePath) {
-        return FileStorageService.super.save(file, prePath);
-    }
-
-    @Override
-    public String save(File file, String prePath) {
-        return FileStorageService.super.save(file, prePath);
+        fileStorageService.delete(path);
     }
 
     @Override
     public InputStream readStream(String fileUrl) {
-        InputStream inputStream = null;
-        try {
-            inputStream = OkHttpFileStreamReader.readHttpStream(fileUrl);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return inputStream;
+        return OkHttpUtil.getInputStream(fileUrl);
     }
 
     /**
@@ -65,7 +48,7 @@ public class XFIleStorageServiceImpl implements FileStorageService {
     @Override
     public long getFileSize(String path) {
         try {
-            return OkHttpFileSizeUtil.getFileSize(path);
+            return OkHttpUtil.getFileSize(path);
         } catch (Exception e) {
             LOG.error("获取文件大小失败", e);
             throw new RuntimeException(e);

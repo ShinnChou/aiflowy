@@ -41,7 +41,7 @@ public class FileStorageManager implements FileStorageService {
 
     @Override
     public long getFileSize(String path) {
-        return 0;
+        return getService().getFileSize(path);
     }
 
     private FileStorageService getService() {

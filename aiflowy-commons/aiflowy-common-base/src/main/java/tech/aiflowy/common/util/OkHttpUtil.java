@@ -5,9 +5,7 @@ import okio.BufferedSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Map;
 
 public class OkHttpUtil {
@@ -25,9 +23,62 @@ public class OkHttpUtil {
         return executeString(url, "GET", null, null);
     }
 
-    public static long getSize(String url) {
+    /**
+     * 获取远程URL资源的文件大小（字节数）
+     * 支持分块传输（Transfer-Encoding: chunked）的大文件，兼容普通文件
+     * @param url 远程资源URL
+     * @return 资源字节大小，失败/无有效大小返回 0L
+     */
+    public static long getFileSize(String url) {
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
 
-        return 0l;
+        Response response = null;
+        InputStream in = null;
+        try {
+            response = getOkHttpClient().newCall(request).execute();
+
+            if (!response.isSuccessful()) {
+                LOG.error("Failed to get file size, HTTP response code: {} for url: {}",
+                        response.code(), url);
+                return 0L;
+            }
+
+            ResponseBody body = response.body();
+            if (body == null) {
+                LOG.warn("Response body is null for url: {}", url);
+                return 0L;
+            }
+            in = body.byteStream();
+
+            byte[] buffer = new byte[1024 * 8];
+            long totalBytes = 0L;
+            int len;
+            while ((len = in.read(buffer)) != -1) {
+                totalBytes += len;
+            }
+
+            LOG.info("Success to get file size for url: {}, size: {} bytes (≈ {} M)",
+                    url, totalBytes, String.format("%.2f", totalBytes / 1024.0 / 1024.0));
+            return totalBytes;
+
+        } catch (IOException e) {
+            LOG.error("IO exception when getting file size for url: {}", url, e);
+            return 0L;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    LOG.warn("Failed to close InputStream when getting file size", e);
+                }
+            }
+            if (response != null) {
+                response.close();
+            }
+        }
     }
 
     public static byte[] getBytes(String url) {
@@ -40,10 +91,24 @@ public class OkHttpUtil {
 
     public static InputStream getInputStream(String url) {
         try (Response response = getOkHttpClient().newCall(new Request.Builder().url(url).build()).execute();
-             ResponseBody body = response.body()) {
-            if (body != null) {
-                return body.byteStream();
+             ResponseBody body = response.body();
+             InputStream in = body != null ? body.byteStream() : null;
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+            if (!response.isSuccessful() || in == null) {
+                LOG.error("HTTP request failed with code: {} for url: {}", response.code(), url);
+                return null;
             }
+
+            byte[] buffer = new byte[1024 * 4];
+            int len;
+            while ((len = in.read(buffer)) != -1) {
+                out.write(buffer, 0, len);
+            }
+            out.flush();
+
+            return new ByteArrayInputStream(out.toByteArray());
+
         } catch (IOException ioe) {
             LOG.error("HTTP getInputStream failed: " + url, ioe);
         } catch (Exception e) {
