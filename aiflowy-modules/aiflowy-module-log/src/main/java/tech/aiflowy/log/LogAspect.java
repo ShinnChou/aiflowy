@@ -1,5 +1,6 @@
 package tech.aiflowy.log;
 
+import jakarta.servlet.http.HttpServletRequest;
 import tech.aiflowy.common.util.RequestUtil;
 import tech.aiflowy.common.util.StringUtil;
 
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.Date;

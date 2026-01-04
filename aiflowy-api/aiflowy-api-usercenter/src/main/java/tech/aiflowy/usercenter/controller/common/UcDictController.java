@@ -1,5 +1,6 @@
 package tech.aiflowy.usercenter.controller.common;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +12,6 @@ import tech.aiflowy.core.dict.DictLoader;
 import tech.aiflowy.core.dict.DictManager;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

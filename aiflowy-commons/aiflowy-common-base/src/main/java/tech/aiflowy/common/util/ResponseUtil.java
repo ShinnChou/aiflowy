@@ -1,8 +1,8 @@
 package tech.aiflowy.common.util;
 
 import com.alibaba.fastjson.JSON;
+import jakarta.servlet.http.HttpServletResponse;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ResponseUtil {

@@ -2,19 +2,17 @@ package tech.aiflowy.common.web.error;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import tech.aiflowy.common.domain.Result;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
-import com.alibaba.fastjson.support.spring.annotation.FastJsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class GlobalErrorResolver implements HandlerExceptionResolver {
 
@@ -36,7 +34,7 @@ public class GlobalErrorResolver implements HandlerExceptionResolver {
             error = Result.fail(1, "错误信息：" + ex.getMessage());
         }
         JSONObject object = JSON.parseObject(JSON.toJSONString(error));
-        return new ModelAndView(new FastJsonView())
+        return new ModelAndView(new JakartaJsonView())
                 .addAllObjects(object);
     }
 }

@@ -3,6 +3,7 @@ package tech.aiflowy.admin.controller.ai;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import tech.aiflowy.ai.entity.Plugin;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import tech.aiflowy.common.web.jsonbody.JsonBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**

@@ -3,15 +3,14 @@ package tech.aiflowy.common.tcaptcha.tainai;
 import cloud.tianai.captcha.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.spring.plugins.secondary.SecondaryVerificationApplication;
 import com.alibaba.fastjson.JSONObject;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import tech.aiflowy.common.domain.Result;
 import tech.aiflowy.common.util.RequestUtil;
 import tech.aiflowy.common.util.ResponseUtil;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Component
 public class CaptchaValidInterceptor implements HandlerInterceptor {

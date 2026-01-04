@@ -5,14 +5,13 @@ import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import tech.aiflowy.common.annotation.UsePermission;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class CurdInterceptor implements HandlerInterceptor {
 
