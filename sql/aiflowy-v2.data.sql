@@ -87,7 +87,7 @@ INSERT INTO `tb_sys_menu` (`id`, `parent_id`, `menu_type`, `menu_title`, `menu_u
 INSERT INTO `tb_sys_menu` (`id`, `parent_id`, `menu_type`, `menu_title`, `menu_url`, `component`, `menu_icon`, `is_show`, `permission_tag`, `sort_no`, `status`, `created`, `created_by`, `modified`, `modified_by`, `remark`) VALUES (363435949415337984, 363168956276838400, 1, '保存', '', '', '', 0, '/api/v1/sysUserFeedback/save', 2, 0, '2025-12-30 10:25:43', 1, '2025-12-30 10:26:10', 1, '');
 
 INSERT INTO `tb_sys_menu` (`id`, `parent_id`, `menu_type`, `menu_title`, `menu_url`, `component`, `menu_icon`, `is_show`, `sort_no`, `status`, `created`, `created_by`, `modified`, `modified_by`, `remark`) 
-VALUES (183724390000000001, 258052082618335232, 0, 'menus.system.sysPosition', '/sys/sysPosition', '/system/sysPosition/SysPositionList', 'svg:account', 1, 100, 1, NOW(), 0, NOW(), 0, '岗位管理菜单');
+VALUES (183724390000000001, 258052082618335232, 0, 'menus.system.sysPosition', '/sys/sysPosition', '/system/sysPosition/SysPositionList', 'svg:position', 1, 100, 1, NOW(), 0, NOW(), 0, '岗位管理菜单');
 
 INSERT INTO `tb_sys_menu` (`id`, `parent_id`, `menu_title`, `menu_url`, `permission_tag`, `menu_type`, `sort_no`, `is_show`, `status`, `created`, `created_by`, `modified`, `modified_by`, `remark`) 
 VALUES 
