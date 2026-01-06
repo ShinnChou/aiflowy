@@ -1127,24 +1127,18 @@ CREATE TABLE `tb_mcp`
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'mcp表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for tb_mcp
+-- Table structure for tb_bot_mcp
 -- ----------------------------
-DROP TABLE IF EXISTS `tb_mcp`;
-CREATE TABLE `tb_mcp`
+DROP TABLE IF EXISTS `tb_bot_mcp`;
+CREATE TABLE `tb_bot_mcp`
 (
-    `id`          bigint(0) UNSIGNED NOT NULL COMMENT 'id',
-    `title`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '标题',
-    `description` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '描述',
-    `config_json` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '完整MCP配置JSON',
-    `dept_id`     bigint(0) UNSIGNED NOT NULL COMMENT '部门ID',
-    `tenant_id`   bigint(0) UNSIGNED NOT NULL COMMENT '租户ID',
-    `created`     datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
-    `created_by`  bigint(0) UNSIGNED NULL DEFAULT NULL COMMENT '创建者ID',
-    `modified`    datetime(0) NULL DEFAULT NULL COMMENT '修改时间',
-    `modified_by` bigint(0) UNSIGNED NULL DEFAULT NULL COMMENT '修改者ID',
-    `status`      tinyint(1) NULL DEFAULT 0 COMMENT '是否启用',
+    `id`                   bigint(0) UNSIGNED NOT NULL COMMENT 'id',
+    `bot_id`               bigint(0) UNSIGNED NULL DEFAULT NULL COMMENT 'botId',
+    `mcp_id`               bigint(0) UNSIGNED NULL DEFAULT NULL COMMENT 'mcpId',
+    `mcp_tool_name`        varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'mcp工具名称',
+    `mcp_tool_description` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'mcp工具描述',
     PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'mcp表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 SET
 FOREIGN_KEY_CHECKS = 1;
