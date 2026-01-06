@@ -279,7 +279,7 @@
             </dependency>
             <dependency>
                 <groupId>tech.aiflowy</groupId>
-                <artifactId>aiflowy-common-tcaptcha</artifactId>
+                <artifactId>aiflowy-common-captcha</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>

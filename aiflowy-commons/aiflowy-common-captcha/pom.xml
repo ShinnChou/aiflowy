@@ -7,8 +7,8 @@
         <version>${revision}</version>
     </parent>
 
-    <name>aiflowy-common-tcaptcha</name>
-    <artifactId>aiflowy-common-tcaptcha</artifactId>
+    <name>aiflowy-common-captcha</name>
+    <artifactId>aiflowy-common-captcha</artifactId>
 
     <dependencies>
         <dependency>
