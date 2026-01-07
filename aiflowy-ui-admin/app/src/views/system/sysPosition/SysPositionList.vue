@@ -61,10 +61,14 @@ function showDialog(row: any) {
 
 function changeStatus(row: any) {
   const newStatus = row.status === 1 ? 0 : 1;
-  const actionText = newStatus === 1 ? '启用' : '禁用';
+  const actionText =
+    newStatus === 1 ? $t('sysPosition.enable') : $t('sysPosition.disable');
 
   ElMessageBox.confirm(
-    `确认要${actionText}"${row.positionName}"吗？`,
+    $t('sysPosition.message.title', {
+      actionText,
+      positionName: row.positionName,
+    }),
     $t('message.noticeTitle'),
     {
       confirmButtonText: $t('message.ok'),
@@ -80,7 +84,7 @@ function changeStatus(row: any) {
         })
         .then((res) => {
           if (res.errorCode === 0) {
-            ElMessage.success('操作成功');
+            ElMessage.success($t('ui.actionMessage.operationSuccess'));
             pageDataRef.value.reload();
           }
         });
@@ -174,7 +178,9 @@ function remove(row: any) {
                 >
                   {{
                     dictStore.getDictLabel('dataStatus', row.status) ||
-                    (row.status === 1 ? '启用' : '禁用')
+                    (row.status === 1
+                      ? $t('sysPosition.enable')
+                      : $t('sysPosition.disable'))
                   }}
                 </ElButton>
               </template>

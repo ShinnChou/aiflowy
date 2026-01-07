@@ -4,5 +4,7 @@
   "dialogModel": "Chat Model Settings",
   "modelName": "Model Name",
   "basic": "BasicInformation",
-  "updatePwd": "UpdatePassword"
+  "updatePwd": "UpdatePassword",
+  "systemAIFunctionSettings": "System AI Function Settings",
+  "note": "Note: This config only applies to system AI features, not [Chat Assistant]."
 }

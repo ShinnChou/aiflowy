@@ -220,7 +220,9 @@ function changeTab(category: any) {
               >
                 <template #default="{ row }">
                   <div v-if="item.fieldType === 5">
-                    {{ 1 === row[item.key] ? '是' : '否' }}
+                    {{
+                      1 === row[item.key] ? $t('common.yes') : $t('common.no')
+                    }}
                   </div>
                   <div v-else-if="item.fieldType === 4">
                     {{ parseFloat(row[item.key]) }}

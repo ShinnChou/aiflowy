@@ -115,7 +115,7 @@ function closeDialog() {
       >
         <ElInput
           v-model.trim="entity.positionName"
-          placeholder="请输入岗位名称"
+          :placeholder="$t('sysPosition.placeholder.positionName')"
         />
       </ElFormItem>
       <ElFormItem
@@ -124,7 +124,7 @@ function closeDialog() {
       >
         <ElInput
           v-model.trim="entity.positionCode"
-          placeholder="请输入岗位编码"
+          :placeholder="$t('sysPosition.placeholder.positionCode')"
         />
       </ElFormItem>
       <ElFormItem prop="sortNo" :label="$t('sysPosition.sortNo') || '排序'">

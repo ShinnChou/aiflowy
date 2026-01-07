@@ -85,10 +85,12 @@ function handleSave() {
 <template>
   <div class="settings-container">
     <div class="settings-config-container border-border border">
-      <div class="mb-6">系统 AI 功能设置</div>
+      <div class="mb-6">
+        {{ $t('settingsConfig.systemAIFunctionSettings') }}
+      </div>
       <ElAlert
         class="!mb-5"
-        title="注意：此项配置，仅用于系统的 AI 功能，而非【聊天助手】。"
+        :title="$t('settingsConfig.note')"
         type="warning"
       />
       <ElForm :model="entity" class="demo-form-inline" label-width="150px">
@@ -132,23 +134,26 @@ function handleSave() {
 .settings-container {
   display: flex;
   flex-direction: column;
-  padding: 30px 143px;
   height: 100%;
+  padding: 30px 143px;
 }
 
 .settings-config-container {
-  background-color: var(--el-bg-color);
   width: 100%;
   padding: 20px;
+  background-color: var(--el-bg-color);
   border-radius: 10px;
 }
+
 :deep(.el-form-item) {
   margin-bottom: 25px;
 }
+
 .settings-notice {
   margin-bottom: 20px;
   color: var(--el-color-danger);
 }
+
 .settings-button-container {
   display: flex;
   justify-content: flex-end;

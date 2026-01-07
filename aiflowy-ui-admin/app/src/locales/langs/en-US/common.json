@@ -19,5 +19,7 @@
   "Hour": "Hour",
   "Day": "Day",
   "Month": "Month",
-  "Week": "Week"
+  "Week": "Week",
+  "yes": "Yes",
+  "no": "No"
 }
