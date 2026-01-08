@@ -12,6 +12,7 @@ import {
   ElCollapse,
   ElCollapseItem,
   ElDialog,
+  ElText,
 } from 'element-plus';
 
 import HeaderSearch from '#/components/headerSearch/HeaderSearch.vue';
@@ -192,7 +193,9 @@ const handleSearch = (query: string) => {
                         <ElAvatar v-else src="/favicon.png" shape="circle" />
                       </div>
                       <div class="title-right-container">
-                        <div class="title">{{ item[titleKey] }}</div>
+                        <ElText truncated class="title">
+                          {{ item[titleKey] }}
+                        </ElText>
                         <div class="desc">{{ item.description }}</div>
                       </div>
                     </div>
@@ -203,7 +206,9 @@ const handleSearch = (query: string) => {
                       <div class="content-title-wrapper">
                         <div class="content-left-container">
                           <div class="title-right-container">
-                            <div class="title">{{ tool.name }}</div>
+                            <ElText truncated class="title">
+                              {{ tool.name }}
+                            </ElText>
                             <div class="desc">{{ tool.description }}</div>
                           </div>
                         </div>
@@ -222,7 +227,9 @@ const handleSearch = (query: string) => {
                       <div class="content-title-wrapper">
                         <div class="content-left-container">
                           <div class="title-right-container">
-                            <div class="title">{{ tool.name }}</div>
+                            <ElText truncated class="title">
+                              {{ tool.name }}
+                            </ElText>
                             <div class="desc">{{ tool.description }}</div>
                           </div>
                         </div>
@@ -257,7 +264,9 @@ const handleSearch = (query: string) => {
                       <ElAvatar v-else src="/favicon.png" shape="circle" />
                     </div>
                     <div class="title-sec-right-container">
-                      <div class="title">{{ item.title }}</div>
+                      <ElText truncated class="title">
+                        {{ item.title }}
+                      </ElText>
                       <div class="desc">{{ item.description }}</div>
                     </div>
                   </div>
@@ -304,8 +313,10 @@ const handleSearch = (query: string) => {
   justify-content: space-between;
   height: 113px;
   padding: 20px 50px 20px 20px;
+  overflow: hidden;
   cursor: pointer;
   background-color: var(--el-bg-color);
+  border: 1px solid hsl(var(--border));
   border-radius: 8px;
 }
 
@@ -327,13 +338,15 @@ const handleSearch = (query: string) => {
 
 .content-sec-left-container {
   display: flex;
+  overflow: hidden;
 }
 
 .desc {
   display: -webkit-box;
   width: 100%;
-  height: 42px;
-  min-height: 42px;
+
+  /* height: 42px;
+  min-height: 42px; */
   margin-top: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -350,17 +363,22 @@ const handleSearch = (query: string) => {
 }
 
 .title-right-container {
-  display: flex;
+  /* display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: first baseline;
+  justify-content: center; */
+  padding-right: 10px;
   margin-left: 10px;
+  overflow: hidden;
 }
 
 .title-sec-right-container {
-  display: flex;
+  /* display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start; */
+  padding-right: 10px;
   margin-left: 10px;
+  overflow: hidden;
 }
 
 .container-second {
@@ -430,7 +448,7 @@ const handleSearch = (query: string) => {
   margin-top: 12px;
   margin-bottom: 8px;
   background-color: #f9fafc;
-  border: 1px solid #f0f0f0;
+  border: 1px solid hsl(var(--border));
   border-radius: 6px;
 }
 
@@ -438,13 +456,12 @@ const handleSearch = (query: string) => {
   :deep(.el-collapse-item__content)
   .content-title-wrapper:hover {
   background-color: #f8f9fa;
-  border-color: #e6f4ff;
 }
 
 .select-modal-container :deep(.el-collapse) {
   overflow: hidden;
   background-color: #fff;
-  border: 1px solid #dee2e6;
+  border: 1px solid hsl(var(--border));
   border-radius: 4px;
 }
 
