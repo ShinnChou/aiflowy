@@ -39,8 +39,7 @@ public class ModelProviderController extends BaseCurdController<ModelProviderSer
     @Transactional
     public Result<?> remove(@JsonBody(value = "id", required = true) Serializable id) {
         QueryWrapper modelQueryWrapper = QueryWrapper.create()
-                .in(Model::getProviderId, id)
-                .eq(Model::getWithUsed, true);
+                .in(Model::getProviderId, id);
         if (modelService.count(modelQueryWrapper) > 0) {
             throw new BusinessException("Delete all child models before removing this Model Provider");
         }
