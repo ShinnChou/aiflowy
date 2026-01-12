@@ -47,7 +47,7 @@ export const SearchDatacenterNode = async () => {
       },
       {
         type: 'textarea',
-        label: $t('aiWorkflow.descriptions.filterConditions'),
+        label: "如：name='张三' and age=21 or field = {{流程变量}}",
         description: '',
         name: 'where',
         defaultValue: '',

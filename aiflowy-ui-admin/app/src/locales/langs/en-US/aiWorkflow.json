@@ -62,7 +62,6 @@
     "dataToBeSaved": "List of data to be saved",
     "dataTable": "Please select a data table",
     "queryData": "Query data from the data hub",
-    "filterConditions": "For example: name='张三' and age=21 or field = {{process variable}}",
     "sqlQuery": "Query the database via SQL",
     "enterSQL": "Please enter the SQL statement",
     "queryResultJson": "Query result (JSON object)",

@@ -62,7 +62,6 @@
     "dataToBeSaved": "待保存的数据列表",
     "dataTable": "请选择数据表",
     "queryData": "查询数据中枢的数据",
-    "filterConditions": "如：name='张三' and age=21 or field = {{流程变量}}",
     "sqlQuery": "通过 SQL 查询数据库",
     "enterSQL": "请输入SQL语句",
     "queryResultJson": "查询结果(json对象)",
