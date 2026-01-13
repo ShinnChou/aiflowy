@@ -10,9 +10,6 @@ server:
       enabled: true
       charset: UTF-8 # 必须设置 UTF-8，避免 WebFlux 流式返回（AI 场景）会乱码问题
       force: true
-app:
-  file:
-    base-path: attachment # 文件存储基础路径
 spring:
   profiles:
     active: dev
@@ -27,11 +24,11 @@ spring:
   web:
     resources:
       # 示例：windows【file: C:\aiflowy\attachment】 linux【file: /www/aiflowy/attachment】
-      static-locations: file:C:\aiflowy\${app.file.base-path}
+      static-locations: file:C:\aiflowy\attachment
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-    static-path-pattern: /${app.file.base-path}/**
+    static-path-pattern: /attachment/**
   quartz:
     startup-delay: 1
     job-store-type: jdbc
@@ -70,10 +67,10 @@ aiflowy:
     # 本地文件存储配置
     local:
       # 示例：windows【C:\aiflowy\attachment】 linux【/www/aiflowy/attachment】
-      root: C:\aiflowy\${app.file.base-path}
+      root: C:\aiflowy\attachment
       # root: /Users/michael/Desktop/test
       # 后端接口地址
-      prefix: http://localhost:8080/${app.file.base-path}
+      prefix: http://localhost:8080/attachment
       # prefix: http://aiflowy.s7.tunnelfrp.com/static
 # xFileStorage存储文件配置
 dromara:
@@ -87,7 +84,7 @@ dromara:
         end-point: yourEndpoint # 示例：https://oss-cn-beijing.aliyuncs.com
         bucket-name: yourBucketName
         domain: yourDomain # 访问域名，注意“/”结尾，例如：https://bucketname.oss-cn-shanghai.aliyuncs.com/
-        base-path: ${app.file.base-path} # 基础路径
+        base-path: attachment # 基础路径
 node:
   reader: 'defaultReader'
   gitee:
