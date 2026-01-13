@@ -208,9 +208,11 @@ function onAsyncExecute(info: any) {
       @get-data="(v) => handleChoose(nodeNames.workflowNode, v)"
     />
     <CommonSelectDataModal
+      :title="$t('menus.ai.plugin')"
+      width="730"
       ref="pluginSelectRef"
       page-url="/api/v1/plugin/page"
-      is-select-plugin
+      :has-parent="true"
       @get-data="(v) => handleChoose(nodeNames.pluginNode, v)"
     />
     <ElDrawer
