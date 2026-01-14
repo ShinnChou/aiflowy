@@ -1,8 +1,8 @@
 package tech.aiflowy.system.config;
 
 import tech.aiflowy.common.util.SpringContextUtil;
-import tech.aiflowy.core.dict.DictManager;
-import tech.aiflowy.core.dict.loader.DbDataLoader;
+import tech.aiflowy.common.dict.DictManager;
+import tech.aiflowy.common.dict.loader.DbDataLoader;
 import tech.aiflowy.system.entity.SysDict;
 import tech.aiflowy.system.mapper.*;
 import tech.aiflowy.system.service.SysDictService;

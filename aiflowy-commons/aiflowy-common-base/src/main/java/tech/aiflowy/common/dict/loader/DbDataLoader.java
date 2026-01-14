@@ -1,11 +1,11 @@
-package tech.aiflowy.core.dict.loader;
+package tech.aiflowy.common.dict.loader;
 
+import cn.hutool.core.util.StrUtil;
 import tech.aiflowy.common.tree.Tree;
 import tech.aiflowy.common.util.RequestUtil;
-import tech.aiflowy.core.dict.Dict;
-import tech.aiflowy.core.dict.DictItem;
-import tech.aiflowy.core.dict.DictLoader;
-import cn.hutool.core.util.StrUtil;
+import tech.aiflowy.common.dict.Dict;
+import tech.aiflowy.common.dict.DictItem;
+import tech.aiflowy.common.dict.DictLoader;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.mybatisflex.core.BaseMapper;

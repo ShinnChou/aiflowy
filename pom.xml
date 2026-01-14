@@ -316,16 +316,6 @@
             </dependency>
             <dependency>
                 <groupId>tech.aiflowy</groupId>
-                <artifactId>aiflowy-module-common</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>tech.aiflowy</groupId>
-                <artifactId>aiflowy-module-core</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>tech.aiflowy</groupId>
                 <artifactId>aiflowy-module-log</artifactId>
                 <version>${revision}</version>
             </dependency>

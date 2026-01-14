@@ -18,7 +18,11 @@
         </dependency>
         <dependency>
             <groupId>tech.aiflowy</groupId>
-            <artifactId>aiflowy-module-common</artifactId>
+            <artifactId>aiflowy-module-ai</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tech.aiflowy</groupId>
+            <artifactId>aiflowy-common-captcha</artifactId>
         </dependency>
     </dependencies>
 

@@ -1,8 +1,8 @@
-package tech.aiflowy.core.dict.loader;
+package tech.aiflowy.common.dict.loader;
 
-import tech.aiflowy.core.dict.Dict;
-import tech.aiflowy.core.dict.DictItem;
-import tech.aiflowy.core.dict.DictLoader;
+import tech.aiflowy.common.dict.Dict;
+import tech.aiflowy.common.dict.DictItem;
+import tech.aiflowy.common.dict.DictLoader;
 import com.mybatisflex.core.util.ClassUtil;
 import com.mybatisflex.core.util.StringUtil;
 

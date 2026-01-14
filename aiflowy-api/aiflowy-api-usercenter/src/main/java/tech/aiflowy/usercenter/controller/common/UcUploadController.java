@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import tech.aiflowy.common.domain.Result;
-import tech.aiflowy.common.entity.vo.UploadResVo;
+import tech.aiflowy.common.vo.UploadResVo;
 import tech.aiflowy.common.filestorage.FileStorageService;
 
 import javax.annotation.Resource;

@@ -1,4 +1,4 @@
-package tech.aiflowy.core.dict;
+package tech.aiflowy.common.dict;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;

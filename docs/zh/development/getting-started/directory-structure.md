@@ -27,7 +27,6 @@ aiflowy-commons/            # 通用工具与共享组件
 ├── aiflowy-common-file-storage  # 文件存储抽象（本地 / S3 / MinIO）
 ├── aiflowy-common-options       # 系统配置读取与管理
 ├── aiflowy-common-satoken       # Sa-Token 认证集成
-├── aiflowy-common-sms           # 短信服务封装
 ├── aiflowy-common-web           # Web 层通用组件（拦截器、异常处理器、响应封装等）
 └── pom.xml
 ```
@@ -35,6 +34,7 @@ aiflowy-commons/            # 通用工具与共享组件
 ```
 aiflowy-modules/            # 业务功能实现模块
 ├── aiflowy-module-ai            # AI 核心逻辑（智能体、流程编排等）
+├── aiflowy-module-auth          # 认证模块（登录、权限控制等）
 ├── aiflowy-module-autoconfig    # Spring Boot 自动配置
 ├── aiflowy-module-datacenter    # 数据中心（知识库、向量存储等）
 ├── aiflowy-module-job           # 异步任务与调度

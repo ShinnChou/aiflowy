@@ -1,4 +1,4 @@
-package tech.aiflowy.common.entity.vo;
+package tech.aiflowy.common.vo;
 
 public class UploadResVo {
 

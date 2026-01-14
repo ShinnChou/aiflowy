@@ -1,12 +1,12 @@
 package tech.aiflowy.system.entity;
 
 import tech.aiflowy.common.util.SpringContextUtil;
-import tech.aiflowy.core.dict.Dict;
-import tech.aiflowy.core.dict.DictItem;
-import tech.aiflowy.core.dict.DictLoader;
-import tech.aiflowy.core.dict.DictType;
-import tech.aiflowy.core.dict.loader.DatabaseDictLoader;
-import tech.aiflowy.core.dict.loader.EnumDictLoader;
+import tech.aiflowy.common.dict.Dict;
+import tech.aiflowy.common.dict.DictItem;
+import tech.aiflowy.common.dict.DictLoader;
+import tech.aiflowy.common.dict.DictType;
+import tech.aiflowy.common.dict.loader.DatabaseDictLoader;
+import tech.aiflowy.common.dict.loader.EnumDictLoader;
 import tech.aiflowy.system.entity.base.SysDictBase;
 import tech.aiflowy.system.service.SysDictItemService;
 import com.mybatisflex.annotation.Table;

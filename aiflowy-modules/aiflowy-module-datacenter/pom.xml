@@ -22,10 +22,6 @@
         </dependency>
         <dependency>
             <groupId>tech.aiflowy</groupId>
-            <artifactId>aiflowy-module-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>tech.aiflowy</groupId>
             <artifactId>aiflowy-common-satoken</artifactId>
         </dependency>
         <dependency>

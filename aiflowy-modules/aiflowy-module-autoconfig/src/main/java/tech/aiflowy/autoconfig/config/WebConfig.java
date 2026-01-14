@@ -5,7 +5,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import tech.aiflowy.common.util.SpringContextUtil;
 import tech.aiflowy.common.web.error.GlobalErrorResolver;
-import tech.aiflowy.core.dict.DictManager;
+import tech.aiflowy.common.dict.DictManager;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

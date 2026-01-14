@@ -2,10 +2,10 @@ package tech.aiflowy.admin.controller.common;
 
 import jakarta.servlet.http.HttpServletRequest;
 import tech.aiflowy.common.domain.Result;
-import tech.aiflowy.core.dict.Dict;
-import tech.aiflowy.core.dict.DictItem;
-import tech.aiflowy.core.dict.DictLoader;
-import tech.aiflowy.core.dict.DictManager;
+import tech.aiflowy.common.dict.Dict;
+import tech.aiflowy.common.dict.DictItem;
+import tech.aiflowy.common.dict.DictLoader;
+import tech.aiflowy.common.dict.DictManager;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -8,8 +8,8 @@ import tech.aiflowy.ai.mapper.ResourceCategoryMapper;
 import tech.aiflowy.ai.mapper.WorkflowCategoryMapper;
 import tech.aiflowy.ai.mapper.WorkflowMapper;
 import tech.aiflowy.common.util.SpringContextUtil;
-import tech.aiflowy.core.dict.DictManager;
-import tech.aiflowy.core.dict.loader.DbDataLoader;
+import tech.aiflowy.common.dict.DictManager;
+import tech.aiflowy.common.dict.loader.DbDataLoader;
 
 import javax.annotation.Resource;
 

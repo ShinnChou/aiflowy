@@ -12,11 +12,9 @@
 
     <modules>
         <module>aiflowy-module-system</module>
-        <module>aiflowy-module-core</module>
         <module>aiflowy-module-log</module>
         <module>aiflowy-module-auth</module>
         <module>aiflowy-module-autoconfig</module>
-        <module>aiflowy-module-common</module>
         <module>aiflowy-module-ai</module>
         <module>aiflowy-module-job</module>
         <module>aiflowy-module-datacenter</module>

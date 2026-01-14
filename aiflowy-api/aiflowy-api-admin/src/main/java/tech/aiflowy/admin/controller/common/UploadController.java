@@ -3,7 +3,7 @@ package tech.aiflowy.admin.controller.common;
 import cn.dev33.satoken.annotation.SaIgnore;
 import tech.aiflowy.common.domain.Result;
 
-import tech.aiflowy.common.entity.vo.UploadResVo;
+import tech.aiflowy.common.vo.UploadResVo;
 import tech.aiflowy.common.filestorage.FileStorageService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;

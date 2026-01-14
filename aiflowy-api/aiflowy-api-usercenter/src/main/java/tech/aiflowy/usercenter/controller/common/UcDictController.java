@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tech.aiflowy.common.domain.Result;
-import tech.aiflowy.core.dict.Dict;
-import tech.aiflowy.core.dict.DictItem;
-import tech.aiflowy.core.dict.DictLoader;
-import tech.aiflowy.core.dict.DictManager;
+import tech.aiflowy.common.dict.Dict;
+import tech.aiflowy.common.dict.DictItem;
+import tech.aiflowy.common.dict.DictLoader;
+import tech.aiflowy.common.dict.DictManager;
 
 import javax.annotation.Resource;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package tech.aiflowy.core.dict;
+package tech.aiflowy.common.dict;
 
 import java.io.Serializable;
 import java.util.ArrayList;

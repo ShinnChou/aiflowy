@@ -4,7 +4,7 @@ import tech.aiflowy.common.domain.Result;
 import tech.aiflowy.common.util.SpringContextUtil;
 
 import tech.aiflowy.common.web.controller.BaseCurdController;
-import tech.aiflowy.core.dict.DictManager;
+import tech.aiflowy.common.dict.DictManager;
 import tech.aiflowy.system.entity.SysDict;
 import tech.aiflowy.system.service.SysDictService;
 import com.mybatisflex.core.query.QueryWrapper;
