@@ -33,7 +33,7 @@ docker compose ps
 | **用户中心 (User UI)** | [http://localhost:8082](http://localhost:8082) | admin / 123456 | 聊天、工作流执行界面 |
 | **后端 API** | [http://localhost:8080](http://localhost:8080) | - | 核心业务服务接口 |
 | **MySQL 数据库** | localhost:3306 | root / 123456 | 持久化存储 (数据库名: aiflowy) |
-| **Redis** | localhost:6379 | No password | 缓存与 Sa-Token 存储 |
+| **Redis** | localhost:6379 | aiflowy_redis_2026 | 缓存与 Sa-Token 存储 |
 
 ## 4. 关键配置说明
 
@@ -48,6 +48,17 @@ docker compose ps
 
 ### 4.3 字符集优化
 - 已在 `docker-compose.yml` 环境参数中强制设置 `useUnicode=true&characterEncoding=utf-8` 以防止中文乱码。
+
+### 4.4 API 网关配置
+- 前端服务的 `VITE_GLOB_API_URL` 应留空，由 Nginx 代理转发至后端 API。
+- 若需直接访问后端 API（绕过 Nginx），需将该变量设置为实际 API 地址，例如 `https://api.example.com`。
+
+### 4.5 Redis 密码配置
+- 默认密码为 `aiflowy_redis_2026`，可通过环境变量 `REDIS_PASSWORD` 自定义：
+  ```bash
+  export REDIS_PASSWORD=your_secure_password
+  docker compose up -d
+  ```
 
 ## 5. 常用运维命令
 
