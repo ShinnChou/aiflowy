@@ -5,7 +5,7 @@ import tech.aiflowy.common.annotation.DictDef;
 /**
  * 通用数据状态
  */
-@DictDef(name = "数据权限类型", code = "dataStatus", keyField = "code", labelField = "text")
+@DictDef(name = "通用数据状态", code = "dataStatus", keyField = "code", labelField = "text")
 public enum EnumDataStatus {
 
     UNAVAILABLE(0, "未启用"),

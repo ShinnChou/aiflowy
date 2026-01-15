@@ -1,56 +1,97 @@
 # 数据字典
+AIFlowy 中，通过 `DictLoader` 将所有字典值按标准字段统一返回，做到了数据字典的标准化。
+## 枚举类
+枚举类字典主要放在：`tech.aiflowy.common.constant.enums` 包下
 
-## 前言
-
-数据字典是在一个系统中，常用描述或存储一些固定的业务数据，比如性别、年级等固定的信息。在 AIFlowy 中，有一个数据库字典的模块，用于管理数据字典，如下图所示：
-
-![data_dictionary.png](resource/data_dictionary.png)
-
-## 数据字典的类型
-
-在 AIFlowy 中，有如下几种类型的数据字典：
-
-- **枚举类字典**：用 Java 定义的枚举类来当做数据字典。
-- **数据表字典**：使用某张表的数据来当做数据字典。
-- **Dict 表数据字典**：自己添加数据到表 `tb_sys_dict` 以及 `tb_sys_dict_item` 来当做数据字典。
-- **自定义数据字典**：通过实现 `DictLoader` 来当做数据字典。
-
-## DictLoader 示例代码
-
-以下代码中，用于定义一个名为 `"sysPositions"` 的数据字典，前端可以通过接口传入 `"sysPositions"` code 读取到该数据字典的内容。
-
+枚举类字典在编码过程中清晰明了，不会出现硬编码的情况。
+前端回显可以通过预加载枚举值来实现，做到了前后端统一的标准。
+### @DictDef 注解
+用于定义一个数据字典，示例代码如下：
 ```java
-@Component
-public class SysPositionDict implements DictLoader {
-    @Override
-    public String code() {
-        return "sysPositions";
+/**
+ * 通用数据状态
+ */
+@DictDef(name = "通用数据状态", code = "dataStatus", keyField = "code", labelField = "text")
+public enum EnumDataStatus {
+
+    UNAVAILABLE(0, "未启用"),
+    AVAILABLE(1, "已启用"),
+    ;
+
+    private Integer code;
+    private String text;
+
+    EnumDataStatus(Integer code, String text) {
+        this.code = code;
+        this.text = text;
     }
 
-    @Override
-    public Dict load(String keyword, Map<String, String[]> parameters) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.select("id", "name");
-        queryWrapper.in("dept_id", parameters.get("deptIds"));
-        List<Row> rows = Db.selectListByQuery("tb_sys_position", queryWrapper);
-        List<DictItem> items = null;
-        if (rows != null) {
-            items = new ArrayList<>(rows.size());
-            for (Row row : rows) {
-                DictItem dictItem = new DictItem();
-                dictItem.setValue(row.get("id"));
-                dictItem.setLabel(String.valueOf(row.get("name")));
-                items.add(dictItem);
+    public static EnumDataStatus getByCode(Integer code) {
+        if (null == code) {
+            return null;
+        }
+        for (EnumDataStatus type : EnumDataStatus.values()) {
+            if (type.getCode().equals(code)) {
+                return type;
             }
         }
-        Dict dict = new Dict();
-        dict.setCode("sysPositions");
-        dict.setItems(items);
-        return dict;
+        throw new RuntimeException("内容类型非法");
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }
 ```
+其中 `code` 是该枚举的标识，`keyField` 是枚举值的字段名称，`labelField` 是枚举值的显示名称。
+配合前端 `DictSelect` 组件可以一行代码轻松引入枚举选项。
+```
+<DictSelect v-model="entity.status" dict-code="dataStatus" />
+```
+## 数据表
+在实际业务中，有的选项是需要从数据库中读取的，比如商品分类。
+AIFlowy 中，将这一过程标准化了，你只需要配置相应的 loader 就可以像用枚举字典那样使用数据表数据了。
 
+- 示例：我们要将 `tb_workflow_category` 的数据作为字典给前端使用。
+在 `tech.aiflowy.ai.config.AiDictAutoConfig` 类中可以看到如下配置：
+
+```java
+
+@Resource
+private WorkflowCategoryMapper workflowCategoryMapper;
+
+@EventListener(ApplicationReadyEvent.class)
+    public void onApplicationStartup() {
+
+        DictManager dictManager = SpringContextUtil.getBean(DictManager.class);
+        ...
+        dictManager.putLoader(new DbDataLoader<>("aiWorkFlowCategory", 
+        workflowCategoryMapper, 
+        "id", 
+        "category_name", 
+        null, 
+        null, 
+        false));
+        ...
+    }
+```
+这里的代码并不是将数据库中的所有数据预先加载到内存。而是声明了一个 code 为`aiWorkFlowCategory`的字典加载器。
+
+这个加载器绑定了 `workflowCategoryMapper`，并指定了 `id` 为 key，`category_name` 为 label。
+
+前端在加载 `aiWorkFlowCategory` 字典数据时才会请求数据库。
 ## 字典数据的读取
 
 在 AIFlowy 中，提供了一个用于读取数据字典的接口：/api/v1/dict/items/{code} 。用于传入字典 code 读取数据字典。
