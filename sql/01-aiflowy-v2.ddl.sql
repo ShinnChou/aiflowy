@@ -29,24 +29,6 @@ CREATE TABLE `tb_bot`
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'bot表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
--- Table structure for tb_bot_api_key
--- ----------------------------
-DROP TABLE IF EXISTS `tb_bot_api_key`;
-CREATE TABLE `tb_bot_api_key`
-(
-    `id`          bigint UNSIGNED NOT NULL COMMENT 'id',
-    `api_key`     varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT 'apiKey，请勿手动修改！',
-    `bot_id`      bigint UNSIGNED NOT NULL COMMENT 'botId',
-    `salt`        varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  NOT NULL DEFAULT '' COMMENT '加密botId，生成apiKey的盐',
-    `options`     text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '预留拓展配置的字段',
-    `created`     datetime NULL DEFAULT NULL,
-    `created_by`  bigint UNSIGNED NULL DEFAULT NULL,
-    `modified`    datetime NULL DEFAULT NULL,
-    `modified_by` bigint UNSIGNED NULL DEFAULT NULL,
-    PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'bot apiKey 表' ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
 -- Table structure for tb_bot_category
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_bot_category`;
