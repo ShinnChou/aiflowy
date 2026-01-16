@@ -147,18 +147,6 @@ function sidebarDevelopment(): DefaultTheme.SidebarItem[] {
                 // {text: '其他', link: '/backend/other'}
             ]
         },
-        {
-            text: 'API 文档',
-            collapsed: false,
-            items: [
-                {text: '大语言模型', link: 'ai/language-model'},
-                {text: 'Bot 应用', link: 'ai/bot-application'},
-                {text: '插件', link: 'ai/plugin'},
-                {text: '知识库', link: 'ai/knowledge'},
-                {text: 'apiKey', link: 'ai/apiKey'},
-                {text: 'Ollama', link: 'ai/ollama'},
-            ]
-        },
     ]
 }
 
@@ -291,10 +279,6 @@ function sidebarProduct(): DefaultTheme.SidebarItem[] {
                     text: '菜单管理',
                     link: 'system/menu.md',
                 },
-                // {
-                //     text: 'apiKey',
-                //     link: 'system/apiKey.md',
-                // },
                 {
                     text: '数据字典',
                     link: 'system/data_dictionary.md',
