@@ -1,5 +1,6 @@
 import antDesign from '@iconify/json/json/ant-design.json';
 import ep from '@iconify/json/json/ep.json';
+import mdi from '@iconify/json/json/mdi.json';
 import {
   addCollection,
   addIcon,
@@ -9,6 +10,7 @@ import {
 
 addCollection(antDesign);
 addCollection(ep);
+addCollection(mdi);
 
 export * from './create-icon';
 
