@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
+import jakarta.validation.ConstraintViolationException;
+import tech.aiflowy.common.web.exceptions.BusinessException;
 
 public class GlobalErrorResolver implements HandlerExceptionResolver {
 
@@ -29,6 +31,10 @@ public class GlobalErrorResolver implements HandlerExceptionResolver {
             error = Result.fail(401, "请登录");
         } else if (ex instanceof NotPermissionException || ex instanceof NotRoleException) {
             error = Result.fail(4010, "无权操作");
+        } else if (ex instanceof ConstraintViolationException) {
+            error = Result.fail(400, ex.getMessage());
+        } else if (ex instanceof BusinessException) {
+            error = Result.fail(1, ex.getMessage());
         } else {
             LOG.error(ex.toString(), ex);
             error = Result.fail(1, "错误信息：" + ex.getMessage());

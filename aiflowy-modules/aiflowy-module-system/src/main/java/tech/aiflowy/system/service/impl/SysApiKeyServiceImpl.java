@@ -80,4 +80,19 @@ public class SysApiKeyServiceImpl extends ServiceImpl<SysApiKeyMapper, SysApiKey
             throw new BusinessException("该apiKey没有权限访问该资源");
         }
     }
+
+    @Override
+    public SysApiKey getSysApiKey(String apiKey) {
+        QueryWrapper w = QueryWrapper.create();
+        w.eq(SysApiKey::getApiKey, apiKey);
+        SysApiKey one = getOne(w);
+        if (one == null || one.getStatus() == 0) {
+            throw new BusinessException("apiKey 不存在或已禁用");
+        }
+        if (one.getExpiredAt() != null && one.getExpiredAt().getTime() < new Date().getTime()) {
+            throw new BusinessException("apiKey 已过期");
+        }
+        return one;
+    }
+
 }

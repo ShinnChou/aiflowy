@@ -14,4 +14,7 @@ public interface SysApiKeyService extends IService<SysApiKey> {
     void checkApiKey(String apiKey);
 
     void checkApikeyPermission(String apiKey, String requestURI);
+
+    SysApiKey getSysApiKey(String apiKey);
+
 }
