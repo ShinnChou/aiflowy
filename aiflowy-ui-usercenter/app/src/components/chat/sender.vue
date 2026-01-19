@@ -36,8 +36,16 @@ function sendMessage() {
     content: senderValue.value,
     typing: true,
   });
+  const assistantMsg = {
+    key: uuid(),
+    role: 'assistant',
+    placement: 'start',
+    content: '',
+    loading: true,
+    typing: true,
+  };
+  props.addMessage?.(assistantMsg);
   senderValue.value = '';
-  const msgKey = uuid();
   let str = '';
   sseClient.post('/userCenter/bot/chat', data, {
     onMessage(res) {
@@ -46,13 +54,6 @@ function sendMessage() {
       }
       const sseData = JSON.parse(res.data);
       const delta = sseData.payload?.delta;
-      const msg = {
-        key: msgKey,
-        role: 'assistant',
-        placement: 'start',
-        content: (str += delta),
-        typing: true,
-      };
       if (res.event === 'done') {
         btnLoading.value = false;
         getSessionList();
@@ -65,17 +66,20 @@ function sendMessage() {
       ) {
         const errorMessage = sseData.payload.message;
         props.addMessage?.({
-          key: msgKey,
-          role: 'assistant',
-          placement: 'start',
+          ...assistantMsg,
           content: errorMessage,
+          loading: false,
           typing: false,
         });
         return;
       }
 
       if (str !== res.data && res.event !== 'done') {
-        props.addMessage?.(msg);
+        props.addMessage?.({
+          ...assistantMsg,
+          content: (str += delta),
+          loading: str.length <= 0,
+        });
       }
     },
     onError(err) {
