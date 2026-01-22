@@ -28,6 +28,7 @@ import tech.aiflowy.ai.entity.DocumentChunk;
 import tech.aiflowy.ai.entity.DocumentCollection;
 import tech.aiflowy.ai.entity.Model;
 
+import static tech.aiflowy.ai.entity.DocumentCollection.KEY_CAN_UPDATE_EMBEDDING_MODEL;
 import static tech.aiflowy.ai.entity.DocumentCollection.KEY_SEARCH_ENGINE_TYPE;
 import static tech.aiflowy.ai.entity.table.DocumentChunkTableDef.DOCUMENT_CHUNK;
 import static tech.aiflowy.ai.entity.table.DocumentTableDef.DOCUMENT;
@@ -286,16 +287,9 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
 
         DocumentCollection documentCollection = new DocumentCollection();
         documentCollection.setId(entity.getCollectionId());
-        // CanUpdateEmbedLlm false: 不能修改知识库的大模型 true: 可以修改
-        DocumentCollection knowledge1 = knowledgeService.getById(entity.getCollectionId());
-        Map<String, Object> knowledgeoptions = new HashMap<>();
-        if (knowledge1.getOptions() == null) {
-            knowledgeoptions.put("canUpdateEmbedding", false);
-        } else {
-            knowledgeoptions = knowledge.getOptions();
-            knowledgeoptions.put("canUpdateEmbedding", false);
-        }
-        documentCollection.setOptions(knowledgeoptions);
+        Map<String, Object> knowledgeOptions = knowledge.getOptions();
+        knowledgeOptions.put(KEY_CAN_UPDATE_EMBEDDING_MODEL, false);
+        documentCollection.setOptions(knowledgeOptions);
         knowledgeService.updateById(documentCollection);
         return true;
     }

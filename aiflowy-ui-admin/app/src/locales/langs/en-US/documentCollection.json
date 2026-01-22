@@ -26,6 +26,7 @@
   "createdModifyTime": "Creation/update time",
   "documentList": "documentList",
   "knowledgeRetrieval": "knowledgeRetrieval",
+  "config": "DocumentCollection",
   "sorting": "Sorting",
   "content": "Content",
   "placeholder": {
