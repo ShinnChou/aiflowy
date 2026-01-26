@@ -123,7 +123,6 @@ jetcache:
 rag:
   searcher:
     # 搜索方式 默认lucene
-    # type : elasticSearch / lucene
     lucene:
       indexDirPath: ./luceneKnowledge
     elastic:
