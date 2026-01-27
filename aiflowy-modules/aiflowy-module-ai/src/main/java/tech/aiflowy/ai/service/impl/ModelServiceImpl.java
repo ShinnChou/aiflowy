@@ -132,7 +132,7 @@ public class ModelServiceImpl extends ServiceImpl<ModelMapper, Model> implements
             }
         } catch (Exception e) {
             log.error("校验失败：{}", e.getMessage());
-            throw new BusinessException("校验未通过，请前往后端日志查看详情！");
+            throw new BusinessException(e.getMessage());
         }
     }
 
@@ -147,7 +147,7 @@ public class ModelServiceImpl extends ServiceImpl<ModelMapper, Model> implements
             return vectorData.getVector().length;
         } catch (Exception e) {
             log.error("模型配置校验失败:{}", e.getMessage());
-            throw new BusinessException("校验未通过，请前往后端日志查看详情！");
+            throw new BusinessException(e.getMessage());
         }
     }
 
@@ -167,7 +167,7 @@ public class ModelServiceImpl extends ServiceImpl<ModelMapper, Model> implements
             log.info("校验结果：{}", response);
         } catch (Exception e) {
             log.error("校验失败：{}", e.getMessage());
-            throw new BusinessException("校验未通过，请前往后端日志查看详情！");
+            throw new BusinessException(e.getMessage());
         }
 
     }
