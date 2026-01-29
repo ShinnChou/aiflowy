@@ -465,4 +465,14 @@ const handleRefresh = () => {
       )
   ) !important;
 }
+
+.el-bubble-list :deep(.el-bubble .el-thinking) {
+  --el-thinking-content-wrapper-width: var(
+    --bubble-content-max-width
+  ) !important;
+}
+
+.el-bubble-list :deep(.el-bubble .el-thinking .content-wrapper) {
+  margin-bottom: 8px;
+}
 </style>

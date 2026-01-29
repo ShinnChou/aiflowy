@@ -71,12 +71,22 @@ function getUserAvatar() {
 </template>
 
 <style lang="css" scoped>
-:deep(.el-bubble) {
+.el-bubble-list :deep(.el-bubble) {
   --bubble-content-max-width: calc(
     100% -
       calc(
         var(--el-bubble-avatar-placeholder-gap) + var(--el-avatar-size, 40px)
       )
   ) !important;
+}
+
+.el-bubble-list :deep(.el-bubble .el-thinking) {
+  --el-thinking-content-wrapper-width: var(
+    --bubble-content-max-width
+  ) !important;
+}
+
+.el-bubble-list :deep(.el-bubble .el-thinking .content-wrapper) {
+  margin-bottom: 8px;
 }
 </style>
