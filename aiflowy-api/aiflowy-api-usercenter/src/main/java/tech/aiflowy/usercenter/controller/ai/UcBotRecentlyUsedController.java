@@ -18,6 +18,7 @@ import tech.aiflowy.common.web.controller.BaseCurdController;
 import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,12 +46,15 @@ public class UcBotRecentlyUsedController extends BaseCurdController<BotRecentlyU
         LoginAccount account = SaTokenUtil.getLoginAccount();
         QueryWrapper w = QueryWrapper.create();
         w.eq(BotRecentlyUsed::getCreatedBy,account.getId());
+        w.orderBy(BotRecentlyUsed::getSortNo,true);
         List<BotRecentlyUsed> list = service.list(w);
         if (CollectionUtil.isNotEmpty(list)) {
             List<BigInteger> botIds = list.stream().map(BotRecentlyUsed::getBotId).collect(Collectors.toList());
             QueryWrapper botQw = QueryWrapper.create();
             botQw.in(Bot::getId,botIds);
-            return Result.ok(botService.list(botQw));
+            List<Bot> listBot = botService.list(botQw);
+            listBot.sort(Comparator.comparing(bot -> botIds.indexOf(bot.getId())));
+            return Result.ok(listBot);
         }
         return Result.ok(new ArrayList<>());
     }

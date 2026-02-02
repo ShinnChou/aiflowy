@@ -36,6 +36,12 @@ public class BotRecentlyUsedBase implements Serializable {
     @Column(comment = "创建者")
     private BigInteger createdBy;
 
+    /**
+     * 排序
+     */
+    @Column(comment = "排序")
+    private Integer sortNo;
+
     public BigInteger getId() {
         return id;
     }
@@ -66,6 +72,14 @@ public class BotRecentlyUsedBase implements Serializable {
 
     public void setCreatedBy(BigInteger createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Integer getSortNo() {
+        return sortNo;
+    }
+
+    public void setSortNo(Integer sortNo) {
+        this.sortNo = sortNo;
     }
 
 }

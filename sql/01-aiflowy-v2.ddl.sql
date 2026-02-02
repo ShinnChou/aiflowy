@@ -129,10 +129,11 @@ CREATE TABLE `tb_bot_plugin`
 DROP TABLE IF EXISTS `tb_bot_recently_used`;
 CREATE TABLE `tb_bot_recently_used`
 (
-    `id`         bigint UNSIGNED NOT NULL COMMENT '主键',
-    `bot_id`     bigint UNSIGNED NOT NULL COMMENT 'botId',
-    `created`    datetime NOT NULL COMMENT '创建时间',
-    `created_by` bigint UNSIGNED NOT NULL COMMENT '创建者',
+    `id`         bigint(0) UNSIGNED NOT NULL COMMENT '主键',
+    `bot_id`     bigint(0) UNSIGNED NOT NULL COMMENT 'botId',
+    `created`    datetime(0) NOT NULL COMMENT '创建时间',
+    `created_by` bigint(0) UNSIGNED NOT NULL COMMENT '创建者',
+    `sort_no`    int(0) NULL DEFAULT 0 COMMENT '排序',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '最近使用' ROW_FORMAT = Dynamic;
 
