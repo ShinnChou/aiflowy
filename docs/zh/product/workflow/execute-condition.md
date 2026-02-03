@@ -26,7 +26,7 @@
 
 再将分支二的执行条件设置为 `input=="2"`
 
-然后点击 `试运行`，输入 `2`，可以看执行结果为 `branch_two`：
+然后点击 `试运行`，输入 `2`，可以看执行结果为 `分支二输出`：
 
 ![branch-result.png](resource/branch-result.png)
 
