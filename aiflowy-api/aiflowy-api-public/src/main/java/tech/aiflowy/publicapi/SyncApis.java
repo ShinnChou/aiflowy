@@ -31,7 +31,7 @@ public class SyncApis {
     public static void main(String[] args) throws Exception {
 
         try (HikariDataSource dataSource = new HikariDataSource()) {
-            dataSource.setJdbcUrl("jdbc:mysql://192.168.2.10:3306/aiflowy-v2?useInformationSchema=true&characterEncoding=utf-8");
+            dataSource.setJdbcUrl("jdbc:mysql://192.168.2.10:3306/aiflowy-v2-pro?useInformationSchema=true&characterEncoding=utf-8");
             dataSource.setUsername("root");
             dataSource.setPassword("123456");
 
@@ -64,7 +64,9 @@ public class SyncApis {
     public static void extractCommentsFromFile(String filePath, SysApiKeyResourceMapper mapper) throws Exception {
         System.out.println("正在解析文件: " + filePath);
         FileInputStream in = new FileInputStream(filePath);
-        CompilationUnit cu = StaticJavaParser.parse(in);
+        com.github.javaparser.JavaParser parser = new com.github.javaparser.JavaParser();
+        parser.getParserConfiguration().setLanguageLevel(com.github.javaparser.ParserConfiguration.LanguageLevel.JAVA_17);
+        CompilationUnit cu = parser.parse(in).getResult().orElseThrow();
 
         cu.findAll(ClassOrInterfaceDeclaration.class).forEach(c -> {
             // 1. 获取类级别的 RequestMapping 路径
