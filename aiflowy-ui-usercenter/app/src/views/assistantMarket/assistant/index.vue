@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import { cloneDeep } from '@aiflowy/utils';
+
 import { ArrowLeft, Minus, Plus } from '@element-plus/icons-vue';
 import {
   ElAside,
@@ -83,8 +85,13 @@ const messageList = ref<any>([]);
 function addMessage(message: any) {
   messageList.value.push(message);
 }
-function updateLastMessage(message: any) {
+function updateLastMessage(item: any) {
   const lastIndex = messageList.value.length - 1;
+  let message = item;
+
+  if (typeof item === 'function') {
+    message = item(messageList.value[lastIndex]);
+  }
 
   if (lastIndex >= 0) {
     messageList.value[lastIndex] = {
@@ -93,6 +100,21 @@ function updateLastMessage(message: any) {
     };
   }
 }
+const stopThinking = () => {
+  const lastIndex = messageList.value.length - 1;
+
+  if (lastIndex >= 0 && messageList.value[lastIndex]?.chains) {
+    const chains = cloneDeep(messageList.value[lastIndex].chains);
+
+    for (const chain of chains) {
+      if (!('id' in chain) && chain.thinkingStatus === 'thinking') {
+        chain.thinkingStatus = 'end';
+      }
+    }
+
+    messageList.value[lastIndex].chains = chains;
+  }
+};
 </script>
 
 <template>
@@ -125,6 +147,7 @@ function updateLastMessage(message: any) {
           class="absolute bottom-5 left-0 w-full"
           :add-message="addMessage"
           :update-last-message="updateLastMessage"
+          :stop-thinking="stopThinking"
           :bot="botInfo"
           :conversation-id="conversationId"
         />

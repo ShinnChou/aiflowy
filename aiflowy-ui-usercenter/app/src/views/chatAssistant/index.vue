@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 
 import { IconifyIcon } from '@aiflowy/icons';
-import { cn } from '@aiflowy/utils';
+import { cloneDeep, cn } from '@aiflowy/utils';
 
 import { ElAside, ElContainer, ElMain } from 'element-plus';
 
@@ -38,8 +38,13 @@ const messageList = ref<any>([]);
 function addMessage(message: any) {
   messageList.value.push(message);
 }
-function updateLastMessage(message: any) {
+function updateLastMessage(item: any) {
   const lastIndex = messageList.value.length - 1;
+  let message = item;
+
+  if (typeof item === 'function') {
+    message = item(messageList.value[lastIndex]);
+  }
 
   if (lastIndex >= 0) {
     messageList.value[lastIndex] = {
@@ -48,6 +53,21 @@ function updateLastMessage(message: any) {
     };
   }
 }
+const stopThinking = () => {
+  const lastIndex = messageList.value.length - 1;
+
+  if (lastIndex >= 0 && messageList.value[lastIndex]?.chains) {
+    const chains = cloneDeep(messageList.value[lastIndex].chains);
+
+    for (const chain of chains) {
+      if (!('id' in chain) && chain.thinkingStatus === 'thinking') {
+        chain.thinkingStatus = 'end';
+      }
+    }
+
+    messageList.value[lastIndex].chains = chains;
+  }
+};
 function setMessageList(messages: any) {
   messageList.value = messages;
 }
@@ -77,6 +97,7 @@ const toggleFold = () => {
                 <ChatSender
                   :add-message="addMessage"
                   :update-last-message="updateLastMessage"
+                  :stop-thinking="stopThinking"
                   :bot="currentBot"
                   :conversation-id="conversationId"
                 />

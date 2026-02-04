@@ -38,6 +38,12 @@ import ShowJson from '#/components/json/ShowJson.vue';
 import BotAvatar from '../botAvatar/botAvatar.vue';
 import SendingIcon from '../icons/SendingIcon.vue';
 
+type Think = {
+  reasoning_content?: string;
+  thinkingStatus?: ThinkingStatus;
+  thinlCollapse?: boolean;
+};
+
 type Tool = {
   id: string;
   name: string;
@@ -46,10 +52,7 @@ type Tool = {
 };
 
 type MessageItem = ChatMessage & {
-  reasoning_content?: string;
-  thinkingStatus?: ThinkingStatus;
-  thinlCollapse?: boolean;
-  tools?: Tool[];
+  chains?: (Think | Tool)[];
 };
 
 const props = defineProps<{
@@ -208,28 +211,34 @@ const handleSubmit = async (refreshContent: string) => {
       }
 
       if (lastIndex >= 0 && sseData?.domain === 'TOOL') {
-        const tools = cloneDeep(lastBubbleItem?.tools ?? []);
-        const index = tools.findIndex(
-          (tool) => tool.id === sseData?.payload?.tool_call_id,
+        const chains = cloneDeep(lastBubbleItem?.chains ?? []);
+        const index = chains.findIndex(
+          (chain) =>
+            isTool(chain) && chain.id === sseData?.payload?.tool_call_id,
         );
 
         if (index === -1) {
-          tools.push({
+          chains.push({
             id: sseData?.payload?.tool_call_id,
             name: sseData?.payload?.name,
             status: sseData?.type,
             result:
-              sseData?.type === 'TOOL_CALL' ? '{}' : sseData?.payload?.result,
+              sseData?.type === 'TOOL_CALL'
+                ? sseData?.payload?.arguments
+                : sseData?.payload?.result,
           });
         } else {
-          tools[index] = {
-            ...tools[index]!,
+          chains[index] = {
+            ...chains[index]!,
             status: sseData?.type,
             result:
-              sseData?.type === 'TOOL_CALL' ? '{}' : sseData?.payload?.result,
+              sseData?.type === 'TOOL_CALL'
+                ? sseData?.payload?.arguments
+                : sseData?.payload?.result,
           };
         }
-        bubbleItems.value[lastIndex]!.tools = tools;
+        bubbleItems.value[lastIndex]!.chains = chains;
+        stopThinking();
         return;
       }
 
@@ -239,16 +248,28 @@ const handleSubmit = async (refreshContent: string) => {
 
       if (lastBubbleItem && delta) {
         if (sseData.type === 'THINKING') {
-          bubbleItems.value[lastIndex] = {
-            ...lastBubbleItem,
-            thinkingStatus: 'thinking',
-            thinlCollapse: true,
-            reasoning_content: (lastBubbleItem.reasoning_content ?? '') + delta,
-          };
+          const chains = cloneDeep(lastBubbleItem?.chains ?? []);
+          const index = chains.findIndex(
+            (chain) => isThink(chain) && chain.thinkingStatus === 'thinking',
+          );
+
+          if (index === -1) {
+            chains.push({
+              thinkingStatus: 'thinking',
+              thinlCollapse: true,
+              reasoning_content: delta,
+            });
+          } else {
+            const think = chains[index]! as Think;
+            chains[index] = {
+              ...think,
+              reasoning_content: think.reasoning_content + delta,
+            };
+          }
+          bubbleItems.value[lastIndex]!.chains = chains;
         } else if (sseData.type === 'MESSAGE') {
           bubbleItems.value[lastIndex] = {
             ...lastBubbleItem,
-            thinkingStatus: 'end',
             content: (lastBubbleItem.content + delta).replaceAll(
               '```echartsoption',
               '```echarts\noption',
@@ -256,6 +277,7 @@ const handleSubmit = async (refreshContent: string) => {
             loading: false,
             typing: true,
           };
+          stopThinking();
         }
       }
 
@@ -275,10 +297,9 @@ const handleSubmit = async (refreshContent: string) => {
         bubbleItems.value[lastIndex] = {
           ...bubbleItems.value[lastIndex]!,
           loading: false,
-          thinkingStatus: 'end',
-          thinlCollapse: false,
         };
       }
+      stopThinking();
     },
     onError(err) {
       console.error(err);
@@ -286,6 +307,29 @@ const handleSubmit = async (refreshContent: string) => {
     },
   });
 };
+
+const isTool = (item: Think | Tool) => {
+  return 'id' in item;
+};
+const isThink = (item: Think | Tool): item is Think => {
+  return !('id' in item);
+};
+const stopThinking = () => {
+  const lastIndex = bubbleItems.value.length - 1;
+
+  if (lastIndex >= 0 && bubbleItems.value[lastIndex]?.chains) {
+    const chains = cloneDeep(bubbleItems.value[lastIndex].chains);
+
+    for (const chain of chains) {
+      if (isThink(chain) && chain.thinkingStatus === 'thinking') {
+        chain.thinkingStatus = 'end';
+      }
+    }
+
+    bubbleItems.value[lastIndex].chains = chains;
+  }
+};
+
 const handleComplete = (_: TypewriterInstance, index: number) => {
   if (
     index === bubbleItems.value.length - 1 &&
@@ -358,14 +402,64 @@ const handleRefresh = () => {
               <span class="chat-bubble-item-time-style">
                 {{ new Date(item.created).toLocaleString() }}
               </span>
-              <ElThinking
+
+              <template v-if="item.chains">
+                <template
+                  v-for="(chain, index) in item.chains"
+                  :key="chain.id || index"
+                >
+                  <ElThinking
+                    v-if="isThink(chain)"
+                    v-model="chain.thinlCollapse"
+                    :content="chain.reasoning_content"
+                    :status="chain.thinkingStatus"
+                  />
+                  <ElCollapse v-else class="mb-2">
+                    <ElCollapseItem :title="chain.name" :name="chain.id">
+                      <template #title>
+                        <div class="flex items-center gap-2 pl-5">
+                          <ElIcon size="16">
+                            <IconifyIcon icon="svg:wrench" />
+                          </ElIcon>
+                          <span>{{ chain.name }}</span>
+                          <template v-if="chain.status === 'TOOL_CALL'">
+                            <div
+                              class="bg-secondary flex items-center gap-1 rounded-full px-2 py-0.5 leading-none"
+                            >
+                              <ElIcon size="16">
+                                <IconifyIcon
+                                  icon="mdi:clock-time-five-outline"
+                                />
+                              </ElIcon>
+                              <span>{{ $t('bot.Running') }}...</span>
+                            </div>
+                          </template>
+                          <template v-else>
+                            <div
+                              class="bg-secondary flex items-center gap-1 rounded-full px-2 py-0.5 leading-none"
+                            >
+                              <ElIcon size="16" color="var(--el-color-success)">
+                                <CircleCheck />
+                              </ElIcon>
+                              <span>{{ $t('bot.Completed') }}</span>
+                            </div>
+                          </template>
+                        </div>
+                      </template>
+                      <ShowJson :value="chain.result" />
+                    </ElCollapseItem>
+                  </ElCollapse>
+                </template>
+              </template>
+
+              <!-- <ElThinking
                 v-if="item.reasoning_content"
                 v-model="item.thinlCollapse"
                 :content="item.reasoning_content"
                 :status="item.thinkingStatus"
                 class="mb-3"
-              />
-              <ElCollapse v-if="item.tools" class="mb-2">
+              /> -->
+              <!-- <ElCollapse v-if="item.tools" class="mb-2">
                 <ElCollapseItem
                   class="mb-2"
                   v-for="tool in item.tools"
@@ -393,7 +487,7 @@ const handleRefresh = () => {
                   </template>
                   <ShowJson :value="tool.result" />
                 </ElCollapseItem>
-              </ElCollapse>
+              </ElCollapse> -->
             </div>
           </template>
           <!-- 自定义头像 -->

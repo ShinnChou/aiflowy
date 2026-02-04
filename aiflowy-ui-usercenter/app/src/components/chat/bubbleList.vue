@@ -42,13 +42,61 @@ function getUserAvatar() {
         <span class="text-foreground/50 text-xs">
           {{ item.created }}
         </span>
-        <ElThinking
+
+        <template v-if="item.chains">
+          <template
+            v-for="(chain, index) in item.chains"
+            :key="chain.id || index"
+          >
+            <ElThinking
+              v-if="!('id' in chain)"
+              v-model="chain.thinlCollapse"
+              :content="chain.reasoning_content"
+              :status="chain.thinkingStatus"
+            />
+            <ElCollapse v-else class="mb-2">
+              <ElCollapseItem :title="chain.name" :name="chain.id">
+                <template #title>
+                  <div class="flex items-center gap-2 pl-5">
+                    <ElIcon size="16">
+                      <IconifyIcon icon="svg:wrench" />
+                    </ElIcon>
+                    <span>{{ chain.name }}</span>
+                    <template v-if="chain.status === 'TOOL_CALL'">
+                      <div
+                        class="bg-secondary flex items-center gap-1 rounded-full px-2 py-0.5 leading-none"
+                      >
+                        <ElIcon size="16">
+                          <IconifyIcon icon="mdi:clock-time-five-outline" />
+                        </ElIcon>
+                        <span>工具调用中...</span>
+                      </div>
+                    </template>
+                    <template v-else>
+                      <div
+                        class="bg-secondary flex items-center gap-1 rounded-full px-2 py-0.5 leading-none"
+                      >
+                        <ElIcon size="16" color="var(--el-color-success)">
+                          <CircleCheck />
+                        </ElIcon>
+                        <span>调用成功</span>
+                      </div>
+                    </template>
+                  </div>
+                </template>
+                <ShowJson :value="chain.result" />
+              </ElCollapseItem>
+            </ElCollapse>
+          </template>
+        </template>
+
+        <!-- <ElThinking
           v-if="item.reasoning_content"
           v-model="item.thinlCollapse"
           :content="item.reasoning_content"
           :status="item.thinkingStatus"
-        />
-        <ElCollapse v-if="item.tools" class="mb-2">
+        /> -->
+        <!-- <ElCollapse v-if="item.tools" class="mb-2">
           <ElCollapseItem
             class="mb-2"
             v-for="tool in item.tools"
@@ -76,7 +124,7 @@ function getUserAvatar() {
             </template>
             <ShowJson :value="tool.result" />
           </ElCollapseItem>
-        </ElCollapse>
+        </ElCollapse> -->
       </div>
     </template>
 

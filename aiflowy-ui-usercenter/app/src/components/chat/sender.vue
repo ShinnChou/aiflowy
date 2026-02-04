@@ -4,7 +4,7 @@ import type { ThinkingStatus } from 'vue-element-plus-x/types/Thinking';
 
 import { inject, ref } from 'vue';
 
-import { uuid } from '@aiflowy/utils';
+import { cloneDeep, uuid } from '@aiflowy/utils';
 
 import { Promotion } from '@element-plus/icons-vue';
 import { ElButton, ElIcon } from 'element-plus';
@@ -12,6 +12,12 @@ import { ElButton, ElIcon } from 'element-plus';
 import { sseClient } from '#/api/request';
 import SendingIcon from '#/components/icons/SendingIcon.vue';
 // import PaperclipIcon from '#/components/icons/PaperclipIcon.vue';
+
+type Think = {
+  reasoning_content?: string;
+  thinkingStatus?: ThinkingStatus;
+  thinlCollapse?: boolean;
+};
 
 type Tool = {
   id: string;
@@ -21,19 +27,17 @@ type Tool = {
 };
 
 type MessageItem = BubbleProps & {
+  chains?: (Think | Tool)[];
   key: string;
-  reasoning_content?: string;
   role: 'assistant' | 'user';
-  thinkingStatus?: ThinkingStatus;
-  thinlCollapse?: boolean;
-  tools?: Tool[];
 };
 
 interface Props {
   conversationId: string | undefined;
   bot: any;
   addMessage: (message: MessageItem) => void;
-  updateLastMessage: (message: any) => void;
+  updateLastMessage: (item: any) => void;
+  stopThinking: () => void;
 }
 
 const props = defineProps<Props>();
@@ -64,13 +68,10 @@ function sendMessage() {
     content: '',
     loading: true,
     typing: true,
-    thinlCollapse: true,
   });
   senderValue.value = '';
 
   let content = '';
-  let reasoning_content = '';
-  const tools: Tool[] = [];
 
   sseClient.post('/userCenter/bot/chat', data, {
     onMessage(res) {
@@ -100,41 +101,68 @@ function sendMessage() {
       }
 
       if (sseData?.domain === 'TOOL') {
-        const index = tools.findIndex(
-          (tool) => tool.id === sseData?.payload?.tool_call_id,
-        );
+        props.updateLastMessage((message: MessageItem) => {
+          const chains = cloneDeep(message.chains ?? []);
+          const index = chains.findIndex(
+            (chain) =>
+              isTool(chain) && chain.id === sseData?.payload?.tool_call_id,
+          );
 
-        if (index === -1) {
-          tools.push({
-            id: sseData?.payload?.tool_call_id,
-            name: sseData?.payload?.name,
-            status: sseData?.type,
-            result:
-              sseData?.type === 'TOOL_CALL' ? '{}' : sseData?.payload?.result,
-          });
-        } else {
-          tools[index] = {
-            ...tools[index]!,
-            status: sseData?.type,
-            result:
-              sseData?.type === 'TOOL_CALL' ? '{}' : sseData?.payload?.result,
-          };
-        }
-        props.updateLastMessage({ tools });
+          if (index === -1) {
+            chains.push({
+              id: sseData?.payload?.tool_call_id,
+              name: sseData?.payload?.name,
+              status: sseData?.type,
+              result:
+                sseData?.type === 'TOOL_CALL'
+                  ? sseData?.payload?.arguments
+                  : sseData?.payload?.result,
+            });
+          } else {
+            chains[index] = {
+              ...chains[index]!,
+              status: sseData?.type,
+              result:
+                sseData?.type === 'TOOL_CALL'
+                  ? sseData?.payload?.arguments
+                  : sseData?.payload?.result,
+            };
+          }
+          return { chains };
+        });
+        props.stopThinking();
         return;
       }
 
       if (sseData.type === 'THINKING') {
-        props.updateLastMessage({
-          thinkingStatus: 'thinking',
-          reasoning_content: (reasoning_content += delta),
+        props.updateLastMessage((message: MessageItem) => {
+          const chains = cloneDeep(message.chains ?? []);
+          const index = chains.findIndex(
+            (chain) => isThink(chain) && chain.thinkingStatus === 'thinking',
+          );
+
+          if (index === -1) {
+            chains.push({
+              thinkingStatus: 'thinking',
+              thinlCollapse: true,
+              reasoning_content: delta,
+            });
+          } else {
+            const think = chains[index]! as Think;
+            chains[index] = {
+              ...think,
+              reasoning_content: think.reasoning_content + delta,
+            };
+          }
+          return { chains };
         });
       } else if (sseData.type === 'MESSAGE') {
         props.updateLastMessage({
-          content: (content += delta),
           thinkingStatus: 'end',
           loading: false,
+          content: (content += delta),
         });
+        props.stopThinking();
       }
     },
     onError(err) {
@@ -144,15 +172,17 @@ function sendMessage() {
     onFinished() {
       senderValue.value = '';
       btnLoading.value = false;
-
-      props.updateLastMessage({
-        thinkingStatus: 'end',
-        thinlCollapse: false,
-        loading: false,
-      });
+      props.updateLastMessage({ loading: false });
+      props.stopThinking();
     },
   });
 }
+const isTool = (item: Think | Tool) => {
+  return 'id' in item;
+};
+const isThink = (item: Think | Tool): item is Think => {
+  return !('id' in item);
+};
 function getDisabled() {
   return !senderValue.value || !props.conversationId;
 }
