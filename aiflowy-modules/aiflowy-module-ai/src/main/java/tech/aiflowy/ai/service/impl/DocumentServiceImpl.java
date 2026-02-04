@@ -249,9 +249,16 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
         if (knowledge == null) {
             throw new BusinessException("知识库不存在");
         }
-        DocumentStore documentStore = knowledge.toDocumentStore();
+        DocumentStore documentStore = null;
+        try {
+            documentStore = knowledge.toDocumentStore();
+        } catch (Exception e) {
+            Log.error(e.getMessage());
+            throw new BusinessException("向量数据库配置错误");
+        }
+
         if (documentStore == null) {
-            throw new BusinessException("向量数据库类型未设置");
+            throw new BusinessException("向量数据库配置错误");
         }
         // 设置向量模型
         Model model = modelService.getModelInstance(knowledge.getVectorEmbedModelId());

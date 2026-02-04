@@ -180,7 +180,13 @@ public class ModelServiceImpl extends ServiceImpl<ModelMapper, Model> implements
 
     @Override
     public Model getModelInstance(BigInteger modelId) {
+        if (modelId == null) {
+            throw new BusinessException("模型ID不能为空");
+        }
         Model model = modelMapper.selectOneWithRelationsById(modelId);
+        if (model == null) {
+            return null;
+        }
         ModelProvider modelProvider = model.getModelProvider();
         model.setModelProvider(modelProvider);
         if (StrUtil.isBlank(model.getApiKey())) {

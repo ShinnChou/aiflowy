@@ -16,6 +16,7 @@ import com.mybatisflex.annotation.Table;
 import tech.aiflowy.ai.agentsflex.tool.DocumentCollectionTool;
 import tech.aiflowy.ai.entity.base.DocumentCollectionBase;
 import tech.aiflowy.common.util.PropertiesUtil;
+import tech.aiflowy.common.util.StringUtil;
 import tech.aiflowy.common.web.exceptions.BusinessException;
 
 import java.math.BigDecimal;
@@ -63,6 +64,9 @@ public class DocumentCollection extends DocumentCollectionBase {
 
     public DocumentStore toDocumentStore() {
         String storeType = this.getVectorStoreType();
+        if (StringUtil.noText(storeType)) {
+            throw new BusinessException("向量数据库类型未设置");
+        }
         if (storeType == null) {
             return null;
         }
