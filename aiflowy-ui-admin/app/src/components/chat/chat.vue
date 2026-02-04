@@ -9,26 +9,47 @@ import type { BotInfo, ChatMessage } from '@aiflowy/types';
 import { onMounted, ref, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import { IconifyIcon } from '@aiflowy/icons';
 import { $t } from '@aiflowy/locales';
 import { useBotStore } from '@aiflowy/stores';
-import { cn, uuid } from '@aiflowy/utils';
+import { cloneDeep, cn, uuid } from '@aiflowy/utils';
 
-import { CopyDocument, RefreshRight } from '@element-plus/icons-vue';
-import { ElButton, ElIcon, ElMessage, ElSpace } from 'element-plus';
+import {
+  CircleCheck,
+  CopyDocument,
+  RefreshRight,
+} from '@element-plus/icons-vue';
+import {
+  ElButton,
+  ElCollapse,
+  ElCollapseItem,
+  ElIcon,
+  ElMessage,
+  ElSpace,
+} from 'element-plus';
 import { tryit } from 'radash';
 
 import { getMessageList, getPerQuestions } from '#/api';
 import { api, sseClient } from '#/api/request';
 import SendEnableIcon from '#/components/icons/SendEnableIcon.vue';
 import SendIcon from '#/components/icons/SendIcon.vue';
+import ShowJson from '#/components/json/ShowJson.vue';
 
 import BotAvatar from '../botAvatar/botAvatar.vue';
 import SendingIcon from '../icons/SendingIcon.vue';
+
+type Tool = {
+  id: string;
+  name: string;
+  result: string;
+  status: 'TOOL_CALL' | 'TOOL_RESULT';
+};
 
 type MessageItem = ChatMessage & {
   reasoning_content?: string;
   thinkingStatus?: ThinkingStatus;
   thinlCollapse?: boolean;
+  tools?: Tool[];
 };
 
 const props = defineProps<{
@@ -158,7 +179,8 @@ const handleSubmit = async (refreshContent: string) => {
   sseClient.post('/api/v1/bot/chat', data, {
     onMessage(message) {
       const event = message.event;
-      const lastBubbleItem = bubbleItems.value[bubbleItems.value.length - 1];
+      const lastIndex = bubbleItems.value.length - 1;
+      const lastBubbleItem = bubbleItems.value[lastIndex];
 
       //  finish
       if (event === 'done') {
@@ -175,14 +197,39 @@ const handleSubmit = async (refreshContent: string) => {
         sseData.payload?.code === 'SYSTEM_ERROR'
       ) {
         const errorMessage = sseData.payload.message;
-        const lastBubbleItem = bubbleItems.value[bubbleItems.value.length - 1];
         if (!lastBubbleItem) return;
-        bubbleItems.value[bubbleItems.value.length - 1] = {
+        bubbleItems.value[lastIndex] = {
           ...lastBubbleItem,
           content: errorMessage,
           loading: false,
           typing: true,
         };
+        return;
+      }
+
+      if (lastIndex >= 0 && sseData?.domain === 'TOOL') {
+        const tools = cloneDeep(lastBubbleItem?.tools ?? []);
+        const index = tools.findIndex(
+          (tool) => tool.id === sseData?.payload?.tool_call_id,
+        );
+
+        if (index === -1) {
+          tools.push({
+            id: sseData?.payload?.tool_call_id,
+            name: sseData?.payload?.name,
+            status: sseData?.type,
+            result:
+              sseData?.type === 'TOOL_CALL' ? '{}' : sseData?.payload?.result,
+          });
+        } else {
+          tools[index] = {
+            ...tools[index]!,
+            status: sseData?.type,
+            result:
+              sseData?.type === 'TOOL_CALL' ? '{}' : sseData?.payload?.result,
+          };
+        }
+        bubbleItems.value[lastIndex]!.tools = tools;
         return;
       }
 
@@ -192,14 +239,14 @@ const handleSubmit = async (refreshContent: string) => {
 
       if (lastBubbleItem && delta) {
         if (sseData.type === 'THINKING') {
-          bubbleItems.value[bubbleItems.value.length - 1] = {
+          bubbleItems.value[lastIndex] = {
             ...lastBubbleItem,
             thinkingStatus: 'thinking',
             thinlCollapse: true,
             reasoning_content: (lastBubbleItem.reasoning_content ?? '') + delta,
           };
         } else if (sseData.type === 'MESSAGE') {
-          bubbleItems.value[bubbleItems.value.length - 1] = {
+          bubbleItems.value[lastIndex] = {
             ...lastBubbleItem,
             thinkingStatus: 'end',
             content: (lastBubbleItem.content + delta).replaceAll(
@@ -227,6 +274,8 @@ const handleSubmit = async (refreshContent: string) => {
       if (lastIndex) {
         bubbleItems.value[lastIndex] = {
           ...bubbleItems.value[lastIndex]!,
+          loading: false,
+          thinkingStatus: 'end',
           thinlCollapse: false,
         };
       }
@@ -303,12 +352,7 @@ const handleRefresh = () => {
         v-if="localeConversationId || bubbleItems.length > 0"
         class="message-container w-full flex-1 overflow-hidden"
       >
-        <el-bubble-list
-          class="!h-full"
-          :list="bubbleItems"
-          max-height="none"
-          @complete="handleComplete"
-        >
+        <el-bubble-list :list="bubbleItems" @complete="handleComplete">
           <template #header="{ item }">
             <div class="flex flex-col">
               <span class="chat-bubble-item-time-style">
@@ -321,6 +365,35 @@ const handleRefresh = () => {
                 :status="item.thinkingStatus"
                 class="mb-3"
               />
+              <ElCollapse v-if="item.tools" class="mb-2">
+                <ElCollapseItem
+                  class="mb-2"
+                  v-for="tool in item.tools"
+                  :key="tool.id"
+                  :title="tool.name"
+                  :name="tool.id"
+                >
+                  <template #title>
+                    <div class="flex items-center gap-2 pl-5">
+                      <ElIcon size="16">
+                        <IconifyIcon icon="svg:wrench" />
+                      </ElIcon>
+                      <span>{{ tool.name }}</span>
+                      <template v-if="tool.status === 'TOOL_CALL'">
+                        <ElIcon size="16">
+                          <IconifyIcon icon="svg:spinner" />
+                        </ElIcon>
+                      </template>
+                      <template v-else>
+                        <ElIcon size="16" color="var(--el-color-success)">
+                          <CircleCheck />
+                        </ElIcon>
+                      </template>
+                    </div>
+                  </template>
+                  <ShowJson :value="tool.result" />
+                </ElCollapseItem>
+              </ElCollapse>
             </div>
           </template>
           <!-- 自定义头像 -->
@@ -466,13 +539,26 @@ const handleRefresh = () => {
   ) !important;
 }
 
-.el-bubble-list :deep(.el-bubble .el-thinking) {
-  --el-thinking-content-wrapper-width: var(
-    --bubble-content-max-width
-  ) !important;
+:deep(.el-bubble-header) {
+  width: 100%;
 }
 
-.el-bubble-list :deep(.el-bubble .el-thinking .content-wrapper) {
+:deep(.el-thinking) {
+  margin: 0;
+}
+
+:deep(.el-thinking .content-wrapper) {
+  --el-thinking-content-wrapper-width: var(--bubble-content-max-width);
+
   margin-bottom: 8px;
+}
+
+:deep(.el-collapse-item) {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+:deep(.el-collapse-item__content) {
+  padding-bottom: 0;
 }
 </style>

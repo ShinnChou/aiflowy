@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { IconifyIcon } from '@aiflowy/icons';
 import { useUserStore } from '@aiflowy/stores';
 
-import { ElAvatar } from 'element-plus';
+import { CircleCheck } from '@element-plus/icons-vue';
+import { ElAvatar, ElCollapse, ElCollapseItem, ElIcon } from 'element-plus';
 
 import defaultAssistantAvatar from '#/assets/defaultAssistantAvatar.svg';
 import defaultUserAvatar from '#/assets/defaultUserAvatar.png';
+import ShowJson from '#/components/json/ShowJson.vue';
 
 interface Props {
   bot: any;
@@ -44,8 +47,36 @@ function getUserAvatar() {
           v-model="item.thinlCollapse"
           :content="item.reasoning_content"
           :status="item.thinkingStatus"
-          class="mb-3"
         />
+        <ElCollapse v-if="item.tools" class="mb-2">
+          <ElCollapseItem
+            class="mb-2"
+            v-for="tool in item.tools"
+            :key="tool.id"
+            :title="tool.name"
+            :name="tool.id"
+          >
+            <template #title>
+              <div class="flex items-center gap-2 pl-5">
+                <ElIcon size="16">
+                  <IconifyIcon icon="svg:wrench" />
+                </ElIcon>
+                <span>{{ tool.name }}</span>
+                <template v-if="tool.status === 'TOOL_CALL'">
+                  <ElIcon size="16">
+                    <IconifyIcon icon="svg:spinner" />
+                  </ElIcon>
+                </template>
+                <template v-else>
+                  <ElIcon size="16" color="var(--el-color-success)">
+                    <CircleCheck />
+                  </ElIcon>
+                </template>
+              </div>
+            </template>
+            <ShowJson :value="tool.result" />
+          </ElCollapseItem>
+        </ElCollapse>
       </div>
     </template>
 
@@ -80,13 +111,26 @@ function getUserAvatar() {
   ) !important;
 }
 
-.el-bubble-list :deep(.el-bubble .el-thinking) {
-  --el-thinking-content-wrapper-width: var(
-    --bubble-content-max-width
-  ) !important;
+:deep(.el-bubble-header) {
+  width: 100%;
 }
 
-.el-bubble-list :deep(.el-bubble .el-thinking .content-wrapper) {
+:deep(.el-thinking) {
+  margin: 0;
+}
+
+:deep(.el-thinking .content-wrapper) {
+  --el-thinking-content-wrapper-width: var(--bubble-content-max-width);
+
   margin-bottom: 8px;
+}
+
+:deep(.el-collapse-item) {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+:deep(.el-collapse-item__content) {
+  padding-bottom: 0;
 }
 </style>

@@ -13,12 +13,20 @@ import { sseClient } from '#/api/request';
 import SendingIcon from '#/components/icons/SendingIcon.vue';
 // import PaperclipIcon from '#/components/icons/PaperclipIcon.vue';
 
+type Tool = {
+  id: string;
+  name: string;
+  result: string;
+  status: 'TOOL_CALL' | 'TOOL_RESULT';
+};
+
 type MessageItem = BubbleProps & {
   key: string;
   reasoning_content?: string;
   role: 'assistant' | 'user';
   thinkingStatus?: ThinkingStatus;
   thinlCollapse?: boolean;
+  tools?: Tool[];
 };
 
 interface Props {
@@ -26,6 +34,7 @@ interface Props {
   bot: any;
   addMessage?: (message: MessageItem) => void;
 }
+
 const props = defineProps<Props>();
 const senderValue = ref('');
 const btnLoading = ref(false);
@@ -61,6 +70,8 @@ function sendMessage() {
 
   let content = '';
   let reasoning_content = '';
+  const tools: Tool[] = [];
+
   sseClient.post('/userCenter/bot/chat', data, {
     onMessage(res) {
       if (!res.data) {
@@ -68,6 +79,7 @@ function sendMessage() {
       }
       const sseData = JSON.parse(res.data);
       const delta = sseData.payload?.delta;
+
       if (res.event === 'done') {
         btnLoading.value = false;
         getSessionList();
@@ -85,6 +97,31 @@ function sendMessage() {
           loading: false,
           typing: false,
         });
+        return;
+      }
+
+      if (sseData?.domain === 'TOOL') {
+        const index = tools.findIndex(
+          (tool) => tool.id === sseData?.payload?.tool_call_id,
+        );
+
+        if (index === -1) {
+          tools.push({
+            id: sseData?.payload?.tool_call_id,
+            name: sseData?.payload?.name,
+            status: sseData?.type,
+            result:
+              sseData?.type === 'TOOL_CALL' ? '{}' : sseData?.payload?.result,
+          });
+        } else {
+          tools[index] = {
+            ...tools[index]!,
+            status: sseData?.type,
+            result:
+              sseData?.type === 'TOOL_CALL' ? '{}' : sseData?.payload?.result,
+          };
+        }
+        props.addMessage?.({ ...assistantMsg, tools });
         return;
       }
 
@@ -114,6 +151,7 @@ function sendMessage() {
 
       props.addMessage?.({
         ...assistantMsg,
+        tools,
         content,
         reasoning_content,
         thinkingStatus: 'end',
