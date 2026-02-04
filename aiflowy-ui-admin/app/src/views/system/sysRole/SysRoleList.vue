@@ -92,7 +92,7 @@ function remove(row: any) {
     <HeaderSearch
       :buttons="headerButtons"
       @search="handleSearch"
-      @button-click="showDialog({})"
+      @button-click="showDialog({ menuCheckStrictly: true })"
     />
 
     <div class="bg-background border-border flex-1 rounded-lg border p-5">
