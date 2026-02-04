@@ -3,13 +3,6 @@ package tech.aiflowy.usercenter.controller.ai;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
-import cn.dev33.satoken.stp.StpUtil;
-import com.agentsflex.core.message.SystemMessage;
-import com.agentsflex.core.message.UserMessage;
-import com.agentsflex.core.model.chat.ChatModel;
-import com.agentsflex.core.model.chat.ChatOptions;
-import com.agentsflex.core.model.chat.tool.Tool;
-import com.agentsflex.core.prompt.MemoryPrompt;
 import com.alicp.jetcache.Cache;
 import com.mybatisflex.core.keygen.impl.SnowFlakeIDKeyGenerator;
 import com.mybatisflex.core.query.QueryWrapper;
@@ -26,20 +19,17 @@ import tech.aiflowy.common.annotation.UsePermission;
 import tech.aiflowy.common.audio.core.AudioServiceManager;
 import tech.aiflowy.common.domain.Result;
 import tech.aiflowy.common.satoken.util.SaTokenUtil;
-import tech.aiflowy.common.util.MapUtil;
-import tech.aiflowy.common.util.Maps;
 import tech.aiflowy.common.web.controller.BaseCurdController;
 import tech.aiflowy.common.web.exceptions.BusinessException;
 import tech.aiflowy.common.web.jsonbody.JsonBody;
-import tech.aiflowy.core.chat.protocol.sse.ChatSseUtil;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.*;
-
-import static tech.aiflowy.ai.entity.table.BotPluginTableDef.BOT_PLUGIN;
-import static tech.aiflowy.ai.entity.table.PluginItemTableDef.PLUGIN_ITEM;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 控制层。
