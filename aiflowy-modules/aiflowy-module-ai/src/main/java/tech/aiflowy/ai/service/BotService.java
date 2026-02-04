@@ -7,6 +7,7 @@ import com.agentsflex.core.prompt.MemoryPrompt;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import tech.aiflowy.ai.entity.Bot;
 import com.mybatisflex.core.service.IService;
+import tech.aiflowy.ai.service.impl.BotServiceImpl;
 import tech.aiflowy.core.chat.protocol.sse.ChatSseEmitter;
 
 import java.math.BigInteger;
@@ -27,5 +28,7 @@ public interface BotService extends IService<Bot> {
 
     Bot getByAlias(String alias);
 
-    SseEmitter startChat(BigInteger botId, ChatModel chatModel, String prompt, MemoryPrompt memoryPrompt, ChatOptions chatOptions, BigInteger conversationId, List<Map<String, String>> messages, UserMessage userMessage);
+    SseEmitter checkChatBeforeStart(BigInteger botId, String prompt, BigInteger conversationId, BotServiceImpl.ChatCheckResult chatCheckResult);
+
+    SseEmitter startChat(BigInteger botId, String prompt,  BigInteger conversationId, List<Map<String, String>> messages, BotServiceImpl.ChatCheckResult chatCheckResult);
 }

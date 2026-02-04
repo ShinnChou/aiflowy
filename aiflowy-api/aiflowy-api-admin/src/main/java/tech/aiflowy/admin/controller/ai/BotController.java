@@ -3,13 +3,8 @@ package tech.aiflowy.admin.controller.ai;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
-import cn.dev33.satoken.stp.StpUtil;
-import com.agentsflex.core.message.SystemMessage;
-import com.agentsflex.core.message.UserMessage;
 import com.agentsflex.core.model.chat.ChatModel;
 import com.agentsflex.core.model.chat.ChatOptions;
-import com.agentsflex.core.model.chat.tool.Tool;
-import com.agentsflex.core.prompt.MemoryPrompt;
 import com.alicp.jetcache.Cache;
 import com.mybatisflex.core.keygen.impl.SnowFlakeIDKeyGenerator;
 import com.mybatisflex.core.query.QueryWrapper;
@@ -21,15 +16,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import tech.aiflowy.ai.agentsflex.listener.PromptChoreChatStreamListener;
 import tech.aiflowy.ai.entity.*;
 import tech.aiflowy.ai.mapper.BotConversationMapper;
 import tech.aiflowy.ai.service.*;
-import tech.aiflowy.ai.agentsflex.listener.PromptChoreChatStreamListener;
+import tech.aiflowy.ai.service.impl.BotServiceImpl;
 import tech.aiflowy.common.audio.core.AudioServiceManager;
 import tech.aiflowy.common.domain.Result;
-import tech.aiflowy.common.util.MapUtil;
-import tech.aiflowy.common.util.Maps;
-import tech.aiflowy.common.util.SSEUtil;
 import tech.aiflowy.common.web.controller.BaseCurdController;
 import tech.aiflowy.common.web.exceptions.BusinessException;
 import tech.aiflowy.common.web.jsonbody.JsonBody;
@@ -40,10 +33,10 @@ import tech.aiflowy.system.mapper.SysApiKeyMapper;
 import javax.annotation.Resource;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.*;
-
-import static tech.aiflowy.ai.entity.table.BotPluginTableDef.BOT_PLUGIN;
-import static tech.aiflowy.ai.entity.table.PluginItemTableDef.PLUGIN_ITEM;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 控制层。
@@ -60,20 +53,12 @@ public class BotController extends BaseCurdController<BotService, Bot> {
     private final BotDocumentCollectionService botDocumentCollectionService;
     private final BotMessageService botMessageService;
     @Resource
-    private SysApiKeyMapper aiBotApiKeyMapper;
-    @Resource
-    private BotConversationService botConversationService;
-    @Resource
-    private BotConversationMapper botConversationMapper;
-    @Resource
     private BotService botService;
     @Autowired
     @Qualifier("defaultCache") // 指定 Bean 名称
     private Cache<String, Object> cache;
     @Resource
     private AudioServiceManager audioServiceManager;
-
-    private static final Logger logger = LoggerFactory.getLogger(BotController.class);
 
     public BotController(BotService service, ModelService modelService, BotWorkflowService botWorkflowService,
                          BotDocumentCollectionService botDocumentCollectionService, BotMessageService botMessageService) {
@@ -86,12 +71,6 @@ public class BotController extends BaseCurdController<BotService, Bot> {
 
     @Resource
     private BotPluginService botPluginService;
-    @Resource
-    private PluginItemService pluginItemService;
-    @Resource
-    private BotMcpService botMcpService;
-    @Resource
-    private McpService mcpService;
 
     @GetMapping("/generateConversationId")
     public Result<Long> generateConversationId() {
@@ -167,45 +146,14 @@ public class BotController extends BaseCurdController<BotService, Bot> {
             @JsonBody(value = "messages") List<Map<String, String>>  messages
 
     ) {
-        if (!StringUtils.hasLength(prompt)) {
-            throw new BusinessException("提示词不能为空！");
+        BotServiceImpl.ChatCheckResult chatCheckResult = new BotServiceImpl.ChatCheckResult();
+
+        // 前置校验：失败则直接返回错误SseEmitter
+        SseEmitter errorEmitter = botService.checkChatBeforeStart(botId, prompt, conversationId, chatCheckResult);
+        if (errorEmitter != null) {
+            return errorEmitter;
         }
-        Bot aiBot = service.getById(botId);
-        String conversationIdStr = conversationId.toString();
-        if (aiBot == null) {
-            return ChatSseUtil.sendSystemError(conversationIdStr, "机器人不存在");
-        }
-        if (aiBot.getModelId() == null) {
-            return ChatSseUtil.sendSystemError(conversationIdStr, "请配置大模型!");
-        }
-        boolean login = StpUtil.isLogin();
-        if (!login && !aiBot.isAnonymousEnabled()) {
-            return ChatSseUtil.sendSystemError(conversationIdStr, "此bot不支持匿名访问");
-        }
-        Map<String, Object> modelOptions = aiBot.getModelOptions();
-        Model model = modelService.getModelInstance(aiBot.getModelId());
-        if (model == null) {
-            return ChatSseUtil.sendSystemError(conversationIdStr, "模型不存在，请检查配置");
-        }
-        ChatModel chatModel = model.toChatModel();
-        if (chatModel == null) {
-            return ChatSseUtil.sendSystemError(conversationIdStr, "对话模型获取失败，请检查配置");
-        }
-        final MemoryPrompt memoryPrompt = new MemoryPrompt();
-        String systemPrompt = MapUtil.getString(modelOptions, Bot.KEY_SYSTEM_PROMPT);
-        Integer maxMessageCount = MapUtil.getInteger(modelOptions, Bot.KEY_MAX_MESSAGE_COUNT);
-        if (maxMessageCount != null) {
-            memoryPrompt.setMaxAttachedMessageCount(maxMessageCount);
-        }
-        if (StringUtils.hasLength(systemPrompt)) {
-            memoryPrompt.setSystemMessage(SystemMessage.of(systemPrompt));
-        }
-        UserMessage userMessage = new UserMessage(prompt);
-        userMessage.addTools(buildFunctionList(Maps.of("botId", botId).set("needEnglishName", false)));
-        ChatOptions chatOptions = getChatOptions(modelOptions);
-        Boolean enableDeepThinking = MapUtil.getBoolean(modelOptions, Bot.KEY_ENABLE_DEEP_THINKING, false);
-        chatOptions.setThinkingEnabled(enableDeepThinking);
-        return botService.startChat(botId, chatModel, prompt, memoryPrompt, chatOptions, conversationId, messages, userMessage);
+        return botService.startChat(botId, prompt, conversationId, messages, chatCheckResult);
     }
 
     @PostMapping("updateLlmId")
@@ -342,78 +290,6 @@ public class BotController extends BaseCurdController<BotService, Bot> {
         QueryWrapper queryWrapperBotPlugins = QueryWrapper.create().in(BotPlugin::getBotId, ids);
         botPluginService.remove(queryWrapperBotPlugins);
         return super.onRemoveBefore(ids);
-    }
-
-    private List<Tool> buildFunctionList(Map<String, Object> buildParams) {
-
-        if (buildParams == null || buildParams.isEmpty()) {
-            throw new IllegalArgumentException("buildParams is empty");
-        }
-
-        List<Tool> functionList = new ArrayList<>();
-
-        BigInteger botId = (BigInteger) buildParams.get("botId");
-        if (botId == null) {
-            throw new IllegalArgumentException("botId is empty");
-        }
-        Boolean needEnglishName = (Boolean) buildParams.get("needEnglishName");
-        if (needEnglishName == null) {
-            needEnglishName = false;
-        }
-
-        QueryWrapper queryWrapper = QueryWrapper.create();
-
-        // 工作流 function 集合
-        queryWrapper.eq(BotWorkflow::getBotId, botId);
-        List<BotWorkflow> botWorkflows = botWorkflowService.getMapper()
-                .selectListWithRelationsByQuery(queryWrapper);
-        if (botWorkflows != null && !botWorkflows.isEmpty()) {
-            for (BotWorkflow botWorkflow : botWorkflows) {
-                Tool function = botWorkflow.getWorkflow().toFunction(needEnglishName);
-                functionList.add(function);
-            }
-        }
-
-        // 知识库 function 集合
-        queryWrapper = QueryWrapper.create();
-        queryWrapper.eq(BotDocumentCollection::getBotId, botId);
-        List<BotDocumentCollection> botDocumentCollections = botDocumentCollectionService.getMapper()
-                .selectListWithRelationsByQuery(queryWrapper);
-        if (botDocumentCollections != null && !botDocumentCollections.isEmpty()) {
-            for (BotDocumentCollection botDocumentCollection : botDocumentCollections) {
-                Tool function = botDocumentCollection.getKnowledge().toFunction(needEnglishName);
-                functionList.add(function);
-            }
-        }
-
-        // 插件 function 集合
-        queryWrapper = QueryWrapper.create();
-        queryWrapper.select(BOT_PLUGIN.PLUGIN_ITEM_ID).eq(BotPlugin::getBotId, botId);
-        List<BigInteger> pluginToolIds = botPluginService.getMapper()
-                .selectListWithRelationsByQueryAs(queryWrapper, BigInteger.class);
-        if (pluginToolIds != null && !pluginToolIds.isEmpty()) {
-            QueryWrapper queryTool = QueryWrapper.create()
-                    .select(PLUGIN_ITEM.ALL_COLUMNS)
-                    .from(PLUGIN_ITEM)
-                    .where(PLUGIN_ITEM.ID.in(pluginToolIds));
-            List<PluginItem> pluginItems = pluginItemService.getMapper().selectListWithRelationsByQuery(queryTool);
-            if (pluginItems != null && !pluginItems.isEmpty()) {
-                for (PluginItem pluginItem : pluginItems) {
-                    functionList.add(pluginItem.toFunction());
-                }
-            }
-        }
-
-        // MCP function 集合
-        queryWrapper = QueryWrapper.create();
-        queryWrapper.eq(BotMcp::getBotId, botId);
-        List<BotMcp> botMcpList = botMcpService.getMapper().selectListWithRelationsByQuery(queryWrapper);
-        botMcpList.forEach(botMcp -> {
-            Tool tool = mcpService.toFunction(botMcp);
-            functionList.add(tool);
-        });
-
-        return functionList;
     }
 
     /**

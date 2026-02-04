@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tech.aiflowy.ai.entity.BotPlugin;
 import tech.aiflowy.ai.entity.PluginItem;
 import tech.aiflowy.ai.service.BotPluginService;
 import tech.aiflowy.ai.service.PluginItemService;
@@ -137,7 +138,7 @@ public class PluginItemController extends BaseCurdController<PluginItemService, 
     protected Result<?> onRemoveBefore(Collection<Serializable> ids) {
 
         QueryWrapper queryWrapper = QueryWrapper.create();
-        queryWrapper.in("plugin_item_id", ids);
+        queryWrapper.in(BotPlugin::getPluginItemId, ids);
 
         boolean exists = botPluginService.exists(queryWrapper);
         if (exists){
