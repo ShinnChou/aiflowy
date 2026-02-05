@@ -637,6 +637,10 @@ const handleRefresh = () => {
   width: 100%;
 }
 
+:deep(.el-bubble-end .el-bubble-header) {
+  width: fit-content;
+}
+
 :deep(.el-thinking) {
   margin: 0;
 }

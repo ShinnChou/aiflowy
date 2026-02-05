@@ -154,6 +154,10 @@ function getUserAvatar() {
   width: 100%;
 }
 
+:deep(.el-bubble-end .el-bubble-header) {
+  width: fit-content;
+}
+
 :deep(.el-bubble-content-wrapper .el-bubble-content) {
   --bubble-content-max-width: 100%;
 }
