@@ -33,6 +33,7 @@ interface SelectedMcpTool {
   name: string;
   description: string;
 }
+
 const props = defineProps({
   title: { type: String, default: '' },
   width: { type: String, default: '80%' },
@@ -243,7 +244,11 @@ const handleSearch = (query: string) => {
                   <!--选择插件-->
                   <div v-if="!isSelectMcp">
                     <div v-for="tool in item.tools" :key="tool.id">
-                      <div class="content-title-wrapper">
+                      <div
+                        class="content-title-wrapper"
+                        @click="toggleSelection(tool.id, !isSelected(tool.id))"
+                        :class="{ 'item-selected': isSelected(tool.id) }"
+                      >
                         <div class="content-left-container">
                           <div class="title-right-container">
                             <ElText truncated class="title">
@@ -256,6 +261,7 @@ const handleSearch = (query: string) => {
                           <ElCheckbox
                             :model-value="isSelected(tool.id)"
                             @change="(val) => toggleSelection(tool.id, val)"
+                            @click.stop
                           />
                         </div>
                       </div>
@@ -264,7 +270,21 @@ const handleSearch = (query: string) => {
                   <!--选择MCP-->
                   <div v-if="isSelectMcp">
                     <div v-for="tool in item.tools" :key="tool.name">
-                      <div class="content-title-wrapper">
+                      <!-- 2. MCP专属：绑定点击事件，取反MCP选中状态 -->
+                      <div
+                        class="content-title-wrapper"
+                        @click="
+                          toggleSelectionMcp(
+                            item.id,
+                            tool.name,
+                            tool.description,
+                            !isSelectedMcp(item.id, tool.name),
+                          )
+                        "
+                        :class="{
+                          'item-selected': isSelectedMcp(item.id, tool.name),
+                        }"
+                      >
                         <div class="content-left-container">
                           <div class="title-right-container">
                             <ElText truncated class="title">
@@ -285,6 +305,7 @@ const handleSearch = (query: string) => {
                                   val,
                                 )
                             "
+                            @click.stop
                           />
                         </div>
                       </div>
@@ -297,7 +318,11 @@ const handleSearch = (query: string) => {
           <template v-else>
             <div class="container-second">
               <div v-for="(item, index) in pageList" :key="index">
-                <div class="content-title-wrapper">
+                <div
+                  class="content-title-wrapper"
+                  @click="toggleSelection(item.id, !isSelected(item.id))"
+                  :class="{ 'item-selected': isSelected(item.id) }"
+                >
                   <div class="content-sec-left-container">
                     <div>
                       <ElAvatar :src="item.icon" v-if="item.icon" />
@@ -314,6 +339,7 @@ const handleSearch = (query: string) => {
                     <ElCheckbox
                       :model-value="isSelected(item.id)"
                       @change="(val) => toggleSelection(item.id, val)"
+                      @click.stop
                     />
                   </div>
                 </div>
@@ -477,7 +503,7 @@ const handleSearch = (query: string) => {
 }
 
 .select-modal-container :deep(.el-collapse-item) {
-  padding-bottom: 8px;
+  margin-bottom: 8px;
   background-color: hsl(var(--background));
 }
 
