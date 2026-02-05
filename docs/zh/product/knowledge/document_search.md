@@ -24,7 +24,7 @@
 3. 可在右侧「文档预览」区域输入内容并点击**查询**，测试检索效果是否符合预期。
 
 ## 四、检索示例：
-![doc_management_2.png](resource/doc_management_2.png)
+![kno_search_6.png](resource/kno_search_6.png)
 上图中是我针对某一个块的文档设置了 **相似提问** 和 **摘要**，测试结果如下：
 ![kno_search_2.png](resource/kno_search_2.png)
 
