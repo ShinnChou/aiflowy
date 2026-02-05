@@ -3,7 +3,7 @@
 ![user.png](resource/user.png)
 
 ## 新增用户
-点击新增按钮，弹出新增用户框，填充信息后点击确认即可新增用户
+点击添加按钮，弹出添加用户框，填充信息后点击保存即可新增用户
 ![addUser.png](resource/addUser.png)
 
 ## 编辑用户
