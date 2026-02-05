@@ -280,14 +280,12 @@ function sidebarProduct(): DefaultTheme.SidebarItem[] {
         {
           text: "素材库",
           collapsed: true,
-          items: [{ text: "什么是素材库", link: "resource/what_is_resource" }],
+          link: "resource/what_is_resource"
         },
         {
           text: "数据中枢",
           collapsed: true,
-          items: [
-            { text: "什么是数据中枢", link: "datacenter/what_is_datacenter" },
-          ],
+          link: "datacenter/what_is_datacenter"
         },
         {
           text: "模型管理",
@@ -341,7 +339,7 @@ function sidebarProduct(): DefaultTheme.SidebarItem[] {
         },
         {
           text: "预警管理",
-          link: "localLlm/vllm.md",
+          link: "alert/what_is_alert",
         },
       ],
     },
@@ -393,7 +391,7 @@ function sidebarProduct(): DefaultTheme.SidebarItem[] {
           },
           {
             text: "认证设置(商业版)",
-            link: "system/oauth.md",
+            link: "auth/oauth.md",
           },
           {
             text: "访问令牌",
