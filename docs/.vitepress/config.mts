@@ -234,6 +234,13 @@ function sidebarProduct(): DefaultTheme.SidebarItem[] {
             ]
         },
         {
+            text: '预警管理(商业版)',
+            collapsed: false,
+            items: [
+                {text: '什么是预警管理', link: 'alert/what_is_alert'},
+            ]
+        },
+        {
             text: '工作流',
             collapsed: false,
             items: [
@@ -286,6 +293,20 @@ function sidebarProduct(): DefaultTheme.SidebarItem[] {
                 {
                     text: '接入本地模型', link: 'localLlm/addLocalLlm.md',
                 }
+            ]
+        },
+        {
+            text: '认证设置(商业版)',
+            collapsed: false,
+            items: [
+                {text: '第三方平台', link: 'auth/oauth'},
+            ]
+        },
+        {
+            text: '访问令牌',
+            collapsed: false,
+            items: [
+                {text: '外部调用', link: 'public-api/apis'},
             ]
         },
         {
