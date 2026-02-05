@@ -13,6 +13,7 @@ import tech.aiflowy.core.chat.protocol.ChatDomain;
 import tech.aiflowy.core.chat.protocol.ChatEnvelope;
 import tech.aiflowy.core.chat.protocol.ChatType;
 import tech.aiflowy.core.chat.protocol.MessageRole;
+import tech.aiflowy.core.chat.protocol.payload.ErrorPayload;
 import tech.aiflowy.core.chat.protocol.sse.ChatSseEmitter;
 
 import java.io.IOException;
@@ -87,6 +88,10 @@ public class ChatStreamListener implements StreamResponseListener {
         // 仅当canStop为true（最后一次无后续工具调用的响应）时，执行业务逻辑
         if (this.canStop) {
             System.out.println("onStop");
+            if (context.getThrowable() != null) {
+                sendSystemError(sseEmitter, context.getThrowable().getMessage());
+                return;
+            }
             memoryPrompt.addMessage(context.getFullMessage());
             ChatEnvelope<Map<String, String>> chatEnvelope = new ChatEnvelope<>();
             chatEnvelope.setDomain(ChatDomain.SYSTEM);
@@ -120,6 +125,20 @@ public class ChatStreamListener implements StreamResponseListener {
         chatEnvelope.setPayload(deltaMap);
 
         sseEmitter.send(chatEnvelope);
+    }
+
+    public void sendSystemError(ChatSseEmitter sseEmitter,
+                                String message) {
+        ChatEnvelope<ErrorPayload> envelope = new ChatEnvelope<>();
+        ErrorPayload payload = new ErrorPayload();
+        payload.setMessage(message);
+        payload.setCode("SYSTEM_ERROR");
+        payload.setRetryable(false);
+        envelope.setPayload(payload);
+        envelope.setDomain(ChatDomain.SYSTEM);
+        envelope.setType(ChatType.ERROR);
+        sseEmitter.sendError(envelope);
+        sseEmitter.complete();
     }
 
 }
