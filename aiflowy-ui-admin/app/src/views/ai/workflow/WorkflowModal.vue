@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { FormInstance } from 'element-plus';
+import type { FormInstance, UploadInstance, UploadProps } from 'element-plus';
 
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import {
   ElButton,
@@ -10,6 +10,7 @@ import {
   ElFormItem,
   ElInput,
   ElMessage,
+  ElUpload,
 } from 'element-plus';
 
 import { api } from '#/api/request';
@@ -28,6 +29,10 @@ const saveForm = ref<FormInstance>();
 // variables
 const dialogVisible = ref(false);
 const isAdd = ref(true);
+const isImport = ref(false);
+const jsonFile = ref<any>(null);
+const uploadFileList = ref<any[]>([]);
+const uploadRef = ref<UploadInstance>();
 const entity = ref<any>({
   alias: '',
   deptId: '',
@@ -38,43 +43,105 @@ const entity = ref<any>({
   englishName: '',
 });
 const btnLoading = ref(false);
-const rules = ref({
-  title: [{ required: true, message: $t('message.required'), trigger: 'blur' }],
+const jsonFileModel = computed({
+  get: () => (uploadFileList.value.length > 0 ? uploadFileList.value[0] : null),
+  set: (value: any) => {
+    if (!value) {
+      uploadFileList.value = [];
+    }
+  },
 });
+const rules = computed(() => ({
+  title: [{ required: true, message: $t('message.required'), trigger: 'blur' }],
+  ...(isImport.value && {
+    jsonFile: [
+      { required: true, message: $t('message.required'), trigger: 'change' },
+    ],
+  }),
+}));
 // functions
-function openDialog(row: any) {
+function openDialog(row: any, importMode = false) {
+  isImport.value = importMode;
   if (row.id) {
     isAdd.value = false;
   }
   entity.value = row;
   dialogVisible.value = true;
 }
+
+const beforeUpload: UploadProps['beforeUpload'] = (file) => {
+  jsonFile.value = file;
+  uploadFileList.value = [file];
+  saveForm.value?.clearValidate('jsonFile');
+  return false;
+};
+const handleChange: UploadProps['onChange'] = (file, fileList) => {
+  jsonFile.value = file.raw;
+  uploadFileList.value = fileList.slice(-1);
+  saveForm.value?.clearValidate('jsonFile');
+};
+const handleRemove: UploadProps['onRemove'] = () => {
+  jsonFile.value = null;
+  uploadFileList.value = [];
+  saveForm.value?.clearValidate('jsonFile');
+};
 function save() {
   saveForm.value?.validate((valid) => {
     if (valid) {
       btnLoading.value = true;
-      api
-        .post(
-          isAdd.value ? '/api/v1/workflow/save' : '/api/v1/workflow/update',
-          entity.value,
-        )
-        .then((res) => {
-          btnLoading.value = false;
-          if (res.errorCode === 0) {
-            ElMessage.success(res.message);
-            emit('reload');
-            closeDialog();
+      if (isImport.value) {
+        const formData = new FormData();
+        formData.append('jsonFile', jsonFile.value!);
+        Object.keys(entity.value).forEach((key) => {
+          if (entity.value[key] !== null && entity.value[key] !== undefined) {
+            formData.append(key, entity.value[key]);
           }
-        })
-        .catch(() => {
-          btnLoading.value = false;
         });
+        api
+          .post('/api/v1/workflow/importWorkFlow', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+          .then((res) => {
+            btnLoading.value = false;
+            if (res.errorCode === 0) {
+              ElMessage.success(res.message);
+              emit('reload');
+              closeDialog();
+            }
+          })
+          .catch(() => {
+            btnLoading.value = false;
+          });
+      } else {
+        api
+          .post(
+            isAdd.value ? '/api/v1/workflow/save' : '/api/v1/workflow/update',
+            entity.value,
+          )
+          .then((res) => {
+            btnLoading.value = false;
+            if (res.errorCode === 0) {
+              ElMessage.success(res.message);
+              emit('reload');
+              closeDialog();
+            }
+          })
+          .catch(() => {
+            btnLoading.value = false;
+          });
+      }
     }
   });
 }
 function closeDialog() {
   saveForm.value?.resetFields();
+  uploadRef.value?.clearFiles();
+  uploadFileList.value = [];
+  jsonFile.value = null;
   isAdd.value = true;
+  isImport.value = false;
   entity.value = {};
   dialogVisible.value = false;
 }
@@ -84,17 +151,41 @@ function closeDialog() {
   <ElDialog
     v-model="dialogVisible"
     draggable
-    :title="isAdd ? $t('button.add') : $t('button.edit')"
+    :title="
+      isImport
+        ? $t('button.import')
+        : isAdd
+          ? $t('button.add')
+          : $t('button.edit')
+    "
     :before-close="closeDialog"
     :close-on-click-modal="false"
   >
     <ElForm
       label-width="120px"
       ref="saveForm"
-      :model="entity"
+      :model="isImport ? { ...entity, jsonFile: jsonFileModel } : entity"
       status-icon
       :rules="rules"
     >
+      <ElFormItem v-if="isImport" prop="jsonFile" label="JSON文件" required>
+        <ElUpload
+          class="w-full"
+          ref="uploadRef"
+          v-model:file-list="uploadFileList"
+          :limit="1"
+          :auto-upload="false"
+          :on-change="handleChange"
+          :before-upload="beforeUpload"
+          :on-remove="handleRemove"
+          accept=".json"
+          drag
+        >
+          <div class="el-upload__text w-full">
+            将 json 文件拖到此处，或<em>点击上传</em>
+          </div>
+        </ElUpload>
+      </ElFormItem>
       <ElFormItem prop="icon" :label="$t('aiWorkflow.icon')">
         <!-- <Cropper v-model="entity.icon" crop /> -->
         <UploadAvatar v-model="entity.icon" />

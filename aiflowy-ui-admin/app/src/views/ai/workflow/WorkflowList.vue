@@ -12,6 +12,7 @@ import {
   Edit,
   Plus,
   Tickets,
+  Upload,
   VideoPlay,
 } from '@element-plus/icons-vue';
 import {
@@ -147,6 +148,14 @@ const headerButtons = [
     data: { action: 'create' },
     permission: '/api/v1/workflow/save',
   },
+  {
+    key: 'import',
+    text: $t('button.import'),
+    icon: markRaw(Upload),
+    type: 'default',
+    data: { action: 'import' },
+    permission: '/api/v1/workflow/save',
+  },
 ];
 
 function initDict() {
@@ -158,8 +167,8 @@ const handleSearch = (params: string) => {
 function reset() {
   pageDataRef.value.setQuery({});
 }
-function showDialog(row: any) {
-  saveDialog.value.openDialog({ ...row });
+function showDialog(row: any, importMode = false) {
+  saveDialog.value.openDialog({ ...row }, importMode);
 }
 function remove(row: any) {
   ElMessageBox.confirm($t('message.deleteAlert'), $t('message.noticeTitle'), {
@@ -351,6 +360,13 @@ const getSideList = async () => {
     ];
   }
 };
+function handleHeaderButtonClick(data: any) {
+  if (data.data.action === 'import') {
+    showDialog({}, true);
+  } else {
+    showDialog({});
+  }
+}
 </script>
 
 <template>
@@ -359,7 +375,7 @@ const getSideList = async () => {
     <HeaderSearch
       :buttons="headerButtons"
       @search="handleSearch"
-      @button-click="showDialog({})"
+      @button-click="handleHeaderButtonClick"
     />
     <div class="flex max-h-[calc(100vh-191px)] flex-1 gap-6">
       <PageSide
