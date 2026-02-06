@@ -114,7 +114,8 @@ docker volume rm es-latest-data
   ```bash
   docker exec -it es-8.15.0 chmod 777 /usr/share/elasticsearch/data
   ```
-
+## 五、AIFlowy 知识库配置示例
+![es_config_eg.png](../resource/es_config_eg.png)
 ---
 
 ### 总结

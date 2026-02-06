@@ -42,5 +42,5 @@ storePrefix = docs:
 defaultCollectionName = documents
 ```
 
-### 2.3 配置示例截图
+### 2.3 AIFlowy 知识库配置示例
 ![create_document_collection_2.png](../resource/create_document_collection_2.png)
