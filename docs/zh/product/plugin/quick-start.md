@@ -1,63 +1,44 @@
-# 快速开始
+# 插件
 
-## 添加 HTTP 插件
+首先点击左侧菜单栏的插件，然后点击 **新增插件** 按钮。<br/>
+这里以 [和风天气](https://console.qweather.com/project?lang=zh)  为例，创建一个 **查询城市id** 的插件。
 
-我们以添加 `高德地图` 插件为例，演示一下如何添加插件。
+## 1. 创建插件
+1. 点击 **创建项目** 按钮， 创建一个新的项目
+   ![img.png](resource/plugin-1.png)
 
-点击添加插件按钮：
+2. 我这里创建了一个叫 test 的项目
+   ![img_3.png](resource/plugin-4.png)
 
-![add.png](resource/add.png)
+3. 凭据身份认证方式选择 **API KEY**
+   ![img_2.png](resource/plugin-3.png)
 
-会弹出新增弹框：
-![add-modal.png](resource/add-modal.png)
-- 插件名称：插件的名称。
-- 插件描述：插件可以实现一些什么样的功能。
-- 插件 URL：插件的请求地址，当前插件下的所有工具都是基于这个请求地址。
-- Headers： 请求头，该插件所需的请求头参数。
-- 认证方式：
-  选择插件使用的授权或验证方式。目前支持如下两种类型：
-  - 无需认证
-不需要认证，直接访问插件即可。
-  - Service token / API key
-  Token（令牌）是一种身份验证方式，用户或系统需提供唯一的密钥（Token）来访问受保护的资源。插件校验 Token 合法后，允许操作。
+4. 点击查看创建的 API KEY
+   ![img_4.png](resource/plugin-5.png)
 
-添加完毕后，点击工具列表按钮：
+5. 拿到 API KEY
+   ![img_5.png](resource/plugin-6.png)
 
-![tools-btn.png](resource/tools-btn.png)
+6. 插件url 获取地址为 [插件url](https://console.qweather.com/setting?lang=zh)
 
-来到工具列表页面后，点击创建工具按钮：
+7. 在Headers 添加 X-QW-Api-Key: 你的 API KEY
+8. 填写插件信息
+   ![mount_plugin_create.png](resource/mount_plugin_create.png)
 
-![add-tool-btn.png](resource/add-tool-btn.png)
+9. 然后进入已经创建好的这个插件， 进入如图所示页面， 点击**创建工具**按钮
+   ![mount_plugin_2.png](resource/mount_plugin_2.png)
 
-填写相关信息后点击确定按钮保存：
+10. 创建好工具之后，点击 **修改**
 
-![fill-tool-info.png](resource/fill-tool-info.png)
+11. 配置如图所示的参数<br/>
+    **注意** 这里配置的 默认值 的作用是：当你挂载这个插件到 聊天助手 的时候，这个默认值不会被大模型返回的值替代，假如你这个参数想让大模型返回的参数来填充
+    那么默认值就不要设置值
+    ![create_plugin_tool_1.png](../plugin/resource/create_plugin_tool_1.png)
 
-之后工具列表里就会出现刚才添加的工具，我们点击修改，进一步完善工具信息：
+## 2. 插件试运行
+1. 插件配置完成后点击右上角的 **试运行** 按钮,然后输入参数，点击运行就能获取到结果
 
-![edit-tool-btn.png](resource/edit-tool-btn.png)
-
-来到工具详情页，我们需要完善三个地方的信息：
-
-![tool-detail.png](resource/tool-detail.png)
-
-修改基本信息，主要是修改工具路径和请求方法：
-
-![edit-basic-info.png](resource/edit-basic-info.png)
-> 记得点击保存
-
-配置输入参数信息：
-
-![edit-input-data.png](resource/edit-input-data.png)
-> 记得点击保存
-
-配置输出参数（这里仅配置了部分参数，方便演示）：
-
-![edit-output-data.png](resource/edit-output-data.png)
-> 记得点击保存
-
-全部配置保存之后，工具就添加成功了。
-
-## 添加本地插件
-
-> 规划中...
+2. 输入参数，点击 **运行**<br/>
+   **注意：** 只有在这里试运行成功之后能正常请求到接口数据，才能挂载到 聊天助手 中，不然 聊天助手 调用插件的时候会调用插件失败
+   ![run_plugin_tool_result.png](../plugin/resource/run_plugin_tool_result.png)
+ 

@@ -308,6 +308,10 @@ function sidebarProduct(): DefaultTheme.SidebarItem[] {
         {
           text: "MCP",
           collapsed: true,
+          items: [
+              { text: "什么是MCP", link: "mcp/what_is_mcp" },
+              { text: "快速开始", link: "mcp/quick-start" },
+          ],
         },
         {
           text: "MCP商店",
