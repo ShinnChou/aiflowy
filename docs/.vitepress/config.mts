@@ -193,7 +193,7 @@ function sidebarProduct(): DefaultTheme.SidebarItem[] {
       items: [
         { text: "用户登录", link: "quick-start/login" },
         { text: "修改密码", link: "quick-start/update-password" },
-        { text: "中英文切换", link: "quick-start/update_password" },
+        { text: "中英文切换", link: "quick-start/locales" },
       ],
     },
     {
