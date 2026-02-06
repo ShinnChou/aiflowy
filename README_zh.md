@@ -31,10 +31,12 @@ AIFlowy 是一个基于 Java 语言构建的**企业级开源 AI 应用（智能
 - ✅ 国际化支持（目前已经完整支持中文和英文）
 
 
-### 🔜 近期路线图
-- [ ] 增强 RAG 检索精度与多模态支持
-- [ ] 优化前端交互体验与性能
-- [ ] 完善开发者文档与 SDK 生态
+## 信创适配
+AIFlowy 深度适配国产化软硬件生态，架构遵循等保 2.0 三级标准设计。
+我们已与多家信创头部企业完成兼容性互认证，确保在物理隔离环境下实现数据自主可控。
+
+![xc.png](docs/assets/images/xc.png)
+
 
 ## 技术栈
 - **后端**：JDK 17 + SpringBoot v3 + Agents Flex + MyBatis Flex + Redis  + Quartz
