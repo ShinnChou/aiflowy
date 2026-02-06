@@ -315,8 +315,9 @@ function sidebarProduct(): DefaultTheme.SidebarItem[] {
           ],
         },
         {
-          text: "MCP商店",
+          text: "MCP商店(商业版)",
           collapsed: true,
+          link: 'mcp/mcp-store'
         },
       ],
     },
