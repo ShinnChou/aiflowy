@@ -108,7 +108,7 @@ function onAsyncExecute(info: any) {
               </CardDescription>
             </CardContent>
           </Card>
-          <RouterLink to="">
+          <RouterLink to="/execHistory">
             <ElButton type="primary" size="large" round plain>
               执行记录
             </ElButton>
