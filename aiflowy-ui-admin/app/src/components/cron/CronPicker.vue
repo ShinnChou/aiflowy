@@ -26,7 +26,13 @@ function useCron(value: string) {
 
 <template>
   <div>
-    <ElDialog draggable title="Cron" v-model="showCron" width="60%">
+    <ElDialog
+      draggable
+      title="Cron"
+      v-model="showCron"
+      width="60%"
+      append-to-body
+    >
       <CronGenerator @use-cron="useCron" />
     </ElDialog>
     <ElButton class="mt-2" @click="showCron = true">
