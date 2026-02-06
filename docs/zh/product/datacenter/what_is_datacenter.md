@@ -3,3 +3,9 @@
 数据中枢可以管理第三方业务数据，使其能够在工作流中被使用。
 工作流中产生的和平台无关的业务数据也是保存到数据中枢里。
 本质上是动态的数据库表，可直接在页面上进行表设计和数据管理。
+
+![alt text](edit-modal.png)
+
+![alt text](detail-data.png)
+
+![alt text](detail-columns.png)
