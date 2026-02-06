@@ -292,9 +292,8 @@ function sidebarProduct(): DefaultTheme.SidebarItem[] {
           text: "模型管理",
           collapsed: true,
           items: [
-            { text: "模型管理", link: "llm/llmList" },
-            { text: "模型接入", link: "llm/addLlm" },
             { text: "供应商管理", link: "llm/llmSuppliers.md" },
+            { text: "模型管理", link: "llm/llmList" },
           ],
         },
         {
