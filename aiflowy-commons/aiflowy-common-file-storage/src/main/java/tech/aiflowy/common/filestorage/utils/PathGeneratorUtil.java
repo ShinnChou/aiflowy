@@ -67,7 +67,7 @@ public class PathGeneratorUtil {
     /**
      * 提取纯文件名（避免文件名包含路径分隔符）
      */
-    private static String getPureFileName(String fileName) {
+    public static String getPureFileName(String fileName) {
         if (fileName == null) {
             return "";
         }

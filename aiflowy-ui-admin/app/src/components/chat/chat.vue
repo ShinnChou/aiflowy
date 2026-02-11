@@ -17,6 +17,7 @@ import { cloneDeep, cn, uuid } from '@aiflowy/utils';
 import {
   CircleCheck,
   CopyDocument,
+  Paperclip,
   RefreshRight,
 } from '@element-plus/icons-vue';
 import {
@@ -34,6 +35,7 @@ import { api, sseClient } from '#/api/request';
 import SendEnableIcon from '#/components/icons/SendEnableIcon.vue';
 import SendIcon from '#/components/icons/SendIcon.vue';
 import ShowJson from '#/components/json/ShowJson.vue';
+import ChatFileUploader from '#/components/upload/ChatFileUploader.vue';
 
 import BotAvatar from '../botAvatar/botAvatar.vue';
 import SendingIcon from '../icons/SendingIcon.vue';
@@ -158,6 +160,7 @@ const stopSse = () => {
   }
 };
 const handleSubmit = async (refreshContent: string) => {
+  const attachments = attachmentsRef.value.getFileList();
   const currentPrompt = refreshContent || senderValue.value.trim();
   if (!currentPrompt) {
     return;
@@ -174,6 +177,7 @@ const handleSubmit = async (refreshContent: string) => {
     prompt: currentPrompt,
     conversationId: localeConversationId.value,
     messages: copyMessages,
+    attachments,
   };
   messages.value.pop();
   const mockMessages = generateMockMessages(refreshContent);
@@ -379,6 +383,23 @@ const handleCopy = (content: string) => {
 const handleRefresh = () => {
   handleSubmit(lastUserMessage.value);
 };
+const showHeaderFlog = ref(false);
+function openCloseHeader() {
+  if (showHeaderFlog.value) {
+    senderRef.value?.closeHeader();
+    files.value = [];
+  } else {
+    senderRef.value?.openHeader();
+  }
+  showHeaderFlog.value = !showHeaderFlog.value;
+}
+const attachmentsRef = ref();
+const files = ref<any[]>([]);
+function handlePasteFile(_: any, fileList: FileList) {
+  showHeaderFlog.value = true;
+  senderRef.value?.openHeader();
+  files.value = [...fileList];
+}
 </script>
 
 <template>
@@ -558,16 +579,22 @@ const handleRefresh = () => {
         :auto-size="{ minRows: 3, maxRows: 6 }"
         allow-speech
         @submit="handleSubmit"
+        @paste-file="handlePasteFile"
       >
         <!-- 自定义头部内容 -->
-        <!--        <template #header>
-          <div class="header-self-wrap">
-            <SenderHeader ref="senderHeader" />
-          </div>
-        </template>-->
+        <template #header>
+          <ChatFileUploader
+            ref="attachmentsRef"
+            :external-files="files"
+            :max-size="10"
+          />
+        </template>
 
         <template #action-list>
           <ElSpace>
+            <ElButton circle @click="openCloseHeader">
+              <ElIcon><Paperclip /></ElIcon>
+            </ElButton>
             <!--<ElButton circle @click="uploadRef.triggerFileSelect()">
               <ElIcon><Paperclip /></ElIcon>
             </ElButton>

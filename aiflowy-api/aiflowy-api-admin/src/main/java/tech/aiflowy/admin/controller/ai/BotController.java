@@ -139,7 +139,8 @@ public class BotController extends BaseCurdController<BotService, Bot> {
             @JsonBody(value = "prompt", required = true) String prompt,
             @JsonBody(value = "botId", required = true) BigInteger botId,
             @JsonBody(value = "conversationId", required = true) BigInteger conversationId,
-            @JsonBody(value = "messages") List<Map<String, String>>  messages
+            @JsonBody(value = "messages") List<Map<String, String>>  messages,
+            @JsonBody(value = "attachments") List<String> attachments
 
     ) {
         BotServiceImpl.ChatCheckResult chatCheckResult = new BotServiceImpl.ChatCheckResult();
@@ -149,7 +150,7 @@ public class BotController extends BaseCurdController<BotService, Bot> {
         if (errorEmitter != null) {
             return errorEmitter;
         }
-        return botService.startChat(botId, prompt, conversationId, messages, chatCheckResult);
+        return botService.startChat(botId, prompt, conversationId, messages, chatCheckResult, attachments);
     }
 
     @PostMapping("updateLlmId")

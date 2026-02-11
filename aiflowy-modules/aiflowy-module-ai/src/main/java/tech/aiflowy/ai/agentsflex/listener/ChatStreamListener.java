@@ -103,9 +103,9 @@ public class ChatStreamListener implements StreamResponseListener {
 
     @Override
     public void onFailure(StreamContext context, Throwable throwable) {
-        if (throwable != null && throwable.getCause() instanceof ClientAbortException) {
+        if (throwable != null) {
             throwable.printStackTrace();
-            sseEmitter.complete();
+            sendSystemError(sseEmitter, throwable.getMessage());
         }
     }
 

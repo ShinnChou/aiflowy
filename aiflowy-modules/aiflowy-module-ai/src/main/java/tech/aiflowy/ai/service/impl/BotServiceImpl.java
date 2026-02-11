@@ -1,6 +1,8 @@
 package tech.aiflowy.ai.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.agentsflex.core.file2text.File2TextService;
+import com.agentsflex.core.file2text.source.HttpDocumentSource;
 import com.agentsflex.core.memory.ChatMemory;
 import com.agentsflex.core.message.Message;
 import com.agentsflex.core.message.SystemMessage;
@@ -30,6 +32,8 @@ import tech.aiflowy.ai.mapper.BotMapper;
 import tech.aiflowy.ai.service.*;
 import tech.aiflowy.ai.utils.CustomBeanUtils;
 import tech.aiflowy.ai.utils.RegexUtils;
+import tech.aiflowy.common.filestorage.FileStorageService;
+import tech.aiflowy.common.filestorage.utils.PathGeneratorUtil;
 import tech.aiflowy.common.satoken.util.SaTokenUtil;
 import tech.aiflowy.common.util.MapUtil;
 import tech.aiflowy.common.util.Maps;
@@ -99,6 +103,8 @@ public class BotServiceImpl extends ServiceImpl<BotMapper, Bot> implements BotSe
     private BotMcpService botMcpService;
     @Resource
     private McpService mcpService;
+    @Resource(name = "default")
+    FileStorageService storageService;
 
     @Override
     public Bot getDetail(String id) {
@@ -162,7 +168,7 @@ public class BotServiceImpl extends ServiceImpl<BotMapper, Bot> implements BotSe
 
     @Override
     public SseEmitter startChat(BigInteger botId, String prompt, BigInteger conversationId, List<Map<String, String>> messages,
-                                BotServiceImpl.ChatCheckResult chatCheckResult) {
+                                BotServiceImpl.ChatCheckResult chatCheckResult, List<String> attachments) {
         Map<String, Object> modelOptions = chatCheckResult.getModelOptions();
         ChatModel chatModel = chatCheckResult.getChatModel();
         final MemoryPrompt memoryPrompt = new MemoryPrompt();
@@ -173,6 +179,10 @@ public class BotServiceImpl extends ServiceImpl<BotMapper, Bot> implements BotSe
         }
         if (StringUtils.hasLength(systemPrompt)) {
             memoryPrompt.setSystemMessage(SystemMessage.of(systemPrompt));
+        }
+        String attachmentsToString = attachmentsToString(attachments);
+        if (StringUtils.hasLength(attachmentsToString)) {
+            prompt = "请基于用户上传的附件内容回答用户问题： \n\n" +  "【用户上传的附件内容】\n" + attachmentsToString + "\n\n"  + "\n\n【用户问题】：\n" + prompt;
         }
         UserMessage userMessage = new UserMessage(prompt);
         userMessage.addTools(buildFunctionList(Maps.of("botId", botId).set("needEnglishName", false)));
@@ -366,5 +376,23 @@ public class BotServiceImpl extends ServiceImpl<BotMapper, Bot> implements BotSe
         return functionList;
     }
 
+    public String attachmentsToString(List<String> fileList) {
+        StringBuilder messageBuilder = new StringBuilder();
+        if (fileList != null && !fileList.isEmpty()) {
+            File2TextService fileTextService = new File2TextService();
+            for (int i = 0; i < fileList.size(); i++) {
+                String fileUrl = fileList.get(i);
+                String result = fileTextService.extractTextFromSource(new HttpDocumentSource(fileUrl));
+                if (result != null) {
+                    if (i > 0) {
+                        messageBuilder.append("\n");
+                    }
+                    messageBuilder.append("附件").append(i + 1).append("，文件名为：").append(PathGeneratorUtil.getPureFileName(fileUrl)).append("，内容为：  \n").append(result);
+                }
+                storageService.delete(fileUrl);
+            }
+        }
+        return messageBuilder.toString();
+    }
 
 }

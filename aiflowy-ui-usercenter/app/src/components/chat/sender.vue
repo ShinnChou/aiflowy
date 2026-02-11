@@ -6,11 +6,12 @@ import { inject, ref } from 'vue';
 
 import { cloneDeep, uuid } from '@aiflowy/utils';
 
-import { Promotion } from '@element-plus/icons-vue';
+import { Paperclip, Promotion } from '@element-plus/icons-vue';
 import { ElButton, ElIcon } from 'element-plus';
 
 import { sseClient } from '#/api/request';
 import SendingIcon from '#/components/icons/SendingIcon.vue';
+import ChatFileUploader from '#/components/upload/ChatFileUploader.vue';
 // import PaperclipIcon from '#/components/icons/PaperclipIcon.vue';
 
 type Think = {
@@ -52,6 +53,7 @@ function sendMessage() {
     conversationId: props.conversationId,
     prompt: senderValue.value,
     botId: props.bot.id,
+    attachments: attachmentsRef.value.getFileList(),
   };
   btnLoading.value = true;
   props.addMessage({
@@ -190,10 +192,29 @@ const stopSse = () => {
   sseClient.abort();
   btnLoading.value = false;
 };
+const showHeaderFlog = ref(false);
+const attachmentsRef = ref();
+const senderRef = ref();
+const files = ref<any[]>([]);
+function handlePasteFile(_: any, fileList: FileList) {
+  showHeaderFlog.value = true;
+  senderRef.value?.openHeader();
+  files.value = [...fileList];
+}
+function openCloseHeader() {
+  if (showHeaderFlog.value) {
+    senderRef.value?.closeHeader();
+    files.value = [];
+  } else {
+    senderRef.value?.openHeader();
+  }
+  showHeaderFlog.value = !showHeaderFlog.value;
+}
 </script>
 
 <template>
   <ElSender
+    ref="senderRef"
     v-model="senderValue"
     variant="updown"
     :auto-size="{ minRows: 2, maxRows: 5 }"
@@ -201,13 +222,25 @@ const stopSse = () => {
     allow-speech
     placeholder="发送消息"
     @keyup.enter="sendMessage"
+    @paste-file="handlePasteFile"
   >
     <!-- 自定义 prefix 前缀 -->
     <!-- <template #prefix>
     </template> -->
-
+    <!-- 自定义头部内容 -->
+    <template #header>
+      <ChatFileUploader
+        ref="attachmentsRef"
+        :external-files="files"
+        @delete-all="openCloseHeader"
+        :max-size="10"
+      />
+    </template>
     <template #action-list>
       <div class="flex items-center gap-2">
+        <ElButton circle @click="openCloseHeader">
+          <ElIcon><Paperclip /></ElIcon>
+        </ElButton>
         <!-- <ElButton :icon="PaperclipIcon" link /> -->
         <ElButton v-if="btnLoading" circle @click="stopSse">
           <ElIcon size="30" color="#409eff"><SendingIcon /></ElIcon>
