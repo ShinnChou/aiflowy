@@ -60,7 +60,7 @@ const showTinyFlow = ref(false);
 const saveLoading = ref(false);
 const handleKeydown = (event: KeyboardEvent) => {
   // 检查是否是 Ctrl+S
-  if (event.ctrlKey && event.key === 's') {
+  if ((event.ctrlKey || event.metaKey) && event.key === 's') {
     event.preventDefault(); // 阻止浏览器默认保存行为
     if (!saveLoading.value) {
       handleSave(true);
