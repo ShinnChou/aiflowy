@@ -159,6 +159,11 @@ const stopSse = () => {
     };
   }
 };
+const clearSenderFiles = () => {
+  files.value = [];
+  attachmentsRef.value.clearFiles();
+  openCloseHeader();
+};
 const handleSubmit = async (refreshContent: string) => {
   const attachments = attachmentsRef.value.getFileList();
   const currentPrompt = refreshContent || senderValue.value.trim();
@@ -179,6 +184,7 @@ const handleSubmit = async (refreshContent: string) => {
     messages: copyMessages,
     attachments,
   };
+  clearSenderFiles();
   messages.value.pop();
   const mockMessages = generateMockMessages(refreshContent);
   bubbleItems.value.push(...mockMessages);

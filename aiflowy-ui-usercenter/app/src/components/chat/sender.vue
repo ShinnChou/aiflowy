@@ -45,6 +45,11 @@ const props = defineProps<Props>();
 const senderValue = ref('');
 const btnLoading = ref(false);
 const getSessionList = inject<any>('getSessionList');
+const clearSenderFiles = () => {
+  files.value = [];
+  attachmentsRef.value.clearFiles();
+  openCloseHeader();
+};
 function sendMessage() {
   if (getDisabled()) {
     return;
@@ -55,6 +60,7 @@ function sendMessage() {
     botId: props.bot.id,
     attachments: attachmentsRef.value.getFileList(),
   };
+  clearSenderFiles();
   btnLoading.value = true;
   props.addMessage({
     key: uuid(),

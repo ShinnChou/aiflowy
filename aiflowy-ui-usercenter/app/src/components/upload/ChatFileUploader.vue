@@ -24,7 +24,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['deleteAll']);
-
 type SelfFilesCardProps = {
   fileSize: number;
   id?: number;
@@ -136,6 +135,9 @@ watch(
 
 defineExpose({
   getFileList,
+  clearFiles() {
+    files.value = [];
+  },
 });
 </script>
 
