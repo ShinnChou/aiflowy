@@ -45,7 +45,7 @@ export default defineConfig({
         target: "_self",
       },
       {
-        text: "定价方案",
+        text: "版本和价格",
         link: "https://aiflowy.tech/pricing",
         noIcon: true,
         target: "_self",
