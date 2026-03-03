@@ -33,6 +33,11 @@ import java.util.Map;
 public class DocumentCollection extends DocumentCollectionBase {
 
     /**
+     * 知识库id
+     */
+    public static final String KEY_DOCUMENT_ID = "documentCollectionId";
+
+    /**
      * 文档块问题集合配置key
      */
     public static final String KEY_CHUNK_QUESTION_VECTOR_STORE_COLLECTION = "chunkQuestionVectorStoreCollection";

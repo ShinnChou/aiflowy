@@ -85,7 +85,7 @@ public class DocumentCollectionServiceImpl extends ServiceImpl<DocumentCollectio
         wrapper.setMaxResults(docRecallMaxNum);
         wrapper.setMinScore((double) minSimilarity);
         wrapper.setText(keyword);
-
+        wrapper.eq(KEY_DOCUMENT_ID, documentCollection.getId());
         StoreOptions options = StoreOptions.ofCollectionName(documentCollection.getVectorStoreCollection());
         options.setIndexName(documentCollection.getVectorStoreCollection());
 

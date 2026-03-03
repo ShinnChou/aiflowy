@@ -280,6 +280,9 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
                     com.agentsflex.core.document.Document document = new com.agentsflex.core.document.Document();
                     document.setId(item.getId());
                     document.setContent(item.getContent());
+                    Map<String, Object> metadata = new HashMap<>();
+                    metadata.put(DocumentCollection.KEY_DOCUMENT_ID, knowledge.getId());
+                    document.setMetadataMap(metadata);
                     documents.add(document);
                 }
         );
