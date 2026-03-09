@@ -34,7 +34,7 @@ public class ChatStreamListener implements StreamResponseListener {
     // 辅助标记：是否进入过工具调用（避免重复递归判断）
     private boolean hasToolCall = false;
     // 工具最大调用次数限制
-    private int maxToolCallCount = 20;
+    private int maxToolCallCount = 0;
 
     public ChatStreamListener(String conversationId, ChatModel chatModel, MemoryPrompt memoryPrompt, ChatSseEmitter sseEmitter, ChatOptions chatOptions) {
         this.conversationId = conversationId;
