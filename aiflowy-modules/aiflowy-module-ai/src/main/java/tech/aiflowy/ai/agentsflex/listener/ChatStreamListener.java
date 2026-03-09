@@ -33,6 +33,8 @@ public class ChatStreamListener implements StreamResponseListener {
     private boolean canStop = true;
     // 辅助标记：是否进入过工具调用（避免重复递归判断）
     private boolean hasToolCall = false;
+    // 工具最大调用次数限制
+    private int maxToolCallCount = 20;
 
     public ChatStreamListener(String conversationId, ChatModel chatModel, MemoryPrompt memoryPrompt, ChatSseEmitter sseEmitter, ChatOptions chatOptions) {
         this.conversationId = conversationId;
@@ -50,6 +52,9 @@ public class ChatStreamListener implements StreamResponseListener {
     @Override
     public void onMessage(StreamContext context, AiMessageResponse aiMessageResponse) {
         try {
+            if (maxToolCallCount >= 20 ) {
+                sendSystemError(sseEmitter, "工具调用次数超出限制，请重新开始会话。");
+            }
             AiMessage aiMessage = aiMessageResponse.getMessage();
             if (aiMessage == null) {
                 return;
@@ -61,8 +66,12 @@ public class ChatStreamListener implements StreamResponseListener {
                 for (ToolMessage toolMessage : toolMessages) {
                     memoryPrompt.addMessage(toolMessage);
                 }
+                // 工具调用次数增加
+                maxToolCallCount++;
                 chatModel.chatStream(memoryPrompt, this, chatOptions);
             } else {
+                // 只要有会话输出，则重置工具调用次数
+                maxToolCallCount = 0;
                 if (this.hasToolCall) {
                     this.canStop = true;
                 }
