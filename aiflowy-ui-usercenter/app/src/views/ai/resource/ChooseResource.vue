@@ -16,7 +16,6 @@ const props = defineProps({
 
 const emit = defineEmits(['choose']);
 
-const pageDataRef = ref();
 const dialogVisible = ref(false);
 const chooseResources = ref([]);
 const currentChoose = ref<any>({});
@@ -41,16 +40,16 @@ watch(
 <template>
   <div>
     <ElDialog
-      v-model="dialogVisible"
       draggable
+      destroy-on-close
+      top="10vh"
+      width="80%"
+      v-model="dialogVisible"
       :title="$t('aiResource.choose')"
       :before-close="closeDialog"
       :close-on-click-modal="false"
-      width="80%"
-      destroy-on-close
     >
       <PageData
-        ref="pageDataRef"
         page-url="/userCenter/resource/page"
         :page-size="8"
         :page-sizes="[8, 12, 16, 20]"
@@ -73,5 +72,3 @@ watch(
     </ElButton>
   </div>
 </template>
-
-<style scoped></style>
