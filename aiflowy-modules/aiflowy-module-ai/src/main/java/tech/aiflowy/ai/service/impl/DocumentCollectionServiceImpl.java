@@ -280,7 +280,7 @@ public class DocumentCollectionServiceImpl extends ServiceImpl<DocumentCollectio
 
             if (documentStore != null) {
                 // 删除向量数据库中的数据
-                documentStore.doDelete(stringDocIds, options);
+                documentStore.delete(stringDocIds, options);
             }
             DocumentSearcher searcher = searcherFactory.getSearcher((String) documentCollection.getOptionsByKey(KEY_SEARCH_ENGINE_TYPE));
             chunkIds.forEach(searcher::deleteDocument);
